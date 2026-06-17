@@ -1,0 +1,64 @@
+<div class="container-fluid mt-4" dir="rtl">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <span class="page-title">التقارير</span>
+    <div class="d-flex gap-2 align-items-center">
+      @if (lastUpdate()) {
+        <small class="text-muted">آخر تحديث: {{ lastUpdate() | date:'HH:mm' }}</small>
+      }
+      <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i> تحديث
+      </button>
+      <button class="btn-print" (click)="onPrint()" [disabled]="rows().length === 0">
+        <i class="fa-solid fa-print"></i> طباعة
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-4 p-3">
+    <div class="d-flex flex-wrap gap-2 align-items-end">
+      <div>
+        <label class="form-label small">من تاريخ</label>
+        <input class="form-control" type="date" [(ngModel)]="dateFrom">
+      </div>
+      <div>
+        <label class="form-label small">إلى تاريخ</label>
+        <input class="form-control" type="date" [(ngModel)]="dateTo">
+      </div>
+      <button class="btn" style="background:var(--second-color);color:#fff" (click)="load()">
+        <i class="fa-solid fa-filter me-1"></i> فلترة
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5"><div class="spinner-border" style="color:var(--second-color)"></div></div>
+  } @else if (rows().length === 0) {
+    <div class="text-center py-5 text-muted">لا توجد بيانات</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>المريض</th>
+            <th>الدكتور</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r.id; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ r.patientName }}</td>
+              <td>{{ r.doctorName }}</td>
+              <td>{{ r.date | date:'yyyy/MM/dd' }}</td>
+              <td>{{ r.status }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

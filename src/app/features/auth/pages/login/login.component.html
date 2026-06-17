@@ -1,0 +1,186 @@
+<div class="lg-wrap">
+
+  <!-- ══════════════════════════════════
+       Left panel — branding
+       ══════════════════════════════════ -->
+  <div class="lg-brand d-none d-lg-flex">
+
+    <!-- Ambient orbs -->
+    <div class="lg-orb lg-orb--1"></div>
+    <div class="lg-orb lg-orb--2"></div>
+
+    <!-- Brand content -->
+    <div class="lg-brand-content">
+
+      <!-- Logo ring -->
+      <div class="lg-logo-ring">
+        <div class="lg-logo-ring-inner">
+          <img src="/assets/img/logo-login.png" class="lg-logo"
+               alt="صحتي" onerror="this.style.display='none'">
+          <i class="fa-solid fa-heart-pulse lg-logo-fallback"></i>
+        </div>
+      </div>
+
+      <h1 class="lg-brand-name">صحتي</h1>
+      <p class="lg-brand-tagline">منصة إدارة الرعاية الصحية المتكاملة</p>
+
+      <!-- Feature pills -->
+      <div class="lg-pills d-flex flex-column gap-2 mt-4">
+        <div class="lg-pill">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>بيانات آمنة ومشفرة بالكامل</span>
+        </div>
+        <div class="lg-pill">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>إحصائيات ولوحات تحكم تفاعلية</span>
+        </div>
+        <div class="lg-pill">
+          <i class="fa-solid fa-users-gear"></i>
+          <span>إدارة شاملة للأطباء والمرضى</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom wave -->
+    <div class="lg-brand-footer">
+      <span>صحتك تبدأ هنا</span>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       Right panel — form
+       ══════════════════════════════════ -->
+  <div class="lg-form-panel d-flex align-items-center justify-content-center">
+
+    <div class="lg-card">
+
+      <!-- Card top accent -->
+      <div class="lg-card-accent"></div>
+
+      <!-- Header -->
+      <div class="lg-card-header">
+        <!-- Logo visible on mobile only -->
+        <div class="lg-mobile-logo d-flex d-lg-none align-items-center gap-2 mb-4">
+          <div class="lg-mobile-logo-ring">
+            <img src="/assets/img/logo-login.png" alt="صحتي"
+                 onerror="this.style.display='none'">
+            <i class="fa-solid fa-heart-pulse"></i>
+          </div>
+          <span class="lg-mobile-app-name">صحتي</span>
+        </div>
+
+        <h2 class="lg-title">تسجيل الدخول</h2>
+        <p class="lg-subtitle">أدخل بياناتك للوصول إلى لوحة التحكم</p>
+      </div>
+
+      <!-- Form -->
+      <form class="lg-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
+
+        <!-- Email -->
+        <div class="lg-field">
+          <label class="lg-label" for="email">
+            <i class="fa-solid fa-envelope"></i>
+            البريد الإلكتروني
+          </label>
+          <div class="lg-input-wrap">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="lg-input"
+              placeholder="example@email.com"
+              dir="ltr"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              required
+              email
+              #emailRef="ngModel"
+              [class.lg-input--invalid]="emailRef.invalid && emailRef.touched"
+              [class.lg-input--valid]="emailRef.valid && emailRef.touched"
+            >
+            @if (emailRef.valid && emailRef.touched) {
+              <i class="fa-solid fa-circle-check lg-input-check"></i>
+            }
+          </div>
+          @if (emailRef.invalid && emailRef.touched) {
+            <span class="lg-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              أدخل بريد إلكتروني صحيح
+            </span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="lg-field">
+          <label class="lg-label" for="password">
+            <i class="fa-solid fa-lock"></i>
+            كلمة المرور
+          </label>
+          <div class="lg-input-wrap">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              name="password"
+              class="lg-input lg-input--pad-left"
+              placeholder="••••••••"
+              [ngModel]="password()"
+              (ngModelChange)="password.set($event)"
+              required
+              minlength="6"
+              #passwordRef="ngModel"
+              [class.lg-input--invalid]="passwordRef.invalid && passwordRef.touched"
+              [class.lg-input--valid]="passwordRef.valid && passwordRef.touched"
+            >
+            <button type="button" class="lg-eye-btn" (click)="togglePassword()">
+              <i class="fa-regular"
+                 [class.fa-eye]="!showPassword()"
+                 [class.fa-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+          @if (passwordRef.invalid && passwordRef.touched) {
+            <span class="lg-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              كلمة المرور 6 أحرف على الأقل
+            </span>
+          }
+        </div>
+
+        <!-- Remember me -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <label class="lg-check-wrap">
+            <input type="checkbox" id="rememberMe" name="rememberMe"
+                   [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)">
+            <span class="lg-check-box">
+              <i class="fa-solid fa-check lg-check-tick"></i>
+            </span>
+            <span class="lg-check-label">تذكرني</span>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="lg-submit-btn"
+                [disabled]="isLoading() || loginForm.invalid"
+                [class.lg-submit-btn--loading]="isLoading()">
+          @if (isLoading()) {
+            <span class="lg-submit-spinner"></span>
+            <span>جاري التحقق...</span>
+          } @else {
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>تسجيل الدخول</span>
+          }
+        </button>
+
+      </form>
+
+      <!-- Footer -->
+      <p class="lg-card-footer-text">
+        <i class="fa-solid fa-shield-halved"></i>
+        اتصالك محمي بتشفير SSL
+      </p>
+
+    </div>
+  </div>
+
+</div>

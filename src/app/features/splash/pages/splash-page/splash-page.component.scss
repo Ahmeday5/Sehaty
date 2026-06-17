@@ -1,0 +1,179 @@
+/* ═══════════════════════════════════════════
+   Splash Screen — صحتي
+   ═══════════════════════════════════════════ */
+
+.sp-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg,
+    #0f172a 0%,
+    #1e1b4b 40%,
+    #0f172a 100%);
+  overflow: hidden;
+  direction: rtl;
+}
+
+/* ── Ambient orbs ── */
+.sp-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .25;
+  pointer-events: none;
+}
+
+.sp-orb--1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, var(--main-color, #14c8c7), transparent 70%);
+  top: -120px; right: -100px;
+  animation: sp-drift 8s ease-in-out infinite alternate;
+}
+
+.sp-orb--2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, var(--second-color, #4b4e9c), transparent 70%);
+  bottom: -80px; left: -80px;
+  animation: sp-drift 10s ease-in-out infinite alternate-reverse;
+}
+
+.sp-orb--3 {
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, #818cf8, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: sp-pulse-orb 4s ease-in-out infinite;
+}
+
+@keyframes sp-drift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(30px, 20px) scale(1.1); }
+}
+
+@keyframes sp-pulse-orb {
+  0%, 100% { opacity: .12; transform: translate(-50%, -50%) scale(1); }
+  50%       { opacity: .22; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* ── Content ── */
+.sp-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  animation: sp-rise .7s cubic-bezier(.22,1,.36,1) both;
+}
+
+@keyframes sp-rise {
+  from { opacity: 0; transform: translateY(32px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Logo ring ── */
+.sp-logo-ring {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--main-color, #14c8c7) 0%,
+    var(--second-color, #4b4e9c) 40%,
+    transparent 60%
+  );
+  padding: 3px;
+  animation: sp-spin 3s linear infinite;
+  box-shadow: 0 0 40px rgba(20,200,199,.3);
+}
+
+@keyframes sp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sp-logo-ring-inner {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: #1e1b4b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.sp-logo {
+  width: 72px; height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(20,200,199,.4));
+  animation: sp-logo-beat 2s ease-in-out infinite;
+}
+
+.sp-logo-fallback {
+  font-size: 38px;
+  background: linear-gradient(135deg, var(--main-color, #14c8c7), var(--second-color, #4b4e9c));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sp-logo-beat 2s ease-in-out infinite;
+}
+
+@keyframes sp-logo-beat {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.06); }
+}
+
+/* ── Brand text ── */
+.sp-brand {
+  text-align: center;
+  animation: sp-rise .7s .15s cubic-bezier(.22,1,.36,1) both;
+}
+
+.sp-name {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #fff;
+  margin: 0;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #fff 30%, rgba(20,200,199,.9));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sp-tagline {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,.55);
+  margin: 4px 0 0;
+  letter-spacing: .5px;
+}
+
+/* ── Progress bar ── */
+.sp-progress-wrap {
+  width: 160px;
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(255,255,255,.1);
+  overflow: hidden;
+  animation: sp-rise .7s .3s cubic-bezier(.22,1,.36,1) both;
+}
+
+.sp-progress-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--main-color, #14c8c7), var(--second-color, #4b4e9c));
+  animation: sp-fill 0.9s cubic-bezier(.4,0,.2,1) forwards;
+  box-shadow: 0 0 10px var(--main-color, #14c8c7);
+}
+
+@keyframes sp-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* ── Version ── */
+.sp-version {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: rgba(255,255,255,.25);
+  letter-spacing: 1px;
+}

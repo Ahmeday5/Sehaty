@@ -1,0 +1,27 @@
+<div class="container-fluid mt-4" dir="rtl" style="max-width:760px">
+  <div class="mb-4">
+    <span class="page-title">سياسة الخصوصية</span>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5"><div class="spinner-border" style="color:var(--second-color)"></div></div>
+  } @else {
+    <div class="card p-4">
+      <div class="mb-3">
+        <label class="form-label fw-bold">محتوى سياسة الخصوصية</label>
+        <textarea class="form-control" rows="16" [(ngModel)]="content"
+          placeholder="اكتب سياسة الخصوصية هنا..."></textarea>
+      </div>
+      <div>
+        <button class="btn" style="background:var(--second-color);color:#fff;min-width:140px" (click)="onSave()" [disabled]="saving()">
+          @if (saving()) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+          } @else {
+            <i class="fa-solid fa-floppy-disk me-2"></i>
+          }
+          حفظ التغييرات
+        </button>
+      </div>
+    </div>
+  }
+</div>

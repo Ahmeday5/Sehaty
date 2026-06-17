@@ -1,0 +1,176 @@
+<div class="ad-page">
+
+  <!-- ── Page header ── -->
+  <div class="page-header">
+    <div class="ad-title-group">
+      <h1 class="page-title">الأطباء</h1>
+      @if (!loading() && filteredDoctors.length > 0) {
+        <span class="ad-count">{{ filteredDoctors.length }} طبيب</span>
+      }
+    </div>
+    <div class="ad-header-actions">
+      <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        @if (lastUpdate()) { {{ lastUpdate() | date:'HH:mm' }} }
+      </button>
+      <button class="btn-primary-action" (click)="openAdd()">
+        <i class="fa-solid fa-user-plus"></i>
+        إضافة طبيب
+      </button>
+    </div>
+  </div>
+
+  <!-- ── KPI strip ── -->
+  @if (!loading() && totalCount > 0) {
+    <div class="ad-kpi-strip">
+      <div class="ad-kpi ad-kpi--total">
+        <div class="ad-kpi-icon">
+          <i class="fa-solid fa-user-doctor"></i>
+        </div>
+        <div class="ad-kpi-body">
+          <p class="ad-kpi-val">{{ totalCount }}</p>
+          <p class="ad-kpi-lbl">إجمالي الأطباء</p>
+        </div>
+      </div>
+      <div class="ad-kpi ad-kpi--active">
+        <div class="ad-kpi-icon">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="ad-kpi-body">
+          <p class="ad-kpi-val">{{ activeCount }}</p>
+          <p class="ad-kpi-lbl">أطباء نشطون</p>
+        </div>
+      </div>
+      <div class="ad-kpi ad-kpi--inactive">
+        <div class="ad-kpi-icon">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </div>
+        <div class="ad-kpi-body">
+          <p class="ad-kpi-val">{{ inactiveCount }}</p>
+          <p class="ad-kpi-lbl">أطباء معطّلون</p>
+        </div>
+      </div>
+      <div class="ad-kpi ad-kpi--spec">
+        <div class="ad-kpi-icon">
+          <i class="fa-solid fa-stethoscope"></i>
+        </div>
+        <div class="ad-kpi-body">
+          <p class="ad-kpi-val">{{ specialities().length }}</p>
+          <p class="ad-kpi-lbl">التخصصات</p>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── Toolbar ── -->
+  <div class="ad-toolbar">
+
+    <!-- Search -->
+    <div class="ad-search-wrap">
+      <i class="fa-solid fa-magnifying-glass ad-search-icon"></i>
+      <input class="ad-search" type="search" placeholder="ابحث باسم الطبيب..."
+             [(ngModel)]="searchValue" (ngModelChange)="onSearch($event)">
+      @if (searchValue) {
+        <button class="ad-search-clear" (click)="searchValue=''; onSearch('')" type="button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+    </div>
+
+    <!-- Filters with scroll arrows -->
+    <div class="ad-filter-row">
+      @if (specialities().length > 3) {
+        <button class="ad-filter-arrow" type="button" (click)="scrollFilters(1)"
+                aria-label="التالي">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      }
+      <div class="ad-filters" #filterWrap>
+        <button class="ad-pill" [class.ad-pill--on]="selectedFilter() === null"
+                (click)="onFilterClick(null)" type="button">
+          <i class="fa-solid fa-border-all"></i>
+          الكل
+        </button>
+        @for (s of specialities(); track s.id) {
+          <button class="ad-pill" [class.ad-pill--on]="selectedFilter() === s.name"
+                  (click)="onFilterClick(s.name)" type="button">
+            {{ s.name }}
+          </button>
+        }
+      </div>
+      @if (specialities().length > 3) {
+        <button class="ad-filter-arrow" type="button" (click)="scrollFilters(-1)"
+                aria-label="السابق">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      }
+    </div>
+
+  </div>
+
+  <!-- ── Content ── -->
+  @if (loading()) {
+    <div class="ad-spinner">
+      <div class="ad-spinner-ring"></div>
+      <p class="ad-spinner-txt">جاري تحميل الأطباء...</p>
+    </div>
+  } @else if (displayed().length === 0) {
+    <div class="ad-empty">
+      <div class="ad-empty-icon">
+        <i class="fa-solid fa-user-doctor"></i>
+      </div>
+      <h3 class="ad-empty-title">
+        @if (searchValue || selectedFilter()) { لا توجد نتائج }
+        @else { لا يوجد أطباء بعد }
+      </h3>
+      <p class="ad-empty-sub">
+        @if (searchValue || selectedFilter()) {
+          جرّب تعديل معايير البحث أو الفلتر المحدد
+        } @else {
+          ابدأ بإضافة أول طبيب إلى المنصة
+        }
+      </p>
+      @if (!searchValue && !selectedFilter()) {
+        <button class="btn-primary-action" (click)="openAdd()">
+          <i class="fa-solid fa-user-plus"></i>
+          إضافة طبيب
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="ad-grid">
+      @for (doctor of displayed(); track doctor.id) {
+        <app-doctor-card
+          [doctor]="doctor"
+          (edit)="openEdit($event)"
+          (toggle)="onToggleActive($event)"
+          (delete)="onDeleteDoctor($event)">
+        </app-doctor-card>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  }
+
+</div>
+
+<!-- Add modal -->
+@if (showAddModal()) {
+  <app-modal title="إضافة طبيب جديد" size="lg" (closed)="closeAdd()">
+    <app-doctor-form (saved)="onSaved()" (cancelled)="closeAdd()"></app-doctor-form>
+  </app-modal>
+}
+
+<!-- Edit modal -->
+@if (editingDoctor()) {
+  <app-modal title="تعديل بيانات الطبيب" size="lg" (closed)="closeEdit()">
+    <app-doctor-form [doctor]="editingDoctor()!" (saved)="onSaved()" (cancelled)="closeEdit()">
+    </app-doctor-form>
+  </app-modal>
+}

@@ -1,0 +1,104 @@
+.cdialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
+  animation: cdialog-fade 0.2s ease;
+  padding: 16px;
+}
+
+.cdialog {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  padding: 28px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  animation: cdialog-scale 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  text-align: center;
+}
+
+.cdialog-icon-wrap {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cdialog-icon {
+  font-size: 28px;
+}
+
+/* Type colours */
+.cdialog--danger   .cdialog-icon-wrap { background: #fef2f2; }
+.cdialog--danger   .cdialog-icon      { color: #ef4444; }
+.cdialog--warning  .cdialog-icon-wrap { background: #fffbeb; }
+.cdialog--warning  .cdialog-icon      { color: #f59e0b; }
+.cdialog--info     .cdialog-icon-wrap { background: #eff6ff; }
+.cdialog--info     .cdialog-icon      { color: #3b82f6; }
+
+.cdialog-content { width: 100%; }
+
+.cdialog-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.cdialog-message {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.55;
+}
+
+.cdialog-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.cdialog-btn {
+  flex: 1;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.14s, transform 0.1s;
+
+  &:active { transform: scale(0.97); }
+
+  &--cancel {
+    background: #f3f4f6;
+    color: #374151;
+    &:hover { background: #e5e7eb; }
+  }
+
+  &--confirm {
+    color: #fff;
+    &.cdialog-btn--danger   { background: #ef4444; &:hover { background: #dc2626; } }
+    &.cdialog-btn--warning  { background: #f59e0b; &:hover { background: #d97706; } }
+    &.cdialog-btn--info     { background: #3b82f6; &:hover { background: #2563eb; } }
+  }
+}
+
+@keyframes cdialog-fade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cdialog-scale {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}

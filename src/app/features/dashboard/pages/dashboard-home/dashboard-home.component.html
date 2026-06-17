@@ -1,0 +1,59 @@
+<div class="db-page">
+
+  <!-- Welcome banner -->
+  <div class="db-banner">
+    <div class="db-banner-content">
+      <h2 class="db-banner-title">أهلاً بك في Sehaty</h2>
+      <p class="db-banner-sub">منصة إدارة الرعاية الصحية المتكاملة — إدارة أكثر ذكاءً، رعاية أفضل</p>
+    </div>
+    <div class="db-banner-icon">
+      <i class="fa-solid fa-heart-pulse"></i>
+    </div>
+    <div class="db-banner-actions">
+      <button class="db-refresh-btn" (click)="refresh()" [disabled]="loading()" title="تحديث البيانات">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+      </button>
+      @if (lastUpdate()) {
+        <span class="db-last-update">{{ lastUpdate() | date:'HH:mm' }}</span>
+      }
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  @if (loading()) {
+    <div class="db-spinner">
+      <div class="spinner-border" style="color:var(--second-color)" role="status">
+        <span class="visually-hidden">جاري التحميل...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="db-cards">
+      @for (stat of cardStats(); track stat.label) {
+        <div class="db-card">
+          <div class="db-card-icon" [style.background]="stat.gradient">
+            <i class="fa-solid" [ngClass]="stat.icon"></i>
+          </div>
+          <div class="db-card-body">
+            <p class="db-card-label">{{ stat.label }}</p>
+            <h3 class="db-card-value">
+              @if (stat.isCurrency) {
+                {{ stat.value | number }} <small class="db-card-curr">ج.م</small>
+              } @else {
+                {{ stat.value | number }}
+              }
+            </h3>
+            <div class="db-card-today">
+              <i class="fa-solid fa-arrow-trend-up"></i>
+              <span>
+                +{{ stat.valueToday | number }}
+                {{ stat.isCurrency ? 'ج.م' : '' }}
+                اليوم
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

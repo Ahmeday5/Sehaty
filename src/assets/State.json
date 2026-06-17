@@ -1,0 +1,7 @@
+{
+  "stats": [
+    { "id": 1, "numone": 150, "age": 25 },
+    { "id": 2, "numone": 170, "age": 30 },
+    { "id": 3, "numone": 190, "age": 50 }
+  ]
+}

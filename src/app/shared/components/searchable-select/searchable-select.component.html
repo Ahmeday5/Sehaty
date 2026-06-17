@@ -1,0 +1,43 @@
+<div class="ss-wrapper" [class.ss-wrapper--open]="open()" [class.ss-wrapper--disabled]="disabled">
+  <button type="button" class="ss-trigger" (click)="toggle()" [disabled]="disabled">
+    <span class="ss-value" [class.ss-value--placeholder]="!selectedLabel">
+      {{ selectedLabel || placeholder }}
+    </span>
+    <span class="ss-icons">
+      @if (value != null) {
+        <i class="fa-solid fa-xmark ss-clear" (click)="clear($event)" aria-label="مسح"></i>
+      }
+      <i class="fa-solid fa-chevron-down ss-caret" [class.ss-caret--open]="open()"></i>
+    </span>
+  </button>
+
+  @if (open()) {
+    <div class="ss-dropdown">
+      <div class="ss-search">
+        <i class="fa-solid fa-magnifying-glass ss-search-icon"></i>
+        <input
+          class="ss-search-input"
+          type="text"
+          placeholder="بحث..."
+          [ngModel]="query()"
+          (ngModelChange)="query.set($event)"
+          (click)="$event.stopPropagation()"
+          autocomplete="off"
+        >
+      </div>
+
+      <ul class="ss-list">
+        @if (filtered().length === 0) {
+          <li class="ss-empty">لا توجد نتائج</li>
+        }
+        @for (opt of filtered(); track opt.value) {
+          <li
+            class="ss-item"
+            [class.ss-item--selected]="opt.value === value"
+            (click)="select(opt)"
+          >{{ opt.label }}</li>
+        }
+      </ul>
+    </div>
+  }
+</div>

@@ -1,0 +1,15 @@
+<div class="content-wrapper">
+  <!-- شرط: الـ Sidebar تظهر فقط إذا المستخدم مسجل دخول -->
+  @if (isLoggedIn$ | async) {
+  <!-- استدعاء كومبوننت الـ Sidebar -->
+  <app-sidebar></app-sidebar>
+  }
+  <!-- المحتوى الرئيسي -->
+  <main class="content" [ngClass]="{'full-width': !(isLoggedIn$ | async)}">
+    @if (isLoggedIn$ | async) {
+    <!-- استدعاء كومبوننت الـ header دائمًا -->
+    <app-header></app-header>
+    }
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,412 @@
+.df {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Image upload ── */
+.df-img-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.df-img-picker {
+  position: relative;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  border: 2.5px dashed #d1d5db;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color .15s;
+
+  &:hover { border-color: var(--main-color, #14c8c7); }
+}
+
+.df-img-preview {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.df-img-change-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  opacity: 0;
+  border-radius: 50%;
+  transition: opacity .15s;
+}
+
+.df-img-picker:hover .df-img-change-overlay { opacity: 1; }
+
+.df-img-icon  { font-size: 22px; color: #9ca3af; }
+.df-img-hint  { font-size: 9px;  color: #9ca3af; margin-top: 4px; }
+.df-img-sub   { font-size: 11px; color: #94a3b8; margin: 0; }
+
+/* ── Validation state on Bootstrap form-control ── */
+.df .form-control.ng-invalid.ng-touched,
+.df .form-select.ng-invalid.ng-touched {
+  border-color: #dc2626 !important;
+  background-color: #fff5f5;
+  box-shadow: 0 0 0 3px rgba(220,38,38,.08) !important;
+}
+
+/* ── Grid ── */
+.df-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  @media (max-width: 576px) { grid-template-columns: 1fr; }
+}
+
+/* ── Field ── */
+.df-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &--full { grid-column: 1 / -1; }
+}
+
+.df-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.df-req { color: #ef4444; margin-inline-start: 2px; }
+
+/* ── Radio group ── */
+.df-radio-group {
+  display: flex;
+  gap: 8px;
+}
+
+.df-radio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #64748b;
+  transition: border-color .12s, background .12s, color .12s;
+  flex: 1;
+  justify-content: center;
+
+  input[type=radio] { display: none; }
+
+  i { font-size: 12px; }
+
+  &--on {
+    border-color: var(--main-color, #14c8c7);
+    background: rgba(20,200,199,.07);
+    color: #0f172a;
+    font-weight: 600;
+  }
+}
+
+/* ── Textarea ── */
+.df-textarea { resize: vertical; min-height: 80px; }
+
+/* ── Certificate section ── */
+.df-cert-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.df-cert-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  i { color: var(--second-color, #4b4e9c); }
+}
+
+/* Upload zone (when no cert selected) */
+.df-cert-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+
+  &:hover {
+    border-color: var(--main-color, #14c8c7);
+    background: rgba(20,200,199,.04);
+  }
+}
+
+.df-cert-upload-icon {
+  font-size: 28px;
+  color: #94a3b8;
+}
+
+.df-cert-upload-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.df-cert-upload-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Preview area (when cert selected) */
+.df-cert-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Image thumbnail */
+.df-cert-thumb {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  height: 140px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+}
+
+.df-cert-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .18s;
+
+  i { font-size: 22px; }
+}
+
+.df-cert-thumb:hover .df-cert-thumb-overlay { opacity: 1; }
+
+/* PDF file button */
+.df-cert-file-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  text-decoration: none;
+  transition: border-color .15s, background .15s;
+
+  &:hover {
+    border-color: var(--second-color, #4b4e9c);
+    background: rgba(75,78,156,.04);
+  }
+}
+
+.df-cert-file-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: rgba(220,38,38,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #dc2626;
+  flex-shrink: 0;
+}
+
+.df-cert-file-info { flex: 1; min-width: 0; }
+
+.df-cert-file-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.df-cert-file-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin: 2px 0 0;
+}
+
+.df-cert-ext-icon {
+  font-size: 13px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* Change cert button */
+.df-cert-change-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background .12s, color .12s;
+
+  &:hover { background: #f1f5f9; color: #0f172a; }
+}
+
+/* Hidden file input */
+.df-file-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0; height: 0;
+}
+
+/* ── Footer ── */
+.df-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.df-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  transition: background .15s, box-shadow .15s;
+
+  &:disabled { opacity: .55; cursor: not-allowed; }
+
+  &--cancel {
+    background: #f1f5f9;
+    color: #374151;
+    border: 1px solid #e2e8f0;
+    &:hover:not(:disabled) { background: #e2e8f0; }
+  }
+
+  &--save {
+    background: var(--main-color, #14c8c7);
+    color: #fff;
+    min-width: 130px;
+    justify-content: center;
+    &:hover:not(:disabled) {
+      background: var(--main-dark, #0ea5a4);
+      box-shadow: 0 4px 14px rgba(20,200,199,.35);
+    }
+  }
+}
+
+/* ── Certificate image lightbox ── */
+.df-cert-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: df-fade-in .18s ease;
+}
+
+@keyframes df-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.df-cert-modal-box {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  animation: df-scale-in .2s ease;
+
+  img {
+    display: block;
+    max-width: 80vw;
+    max-height: 80vh;
+    object-fit: contain;
+  }
+}
+
+@keyframes df-scale-in {
+  from { transform: scale(.9); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+
+.df-cert-modal-close {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s;
+  z-index: 1;
+
+  &:hover { background: rgba(0,0,0,.75); }
+}

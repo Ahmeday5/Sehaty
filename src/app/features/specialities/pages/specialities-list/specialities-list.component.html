@@ -1,0 +1,223 @@
+<div class="container-fluid sl-page">
+
+  <!-- ════════════════════════════════
+       Header row
+       ════════════════════════════════ -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+
+    <div>
+      <h1 class="sl-title mb-1">
+        <i class="fa-solid fa-stethoscope sl-title-icon"></i>
+        التخصصات الطبية
+      </h1>
+      <p class="sl-subtitle mb-0">
+        @if (lastUpdate()) {
+          آخر تحديث الساعة <strong>{{ lastUpdate() | date:'HH:mm' }}</strong>
+        } @else {
+          إدارة التخصصات الطبية المتاحة في المنصة
+        }
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      @if (!loading() && specialities().length > 0) {
+        <span class="sl-total-badge">
+          <i class="fa-solid fa-list-check"></i>
+          {{ specialities().length }} تخصص
+        </span>
+      }
+      <button class="sl-btn sl-btn--refresh" type="button"
+              (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        تحديث
+      </button>
+      <button class="sl-btn sl-btn--add" type="button" (click)="openModal()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة تخصص
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       Table card
+       ════════════════════════════════ -->
+  <div class="sl-table-card">
+
+    <!-- ── Skeleton Loading ── -->
+    @if (loading()) {
+      <div class="table-responsive">
+        <table class="sl-table">
+          <thead>
+            <tr>
+              <th class="sl-th sl-th--num">#</th>
+              <th class="sl-th">التخصص</th>
+              <th class="sl-th sl-th--action"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (_ of [1,2,3,4,5,6]; track $index) {
+              <tr class="sl-skeleton-row">
+                <td><div class="sl-skel sl-skel--sm mx-auto"></div></td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="sl-skel sl-skel--avatar"></div>
+                    <div class="sl-skel sl-skel--md"></div>
+                  </div>
+                </td>
+                <td><div class="sl-skel sl-skel--sm mx-auto"></div></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- ── Empty State ── -->
+    @if (!loading() && specialities().length === 0) {
+      <div class="sl-empty d-flex flex-column align-items-center justify-content-center gap-3 py-5">
+        <div class="sl-empty-icon">
+          <i class="fa-solid fa-stethoscope"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="sl-empty-title">لا توجد تخصصات</h3>
+          <p class="sl-empty-sub">لم يتم إضافة أي تخصصات طبية حتى الآن</p>
+        </div>
+        <button type="button" class="sl-btn sl-btn--add" (click)="openModal()">
+          <i class="fa-solid fa-plus"></i>
+          إضافة أول تخصص
+        </button>
+      </div>
+    }
+
+    <!-- ── Data Table ── -->
+    @if (!loading() && specialities().length > 0) {
+      <div class="table-responsive">
+        <table class="sl-table">
+          <thead>
+            <tr>
+              <th class="sl-th sl-th--num">#</th>
+              <th class="sl-th">التخصص</th>
+              <th class="sl-th sl-th--action">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of specialities(); track s.id; let i = $index) {
+              <tr class="sl-row">
+
+                <!-- Row number -->
+                <td class="sl-td sl-td--num">
+                  <span class="sl-row-num">{{ i + 1 }}</span>
+                </td>
+
+                <!-- Speciality name + avatar -->
+                <td class="sl-td">
+                  <div class="d-flex align-items-center gap-3">
+                    @if (s.imageUrl) {
+                      <img [src]="s.imageUrl" class="sl-avatar sl-avatar--img" alt="">
+                    } @else {
+                      <div class="sl-avatar" [style.background]="iconColor(s.name)">
+                        {{ initials(s.name) }}
+                      </div>
+                    }
+                    <span class="sl-name">{{ s.name }}</span>
+                  </div>
+                </td>
+
+                <!-- Delete action -->
+                <td class="sl-td sl-td--action">
+                  <button type="button" class="sl-del-btn"
+                          (click)="onDelete(s.id, s.name)"
+                          [title]="'حذف ' + s.name">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </td>
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Count label -->
+      <div class="px-3 pb-3 pt-1">
+        <span class="sl-count-label">
+          إجمالي <strong>{{ specialities().length }}</strong> تخصص طبي
+        </span>
+      </div>
+    }
+
+  </div><!-- /sl-table-card -->
+
+</div>
+
+<!-- ════════════════════════════════
+     Add Speciality Modal
+     ════════════════════════════════ -->
+@if (showModal()) {
+  <div class="sl-modal-backdrop" (click)="closeModal()"></div>
+  <div class="sl-modal" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="sl-modal-header">
+      <div>
+        <h4 class="sl-modal-title">
+          <i class="fa-solid fa-circle-plus sl-modal-title-icon"></i>
+          إضافة تخصص جديد
+        </h4>
+        <p class="sl-modal-subtitle mb-0">أدخل بيانات التخصص الطبي الجديد</p>
+      </div>
+      <button type="button" class="sl-modal-close" (click)="closeModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <form [formGroup]="addForm" (ngSubmit)="onAdd()" novalidate>
+    <div class="sl-modal-body">
+
+      <!-- Name field -->
+      <div class="sl-field">
+        <label class="sl-label">اسم التخصص <span class="sl-required">*</span></label>
+        <input type="text" class="sl-input"
+               formControlName="name"
+               placeholder="مثال: طب الأطفال، جراحة العظام..."
+               [class.sl-input--filled]="addForm.get('name')!.value"
+               [class.sl-input--invalid]="addForm.get('name')!.invalid && addForm.get('name')!.touched">
+        <app-form-error [control]="addForm.get('name')"></app-form-error>
+      </div>
+
+      <!-- Image URL field -->
+      <div class="sl-field mt-3">
+        <label class="sl-label">رابط الصورة <span class="sl-optional">(اختياري)</span></label>
+        <input type="text" class="sl-input"
+               formControlName="imageUrl"
+               placeholder="https://..."
+               [class.sl-input--filled]="addForm.get('imageUrl')!.value"
+               [class.sl-input--invalid]="addForm.get('imageUrl')!.invalid && addForm.get('imageUrl')!.touched"
+               dir="ltr">
+        <app-form-error [control]="addForm.get('imageUrl')" patternMsg="أدخل رابط URL صحيح يبدأ بـ http أو https"></app-form-error>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="sl-modal-footer">
+      <button type="button" class="sl-footer-btn sl-footer-btn--cancel"
+              (click)="closeModal()" [disabled]="adding()">
+        إلغاء
+      </button>
+      <button type="submit" class="sl-footer-btn sl-footer-btn--save"
+              [disabled]="adding()">
+        @if (adding()) {
+          <span class="sl-spinner"></span>
+          جاري الحفظ...
+        } @else {
+          <i class="fa-solid fa-floppy-disk"></i>
+          حفظ التخصص
+        }
+      </button>
+    </div>
+    </form>
+
+  </div>
+}

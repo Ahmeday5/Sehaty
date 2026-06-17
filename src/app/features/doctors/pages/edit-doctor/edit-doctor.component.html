@@ -1,0 +1,49 @@
+<div class="container-fluid mt-4">
+  <h4 class="mb-4 fw-bold">تعديل بيانات الطبيب</h4>
+  @if (loading()) {
+    <div class="text-center py-5"><div class="spinner-border" style="color:var(--main-color)" role="status"></div></div>
+  } @else {
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">الاسم</label>
+          <input class="form-control" [(ngModel)]="doctor.name" name="name" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input class="form-control" type="email" [(ngModel)]="doctor.email" name="email" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">رقم الهاتف</label>
+          <input class="form-control" [(ngModel)]="doctor.phone" name="phone" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">التخصص</label>
+          <select class="form-select" [(ngModel)]="doctor.specializationId" name="specializationId" required>
+            @for (sp of specialities(); track sp.id) {
+              <option [value]="sp.id">{{ sp.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">سنوات الخبرة</label>
+          <input class="form-control" type="number" [(ngModel)]="doctor.experienceYears" name="experienceYears">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">سعر الكشف</label>
+          <input class="form-control" type="number" [(ngModel)]="doctor.examiningPrice" name="examiningPrice">
+        </div>
+        <div class="col-12">
+          <label class="form-label">نبذة</label>
+          <textarea class="form-control" rows="3" [(ngModel)]="doctor.about" name="about"></textarea>
+        </div>
+      </div>
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn" style="background:var(--second-color);color:#fff" [disabled]="loading()">
+          حفظ التعديلات
+        </button>
+        <a class="btn btn-secondary" [routerLink]="['/doctors', doctorId, 'details']">إلغاء</a>
+      </div>
+    </form>
+  }
+</div>

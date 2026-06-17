@@ -1,0 +1,351 @@
+<!-- ══════════════════════════════════
+     Page Header
+     ══════════════════════════════════ -->
+<div class="container-fluid au-page">
+
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="au-page-title mb-1">
+        <i class="fa-solid fa-users-gear au-page-title-icon"></i>
+        فريق العمل
+      </h1>
+      <p class="au-page-sub mb-0">إدارة مستخدمي النظام وصلاحياتهم</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="au-btn au-btn--refresh" (click)="refresh()" [disabled]="loading()" type="button">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        تحديث
+      </button>
+      <button class="au-btn au-btn--add" (click)="openAdd()" type="button">
+        <i class="fa-solid fa-user-plus"></i>
+        إضافة مستخدم
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       KPI Stats Strip
+       ══════════════════════════════════ -->
+  @if (!loading() && totalCount > 0) {
+    <div class="d-flex flex-wrap gap-3 mb-4">
+
+      <button type="button" class="au-kpi-card flex-fill"
+              [class.au-kpi-card--active]="selectedRole() === null"
+              (click)="onRoleFilter(null)">
+        <div class="au-kpi-icon au-kpi-icon--total">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="au-kpi-body">
+          <span class="au-kpi-num">{{ totalCount }}</span>
+          <span class="au-kpi-lbl">إجمالي المستخدمين</span>
+        </div>
+      </button>
+
+      <button type="button" class="au-kpi-card flex-fill"
+              [class.au-kpi-card--active]="selectedRole() === 'Admin'"
+              (click)="onRoleFilter('Admin')">
+        <div class="au-kpi-icon au-kpi-icon--admin">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div class="au-kpi-body">
+          <span class="au-kpi-num">{{ adminCount }}</span>
+          <span class="au-kpi-lbl">المديرون</span>
+        </div>
+      </button>
+
+      <button type="button" class="au-kpi-card flex-fill"
+              [class.au-kpi-card--active]="selectedRole() === 'Editor'"
+              (click)="onRoleFilter('Editor')">
+        <div class="au-kpi-icon au-kpi-icon--editor">
+          <i class="fa-solid fa-pen-nib"></i>
+        </div>
+        <div class="au-kpi-body">
+          <span class="au-kpi-num">{{ editorCount }}</span>
+          <span class="au-kpi-lbl">المحررون</span>
+        </div>
+      </button>
+
+      <button type="button" class="au-kpi-card flex-fill"
+              [class.au-kpi-card--active]="selectedRole() === 'Sales'"
+              (click)="onRoleFilter('Sales')">
+        <div class="au-kpi-icon au-kpi-icon--sales">
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <div class="au-kpi-body">
+          <span class="au-kpi-num">{{ salesCount }}</span>
+          <span class="au-kpi-lbl">المبيعات</span>
+        </div>
+      </button>
+
+      <button type="button" class="au-kpi-card flex-fill"
+              [class.au-kpi-card--active]="selectedRole() === 'Marketing'"
+              (click)="onRoleFilter('Marketing')">
+        <div class="au-kpi-icon au-kpi-icon--marketing">
+          <i class="fa-solid fa-bullhorn"></i>
+        </div>
+        <div class="au-kpi-body">
+          <span class="au-kpi-num">{{ marketingCount }}</span>
+          <span class="au-kpi-lbl">التسويق</span>
+        </div>
+      </button>
+
+    </div>
+  }
+
+  <!-- ══════════════════════════════════
+       Search Bar
+       ══════════════════════════════════ -->
+  <div class="au-search-wrap mb-4">
+    <i class="fa-solid fa-magnifying-glass au-search-ico"></i>
+    <input type="text" class="au-search-input"
+           placeholder="البحث بالاسم أو البريد الإلكتروني أو رقم الهاتف..."
+           [(ngModel)]="searchValue" (ngModelChange)="onSearch($event)">
+    @if (searchValue) {
+      <button type="button" class="au-search-clear" (click)="searchValue = ''; onSearch('')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    }
+  </div>
+
+  <!-- ══════════════════════════════════
+       Loading Skeleton
+       ══════════════════════════════════ -->
+  @if (loading()) {
+    <div class="row g-4">
+      @for (_ of [1,2,3,4,5,6]; track $index) {
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+          <div class="au-skeleton"></div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════
+       Empty State
+       ══════════════════════════════════ -->
+  @if (!loading() && displayed().length === 0) {
+    <div class="au-empty d-flex flex-column align-items-center justify-content-center py-5 gap-3">
+      <div class="au-empty-icon">
+        <i class="fa-solid fa-users-slash"></i>
+      </div>
+      <div class="text-center">
+        <h3 class="au-empty-title">لا يوجد مستخدمون</h3>
+        <p class="au-empty-sub">لم يتم العثور على مستخدمين مطابقين للبحث أو الفلتر المحدد</p>
+      </div>
+      @if (selectedRole() || searchValue) {
+        <button type="button" class="au-btn au-btn--refresh"
+                (click)="selectedRole.set(null); searchValue = ''; onSearch('')">
+          <i class="fa-solid fa-filter-circle-xmark"></i>
+          إلغاء الفلتر
+        </button>
+      }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════
+       Users Cards Grid
+       ══════════════════════════════════ -->
+  @if (!loading() && displayed().length > 0) {
+    <div class="row g-4">
+      @for (emp of displayed(); track emp.id) {
+        <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+          <div class="au-card">
+
+            <!-- Stripe accent (via ::before in SCSS) -->
+
+            <!-- Card Header: avatar + role badge -->
+            <div class="au-card-head d-flex align-items-start justify-content-between">
+              <div class="au-avatar-wrap">
+                <img class="au-avatar"
+                     [src]="avatarUrl(emp)"
+                     [alt]="emp.firstName + ' ' + emp.lastName"
+                     onerror="this.src='/assets/img/logo-login.png'">
+              </div>
+              <span class="au-role-badge" [ngClass]="roleBadgeClass(emp.roles)">
+                <i class="fa-solid" [ngClass]="roleIconClass(emp.roles?.[0])"></i>
+                {{ roleLabel(emp.roles) }}
+              </span>
+            </div>
+
+            <!-- Name -->
+            <div class="au-card-body">
+              <h3 class="au-card-name">{{ emp.firstName }} {{ emp.lastName }}</h3>
+
+              <!-- Info rows -->
+              <div class="d-flex flex-column gap-2">
+
+                <div class="au-info-row">
+                  <span class="au-info-ico au-info-ico--mail">
+                    <i class="fa-solid fa-envelope"></i>
+                  </span>
+                  <span class="au-info-txt" dir="ltr" [title]="emp.email">{{ emp.email }}</span>
+                </div>
+
+                <div class="au-info-row">
+                  <span class="au-info-ico au-info-ico--phone">
+                    <i class="fa-solid fa-phone"></i>
+                  </span>
+                  <span class="au-info-txt" dir="ltr">{{ emp.phone }}</span>
+                </div>
+
+                @if (emp.nationalID) {
+                  <div class="au-info-row">
+                    <span class="au-info-ico au-info-ico--id">
+                      <i class="fa-solid fa-id-card"></i>
+                    </span>
+                    <span class="au-info-txt" dir="ltr">{{ maskNationalId(emp.nationalID) }}</span>
+                  </div>
+                }
+
+              </div>
+            </div>
+
+            <!-- Delete Action -->
+            <div class="au-card-footer">
+              <button type="button" class="au-delete-btn w-100" (click)="onDelete(emp)">
+                <i class="fa-solid fa-trash-can"></i>
+                حذف المستخدم
+              </button>
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="mt-4">
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [windowSize]="1"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    </div>
+  }
+
+</div>
+
+
+<!-- ══════════════════════════════════
+     Add User Modal
+     ══════════════════════════════════ -->
+@if (showAddModal()) {
+  <app-modal title="إضافة مستخدم جديد" size="lg" (closed)="closeAdd()">
+    <form [formGroup]="addForm" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Avatar Picker -->
+      <div class="d-flex justify-content-center mb-4">
+        <div class="au-img-picker" (click)="imgInput.click()" role="button" tabindex="0">
+          @if (imagePreview()) {
+            <img [src]="imagePreview()!" class="au-img-preview" alt="صورة المستخدم">
+            <div class="au-img-overlay"><i class="fa-solid fa-camera"></i></div>
+          } @else {
+            <i class="fa-solid fa-user-circle au-img-placeholder-icon"></i>
+            <span class="au-img-hint">رفع صورة</span>
+          }
+        </div>
+        <input #imgInput type="file" accept="image/*" class="d-none" (change)="onImageChange($event)">
+      </div>
+
+      <!-- Fields -->
+      <div class="row g-3">
+
+        <!-- First Name -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">الاسم الأول <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="text" formControlName="firstName"
+                 placeholder="أدخل الاسم الأول"
+                 [class.is-invalid]="addForm.get('firstName')!.invalid && addForm.get('firstName')!.touched">
+          <app-form-error [control]="addForm.get('firstName')"></app-form-error>
+        </div>
+
+        <!-- Last Name -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">الاسم الأخير <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="text" formControlName="lastName"
+                 placeholder="أدخل الاسم الأخير"
+                 [class.is-invalid]="addForm.get('lastName')!.invalid && addForm.get('lastName')!.touched">
+          <app-form-error [control]="addForm.get('lastName')"></app-form-error>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">البريد الإلكتروني <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="email" formControlName="email"
+                 placeholder="example@mail.com" dir="ltr"
+                 [class.is-invalid]="addForm.get('email')!.invalid && addForm.get('email')!.touched">
+          <app-form-error [control]="addForm.get('email')"></app-form-error>
+        </div>
+
+        <!-- Phone -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">رقم الهاتف <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="tel" formControlName="phone"
+                 placeholder="+201xxxxxxxxx" dir="ltr"
+                 [class.is-invalid]="addForm.get('phone')!.invalid && addForm.get('phone')!.touched">
+          <app-form-error [control]="addForm.get('phone')" patternMsg="أدخل رقم هاتف صحيح (7-15 رقماً)"></app-form-error>
+        </div>
+
+        <!-- National ID -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">رقم الهوية <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="text" formControlName="nationalID"
+                 placeholder="أدخل رقم الهوية الوطنية" dir="ltr" maxlength="20"
+                 [class.is-invalid]="addForm.get('nationalID')!.invalid && addForm.get('nationalID')!.touched">
+          <app-form-error [control]="addForm.get('nationalID')" patternMsg="أرقام فقط (10-20 خانة)"></app-form-error>
+        </div>
+
+        <!-- Password -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">كلمة المرور <span class="text-danger">*</span></label>
+          <div class="position-relative">
+            <input class="form-control au-input au-input--has-eye"
+                   [type]="showPassword() ? 'text' : 'password'"
+                   formControlName="password"
+                   placeholder="6 أحرف على الأقل" dir="ltr"
+                   [class.is-invalid]="addForm.get('password')!.invalid && addForm.get('password')!.touched">
+            <button type="button" class="au-eye-btn" (click)="togglePassword()">
+              <i class="fa-regular" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+          <app-form-error [control]="addForm.get('password')"></app-form-error>
+        </div>
+
+        <!-- Role selector -->
+        <div class="col-12">
+          <label class="au-form-lbl">الدور الوظيفي <span class="text-danger">*</span></label>
+          <div class="d-flex flex-wrap gap-2 mt-1">
+            @for (key of ROLE_KEYS; track key) {
+              <label class="au-role-opt" [class.au-role-opt--on]="addForm.get('role')!.value === key">
+                <input type="radio" formControlName="role" [value]="key" class="d-none">
+                <i class="fa-solid" [ngClass]="roleIconClass(key)"></i>
+                {{ ROLES_AR[key] }}
+              </label>
+            }
+          </div>
+          @if (addForm.get('role')!.invalid && addForm.get('role')!.touched) {
+            <p class="au-err mt-1">يرجى اختيار الدور الوظيفي</p>
+          }
+        </div>
+
+      </div>
+
+      <!-- Modal footer -->
+      <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <button type="button" class="au-form-btn au-form-btn--cancel" (click)="closeAdd()">
+          <i class="fa-solid fa-xmark"></i>
+          إلغاء
+        </button>
+        <button type="submit" class="au-form-btn au-form-btn--save" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="fa-solid fa-user-plus"></i>
+          }
+          {{ submitting() ? 'جاري الإضافة...' : 'إضافة المستخدم' }}
+        </button>
+      </div>
+
+    </form>
+  </app-modal>
+}

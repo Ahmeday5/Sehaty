@@ -1,0 +1,38 @@
+@if (svc.state(); as state) {
+  <div
+    class="cdialog-backdrop"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="state.title ?? 'تأكيد'"
+    (click)="onBackdropClick($event)"
+  >
+    <div [class]="'cdialog cdialog--' + (state.type ?? 'warning')">
+      <!-- Icon -->
+      <div class="cdialog-icon-wrap">
+        @switch (state.type ?? 'warning') {
+          @case ('danger')  { <i class="fa-solid fa-triangle-exclamation cdialog-icon"></i> }
+          @case ('warning') { <i class="fa-solid fa-circle-exclamation cdialog-icon"></i> }
+          @case ('info')    { <i class="fa-solid fa-circle-info cdialog-icon"></i> }
+        }
+      </div>
+
+      <!-- Content -->
+      <div class="cdialog-content">
+        @if (state.title) {
+          <h2 class="cdialog-title">{{ state.title }}</h2>
+        }
+        <p class="cdialog-message">{{ state.message }}</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="cdialog-actions">
+        <button class="cdialog-btn cdialog-btn--cancel" (click)="cancel()">
+          {{ state.cancelText ?? 'إلغاء' }}
+        </button>
+        <button [class]="'cdialog-btn cdialog-btn--confirm cdialog-btn--' + (state.type ?? 'warning')" (click)="confirm()">
+          {{ state.confirmText ?? 'تأكيد' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

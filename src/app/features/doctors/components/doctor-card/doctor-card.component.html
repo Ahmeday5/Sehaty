@@ -1,0 +1,80 @@
+<article class="dc" [class.dc--inactive]="!doctor.isActive">
+
+  <!-- Top bar: percentage + status -->
+  <div class="dc-top">
+    @if (doctor.doctorPersentage) {
+      <span class="dc-pct">
+        <i class="fa-solid fa-percent"></i>
+        {{ doctor.doctorPersentage }}%
+      </span>
+    } @else {
+      <span></span>
+    }
+    <span class="dc-status" [class.dc-status--on]="doctor.isActive">
+      <span class="dc-status-dot"></span>
+      {{ doctor.isActive ? 'نشط' : 'غير نشط' }}
+    </span>
+  </div>
+  <!-- Avatar -->
+  <div class="dc-avatar-wrap">
+    <img class="dc-avatar" [src]="imageUrl" [alt]="doctor.name"
+         onerror="this.src='/assets/img/logo-login.png'">
+  </div>
+
+  <!-- Identity -->
+  <div class="dc-identity">
+    <h3 class="dc-name">د. {{ doctor.name }}</h3>
+    <span class="dc-spec">{{ doctor.specialization }}</span>
+  </div>
+
+  <!-- Stats -->
+  <div class="dc-stats">
+    <div class="dc-stat">
+      <div class="dc-stat-icon dc-stat-icon--blue">
+        <i class="fa-regular fa-clock"></i>
+      </div>
+      <div class="dc-stat-body">
+        <strong>{{ doctor.yearsOfExperience }}</strong>
+        <span>سنة خبرة</span>
+      </div>
+    </div>
+    <div class="dc-stat-div"></div>
+    <div class="dc-stat">
+      <div class="dc-stat-icon dc-stat-icon--gold">
+        <i class="fa-solid fa-coins"></i>
+      </div>
+      <div class="dc-stat-body">
+        <strong>{{ doctor.examenPrice | number }}</strong>
+        <span>ج.م / كشف</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions: 4 equal buttons -->
+  <div class="dc-actions">
+    <a class="dc-action dc-action--view" [routerLink]="['/doctors', doctor.id, 'details']"
+       title="تفاصيل">
+      <i class="fa-solid fa-eye"></i>
+      <span>تفاصيل</span>
+    </a>
+    <button class="dc-action dc-action--edit" type="button" (click)="edit.emit(doctor)"
+            title="تعديل">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <span>تعديل</span>
+    </button>
+    <button class="dc-action" type="button"
+            [class.dc-action--activate]="!doctor.isActive"
+            [class.dc-action--deactivate]="doctor.isActive"
+            (click)="toggle.emit(doctor)"
+            [title]="doctor.isActive ? 'تعطيل' : 'تفعيل'">
+      <i class="fa-solid" [class.fa-circle-check]="!doctor.isActive" [class.fa-ban]="doctor.isActive"></i>
+      <span>{{ doctor.isActive ? 'تعطيل' : 'تفعيل' }}</span>
+    </button>
+    <button class="dc-action dc-action--delete" type="button" (click)="delete.emit(doctor)"
+            title="حذف">
+      <i class="fa-solid fa-trash-can"></i>
+      <span>حذف</span>
+    </button>
+  </div>
+
+</article>

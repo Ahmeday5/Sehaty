@@ -1,0 +1,204 @@
+<form class="df" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+  <!-- ── Image upload ── -->
+  <div class="df-img-row">
+    <label class="df-img-picker" for="df-img">
+      @if (imagePreview()) {
+        <img class="df-img-preview" [src]="imagePreview()!" alt="صورة الطبيب">
+        <div class="df-img-change-overlay">
+          <i class="fa-solid fa-camera"></i>
+        </div>
+      } @else {
+        <i class="fa-solid fa-camera df-img-icon"></i>
+        <span class="df-img-hint">صورة الطبيب</span>
+      }
+      <input id="df-img" type="file" accept="image/*" class="df-file-hidden" (change)="onImageChange($event)">
+    </label>
+    <p class="df-img-sub">اضغط لرفع أو تغيير الصورة</p>
+  </div>
+
+  <!-- ── Grid fields ── -->
+  <div class="df-grid">
+
+    <!-- Name -->
+    <div class="df-field">
+      <label class="df-label" for="df-name">الاسم الكامل <span class="df-req">*</span></label>
+      <input id="df-name" class="form-control" formControlName="name" placeholder="د. محمد أحمد">
+      <app-form-error [control]="form.get('name')"></app-form-error>
+    </div>
+
+    <!-- Phone -->
+    <div class="df-field">
+      <label class="df-label" for="df-phone">رقم الهاتف <span class="df-req">*</span></label>
+      <input id="df-phone" class="form-control" formControlName="phone"
+             placeholder="01xxxxxxxxx" dir="ltr">
+      <app-form-error [control]="form.get('phone')" patternMsg="رقم هاتف غير صحيح"></app-form-error>
+    </div>
+
+    <!-- National ID -->
+    <div class="df-field">
+      <label class="df-label" for="df-nid">الرقم القومي <span class="df-req">*</span></label>
+      <input id="df-nid" class="form-control" formControlName="nationalID"
+             placeholder="14 رقماً" dir="ltr" maxlength="20">
+      <app-form-error [control]="form.get('nationalID')"
+                      patternMsg="أرقام فقط (10-20 خانة)"></app-form-error>
+    </div>
+
+    @if (!isEdit) {
+      <!-- Email (add only) -->
+      <div class="df-field">
+        <label class="df-label" for="df-email">البريد الإلكتروني <span class="df-req">*</span></label>
+        <input id="df-email" type="email" class="form-control" formControlName="email"
+               placeholder="doctor@example.com" dir="ltr">
+        <app-form-error [control]="form.get('email')"></app-form-error>
+      </div>
+
+      <!-- Password (add only) -->
+      <div class="df-field">
+        <label class="df-label" for="df-pass">كلمة المرور <span class="df-req">*</span></label>
+        <input id="df-pass" type="password" class="form-control" formControlName="password"
+               placeholder="6 أحرف على الأقل" dir="ltr">
+        <app-form-error [control]="form.get('password')"></app-form-error>
+      </div>
+    }
+
+    <!-- Speciality -->
+    <div class="df-field">
+      <label class="df-label" for="df-spec">التخصص <span class="df-req">*</span></label>
+      <select id="df-spec" class="form-select" formControlName="specialityId">
+        <option [value]="null" disabled>اختر التخصص</option>
+        @for (s of specialities(); track s.id) {
+          <option [value]="s.id">{{ s.name }}</option>
+        }
+      </select>
+      <app-form-error [control]="form.get('specialityId')"></app-form-error>
+    </div>
+
+    <!-- Gender -->
+    <div class="df-field">
+      <label class="df-label">الجنس <span class="df-req">*</span></label>
+      <div class="df-radio-group">
+        <label class="df-radio" [class.df-radio--on]="form.get('gender')?.value === 'Male'">
+          <input type="radio" formControlName="gender" value="Male">
+          <i class="fa-solid fa-mars"></i> ذكر
+        </label>
+        <label class="df-radio" [class.df-radio--on]="form.get('gender')?.value === 'Female'">
+          <input type="radio" formControlName="gender" value="Female">
+          <i class="fa-solid fa-venus"></i> أنثى
+        </label>
+      </div>
+    </div>
+
+    <!-- Years of experience -->
+    <div class="df-field">
+      <label class="df-label" for="df-exp">سنوات الخبرة <span class="df-req">*</span></label>
+      <input id="df-exp" type="number" class="form-control" formControlName="yearsOfExperience"
+             min="0" max="60" placeholder="0">
+      <app-form-error [control]="form.get('yearsOfExperience')"></app-form-error>
+    </div>
+
+    <!-- Exam price -->
+    <div class="df-field">
+      <label class="df-label" for="df-price">سعر الكشف (ج.م) <span class="df-req">*</span></label>
+      <input id="df-price" type="number" class="form-control" formControlName="examenPrice"
+             min="0" placeholder="200">
+      <app-form-error [control]="form.get('examenPrice')"></app-form-error>
+    </div>
+
+    <!-- Doctor percentage -->
+    <div class="df-field">
+      <label class="df-label" for="df-pct">نسبة الطبيب (%) <span class="df-req">*</span></label>
+      <input id="df-pct" type="number" class="form-control" formControlName="doctorPersentage"
+             min="0" max="100" placeholder="85">
+      <app-form-error [control]="form.get('doctorPersentage')"></app-form-error>
+    </div>
+
+  </div>
+
+  <!-- ── Profile info (full width) ── -->
+  <div class="df-field df-field--full">
+    <label class="df-label" for="df-info">نبذة عن الطبيب <span class="df-req">*</span></label>
+    <textarea id="df-info" class="form-control df-textarea" formControlName="profileInfo"
+              rows="3" placeholder="اكتب نبذة مختصرة عن الطبيب وخبراته..."></textarea>
+    <app-form-error [control]="form.get('profileInfo')"></app-form-error>
+  </div>
+
+  <!-- ── Certificate upload ── -->
+  <div class="df-cert-section">
+    <p class="df-cert-title">
+      <i class="fa-solid fa-certificate"></i>
+      الشهادة / المستند
+    </p>
+
+    @if (certPreviewUrl()) {
+      <div class="df-cert-preview-wrap">
+        @if (certIsImage()) {
+          <!-- Image thumbnail → click to open modal -->
+          <div class="df-cert-thumb" (click)="openCertModal()">
+            <img [src]="certPreviewUrl()!" alt="الشهادة">
+            <div class="df-cert-thumb-overlay">
+              <i class="fa-solid fa-magnifying-glass-plus"></i>
+              <span>معاينة</span>
+            </div>
+          </div>
+        } @else {
+          <!-- PDF / file → click opens in new tab -->
+          <a class="df-cert-file-btn" [href]="certPreviewUrl()!" target="_blank" rel="noopener">
+            <div class="df-cert-file-icon">
+              <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <div class="df-cert-file-info">
+              <p class="df-cert-file-name">{{ certName() ?? 'ملف الشهادة' }}</p>
+              <p class="df-cert-file-sub">اضغط لفتح الملف في تبويب جديد</p>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square df-cert-ext-icon"></i>
+          </a>
+        }
+        <label class="df-cert-change-btn" for="df-cert">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          تغيير الملف
+          <input id="df-cert" type="file" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
+                 class="df-file-hidden" (change)="onCertChange($event)">
+        </label>
+      </div>
+    } @else {
+      <label class="df-cert-upload" for="df-cert2">
+        <i class="fa-solid fa-cloud-arrow-up df-cert-upload-icon"></i>
+        <p class="df-cert-upload-title">ارفع الشهادة أو المستند</p>
+        <p class="df-cert-upload-sub">PDF, JPG, PNG (اختياري)</p>
+        <input id="df-cert2" type="file" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
+               class="df-file-hidden" (change)="onCertChange($event)">
+      </label>
+    }
+  </div>
+
+  <!-- ── Footer actions ── -->
+  <div class="df-footer">
+    <button type="button" class="df-btn df-btn--cancel" (click)="cancelled.emit()"
+            [disabled]="submitting()">
+      إلغاء
+    </button>
+    <button type="submit" class="df-btn df-btn--save" [disabled]="submitting()">
+      @if (submitting()) {
+        <span class="spinner-border spinner-border-sm" role="status"></span>
+        جاري الحفظ...
+      } @else {
+        <i class="fa-solid fa-check"></i>
+        {{ isEdit ? 'حفظ التعديلات' : 'إضافة الطبيب' }}
+      }
+    </button>
+  </div>
+
+</form>
+
+<!-- Certificate image lightbox -->
+@if (showCertModal()) {
+  <div class="df-cert-modal" (click)="closeCertModal()">
+    <div class="df-cert-modal-box" (click)="$event.stopPropagation()">
+      <button class="df-cert-modal-close" type="button" (click)="closeCertModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img [src]="certPreviewUrl()!" alt="الشهادة">
+    </div>
+  </div>
+}

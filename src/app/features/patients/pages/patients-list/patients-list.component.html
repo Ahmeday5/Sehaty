@@ -1,0 +1,229 @@
+<div class="container-fluid pl-page">
+
+  <!-- ════════════════════════════════
+       Header row
+       ════════════════════════════════ -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+
+    <div>
+      <h1 class="pl-title mb-1">
+        <i class="fa-solid fa-hospital-user pl-title-icon"></i>
+        سجل المرضى
+      </h1>
+      <p class="pl-subtitle mb-0">
+        @if (lastUpdate()) {
+          آخر تحديث الساعة <strong>{{ lastUpdate() | date:'HH:mm' }}</strong>
+        } @else {
+          إدارة ومتابعة بيانات المرضى المسجلين
+        }
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <!-- Total badge -->
+      @if (!loading() && total() > 0) {
+        <span class="pl-total-badge">
+          <i class="fa-solid fa-users"></i>
+          {{ total() }} مريض مسجل
+        </span>
+      }
+      <button class="pl-btn pl-btn--refresh" type="button"
+              (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        تحديث
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       Search bar
+       ════════════════════════════════ -->
+  <div class="pl-search-wrap mb-4">
+    <i class="fa-solid fa-magnifying-glass pl-search-ico"></i>
+    <input type="text" class="pl-search-input"
+           placeholder="البحث باسم المريض..."
+           [(ngModel)]="searchValue"
+           (ngModelChange)="onSearch($event)">
+    @if (searchValue) {
+      <button type="button" class="pl-search-clear" (click)="clearSearch()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    }
+  </div>
+
+  <!-- ════════════════════════════════
+       Table card
+       ════════════════════════════════ -->
+  <div class="pl-table-card">
+
+    <!-- ── Skeleton Loading ── -->
+    @if (loading()) {
+      <div class="table-responsive">
+        <table class="pl-table">
+          <thead>
+            <tr>
+              <th class="pl-th pl-th--num">#</th>
+              <th class="pl-th">المريض</th>
+              <th class="pl-th d-none d-md-table-cell">رقم الهاتف</th>
+              <th class="pl-th d-none d-lg-table-cell">البريد الإلكتروني</th>
+              <th class="pl-th d-none d-md-table-cell">العمر</th>
+              <th class="pl-th">الحالة</th>
+              <th class="pl-th d-none d-lg-table-cell">تاريخ التسجيل</th>
+              <th class="pl-th pl-th--action"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+              <tr class="pl-skeleton-row">
+                <td><div class="pl-skel pl-skel--sm"></div></td>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="pl-skel pl-skel--avatar"></div>
+                    <div class="pl-skel pl-skel--md"></div>
+                  </div>
+                </td>
+                <td class="d-none d-md-table-cell"><div class="pl-skel pl-skel--md"></div></td>
+                <td class="d-none d-lg-table-cell"><div class="pl-skel pl-skel--lg"></div></td>
+                <td class="d-none d-md-table-cell"><div class="pl-skel pl-skel--sm"></div></td>
+                <td><div class="pl-skel pl-skel--badge"></div></td>
+                <td class="d-none d-lg-table-cell"><div class="pl-skel pl-skel--md"></div></td>
+                <td><div class="pl-skel pl-skel--sm"></div></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- ── Empty State ── -->
+    @if (!loading() && patients().length === 0) {
+      <div class="pl-empty d-flex flex-column align-items-center justify-content-center gap-3 py-5">
+        <div class="pl-empty-icon">
+          <i class="fa-solid fa-user-slash"></i>
+        </div>
+        <div class="text-center">
+          <h3 class="pl-empty-title">لا توجد نتائج</h3>
+          <p class="pl-empty-sub">
+            @if (searchValue) {
+              لم يتم العثور على مريض باسم "<strong>{{ searchValue }}</strong>"
+            } @else {
+              لا يوجد مرضى مسجلون في النظام حتى الآن
+            }
+          </p>
+        </div>
+        @if (searchValue) {
+          <button type="button" class="pl-btn pl-btn--refresh" (click)="clearSearch()">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+            مسح البحث
+          </button>
+        }
+      </div>
+    }
+
+    <!-- ── Data Table ── -->
+    @if (!loading() && patients().length > 0) {
+      <div class="table-responsive">
+        <table class="pl-table">
+          <thead>
+            <tr>
+              <th class="pl-th pl-th--num">#</th>
+              <th class="pl-th">المريض</th>
+              <th class="pl-th d-none d-md-table-cell">رقم الهاتف</th>
+              <th class="pl-th d-none d-lg-table-cell">البريد الإلكتروني</th>
+              <th class="pl-th d-none d-md-table-cell">العمر</th>
+              <th class="pl-th">الحالة</th>
+              <th class="pl-th d-none d-lg-table-cell">تاريخ التسجيل</th>
+              <th class="pl-th pl-th--action">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of patients(); track p.id; let i = $index) {
+              <tr class="pl-row">
+
+                <!-- Row number -->
+                <td class="pl-td pl-td--num">
+                  <span class="pl-row-num">{{ rowIndex(i) }}</span>
+                </td>
+
+                <!-- Patient name + avatar initials -->
+                <td class="pl-td">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="pl-avatar" [style.background]="avatarColor(p.fullName)">
+                      {{ initials(p.fullName) }}
+                    </div>
+                    <div class="pl-name-col">
+                      <span class="pl-name">{{ p.fullName }}</span>
+                      <!-- phone visible only on xs (below md) -->
+                      <span class="pl-name-phone d-md-none" dir="ltr">{{ p.phoneNumber }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Phone (hidden on xs) -->
+                <td class="pl-td d-none d-md-table-cell" dir="ltr">
+                  <span class="pl-phone">{{ p.phoneNumber }}</span>
+                </td>
+
+                <!-- Email (hidden on lg-) -->
+                <td class="pl-td d-none d-lg-table-cell" dir="ltr">
+                  <span class="pl-email" [title]="p.email">{{ p.email }}</span>
+                </td>
+
+                <!-- Age -->
+                <td class="pl-td d-none d-md-table-cell">
+                  <span class="pl-age">{{ calcAge(p.birthday) }} <small>سنة</small></span>
+                </td>
+
+                <!-- Status badge -->
+                <td class="pl-td">
+                  <span class="pl-status-badge"
+                        [class.pl-status-badge--active]="p.isActive"
+                        [class.pl-status-badge--inactive]="!p.isActive">
+                    <span class="pl-status-dot"></span>
+                    {{ p.isActive ? 'نشط' : 'غير نشط' }}
+                  </span>
+                </td>
+
+                <!-- Registration date (hidden on lg-) -->
+                <td class="pl-td d-none d-lg-table-cell">
+                  <span class="pl-date">{{ p.dateOfCreation | date:'d MMM yyyy' }}</span>
+                  <span class="pl-time">{{ p.dateOfCreation | date:'HH:mm' }}</span>
+                </td>
+
+                <!-- Delete action -->
+                <td class="pl-td pl-td--action">
+                  <button type="button" class="pl-del-btn"
+                          (click)="onDelete(p)" [title]="'حذف ' + p.fullName">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </td>
+
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination + count -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 px-3 pb-3 pt-1">
+        <span class="pl-count-label">
+          عرض
+          <strong>{{ (page() - 1) * pageSize + 1 }}</strong>
+          –
+          <strong>{{ (page() - 1) * pageSize + patients().length }}</strong>
+          من
+          <strong>{{ total() }}</strong>
+          مريض
+        </span>
+        <app-pagination
+          [currentPage]="page()"
+          [totalPages]="totalPages"
+          [windowSize]="1"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
+
+  </div><!-- /pl-table-card -->
+
+</div>

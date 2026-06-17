@@ -1,0 +1,26 @@
+<div class="container-fluid mt-4" dir="rtl" style="max-width:640px">
+  <div class="mb-4">
+    <span class="page-title">إرسال إشعار</span>
+  </div>
+
+  <div class="card p-4">
+    <div class="mb-3">
+      <label class="form-label fw-bold">عنوان الإشعار</label>
+      <input class="form-control" [(ngModel)]="title" placeholder="عنوان الإشعار">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">محتوى الإشعار</label>
+      <textarea class="form-control" rows="5" [(ngModel)]="body" placeholder="اكتب رسالة الإشعار هنا..."></textarea>
+    </div>
+    <div>
+      <button class="btn" style="background:var(--second-color);color:#fff;min-width:140px" (click)="onSend()" [disabled]="sending()">
+        @if (sending()) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+        } @else {
+          <i class="fa-solid fa-paper-plane me-2"></i>
+        }
+        إرسال للجميع
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,298 @@
+<!-- ── Loading ── -->
+@if (loading()) {
+  <div class="dd-loading">
+    <div class="dd-loading-ring"></div>
+    <p>جاري تحميل بيانات الطبيب...</p>
+  </div>
+}
+
+<!-- ── Not found ── -->
+@if (!loading() && !doctor()) {
+  <div class="dd-404">
+    <div class="dd-404-icon"><i class="fa-solid fa-user-doctor"></i></div>
+    <h2>لم يتم العثور على الطبيب</h2>
+    <p>تعذّر الوصول إلى بيانات هذا الطبيب</p>
+    <a routerLink="/doctors" class="dd-btn dd-btn--primary">
+      <i class="fa-solid fa-arrow-right"></i>
+      العودة لقائمة الأطباء
+    </a>
+  </div>
+}
+
+@if (doctor()) {
+  @let d = doctor()!;
+
+  <!-- ── Breadcrumb ── -->
+  <div class="dd-breadcrumb">
+    <a routerLink="/doctors" class="dd-bc-link">
+      <i class="fa-solid fa-user-doctor"></i>
+      الأطباء
+    </a>
+    <i class="fa-solid fa-chevron-left dd-bc-sep"></i>
+    <span class="dd-bc-current">{{ d.name }}</span>
+  </div>
+
+  <!-- ── Profile Hero Card ── -->
+  <div class="dd-hero-card">
+
+    <!-- Avatar column -->
+    <div class="dd-hero-avatar-col">
+      <div class="dd-avatar-wrap">
+        <img class="dd-avatar" [src]="imageUrl" [alt]="d.name"
+             onerror="this.src='/assets/img/logo-login.png'">
+        <span class="dd-avatar-status" [class.dd-avatar-status--on]="d.isActive"
+              [title]="d.isActive ? 'نشط' : 'غير نشط'"></span>
+      </div>
+    </div>
+
+    <!-- Info column -->
+    <div class="dd-hero-info">
+      <div class="dd-hero-name-row">
+        <h1 class="dd-hero-name">د. {{ d.name }}</h1>
+        <span class="dd-id-badge">#{{ d.id }}</span>
+        <span class="dd-status-chip" [class.dd-status-chip--on]="d.isActive">
+          <span class="dot"></span>
+          {{ d.isActive ? 'نشط' : 'غير نشط' }}
+        </span>
+      </div>
+      <div class="dd-hero-meta">
+        <span class="dd-meta-tag">
+          <i class="fa-solid fa-stethoscope"></i>
+          {{ d.specialization }}
+        </span>
+        <span class="dd-meta-tag">
+          <i class="fa-solid fa-venus-mars"></i>
+          {{ d.gender === 'Male' ? 'ذكر' : 'أنثى' }}
+        </span>
+        @if (d.email) {
+          <span class="dd-meta-tag" dir="ltr">
+            <i class="fa-solid fa-envelope"></i>
+            {{ d.email }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <!-- Actions column -->
+    <div class="dd-hero-actions">
+      <button class="dd-btn dd-btn--edit" (click)="openEdit()">
+        <i class="fa-solid fa-pen-to-square"></i>
+        تعديل البيانات
+      </button>
+      <button class="dd-btn"
+              [class.dd-btn--activate]="!d.isActive"
+              [class.dd-btn--deactivate]="d.isActive"
+              (click)="toggleStatus()" [disabled]="toggling()">
+        @if (toggling()) {
+          <span class="spinner-border spinner-border-sm"></span>
+        } @else {
+          <i class="fa-solid" [class.fa-circle-check]="!d.isActive" [class.fa-ban]="d.isActive"></i>
+        }
+        {{ d.isActive ? 'تعطيل الحساب' : 'تفعيل الحساب' }}
+      </button>
+      <button class="dd-btn dd-btn--delete" (click)="deleteDoctor()">
+        <i class="fa-solid fa-trash-can"></i>
+        حذف الطبيب
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ── Stats strip ── -->
+  <div class="dd-stats-strip">
+
+    <div class="dd-stat-tile">
+      <div class="dd-stat-icon dd-stat-icon--blue">
+        <i class="fa-regular fa-clock"></i>
+      </div>
+      <div class="dd-stat-body">
+        <p class="dd-stat-val">{{ d.yearsOfExperience }}</p>
+        <p class="dd-stat-lbl">سنوات الخبرة</p>
+      </div>
+    </div>
+
+    <div class="dd-stat-tile">
+      <div class="dd-stat-icon dd-stat-icon--gold">
+        <i class="fa-solid fa-coins"></i>
+      </div>
+      <div class="dd-stat-body">
+        <p class="dd-stat-val">{{ d.examenPrice | number }} <small>ج.م</small></p>
+        <p class="dd-stat-lbl">سعر الكشف</p>
+      </div>
+    </div>
+
+    <div class="dd-stat-tile">
+      <div class="dd-stat-icon dd-stat-icon--teal">
+        <i class="fa-solid fa-percent"></i>
+      </div>
+      <div class="dd-stat-body">
+        <p class="dd-stat-val">{{ d.doctorPersentage }}<small>%</small></p>
+        <p class="dd-stat-lbl">نسبة الطبيب</p>
+      </div>
+    </div>
+
+    <div class="dd-stat-tile">
+      <div class="dd-stat-icon dd-stat-icon--purple">
+        <i class="fa-solid fa-venus-mars"></i>
+      </div>
+      <div class="dd-stat-body">
+        <p class="dd-stat-val">{{ d.gender === 'Male' ? 'ذكر' : 'أنثى' }}</p>
+        <p class="dd-stat-lbl">الجنس</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Content grid ── -->
+  <div class="dd-content-grid">
+
+    <!-- Contact & ID card -->
+    <div class="dd-card">
+      <div class="dd-card-head">
+        <div class="dd-card-head-icon dd-card-head-icon--blue">
+          <i class="fa-solid fa-address-card"></i>
+        </div>
+        <span>معلومات التواصل والهوية</span>
+      </div>
+      <div class="dd-card-body">
+        <div class="dd-info-row">
+          <div class="dd-info-icon-wrap dd-info-icon-wrap--blue">
+            <i class="fa-solid fa-envelope"></i>
+          </div>
+          <div>
+            <p class="dd-info-lbl">البريد الإلكتروني</p>
+            <p class="dd-info-val" dir="ltr">{{ d.email }}</p>
+          </div>
+        </div>
+        <div class="dd-info-row">
+          <div class="dd-info-icon-wrap dd-info-icon-wrap--green">
+            <i class="fa-solid fa-phone"></i>
+          </div>
+          <div>
+            <p class="dd-info-lbl">رقم الهاتف</p>
+            <p class="dd-info-val" dir="ltr">{{ d.phone }}</p>
+          </div>
+        </div>
+        @if (d.nationalID) {
+          <div class="dd-info-row">
+            <div class="dd-info-icon-wrap dd-info-icon-wrap--purple">
+              <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+              <p class="dd-info-lbl">الرقم القومي</p>
+              <p class="dd-info-val" dir="ltr">{{ d.nationalID }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Professional info card -->
+    <div class="dd-card">
+      <div class="dd-card-head">
+        <div class="dd-card-head-icon dd-card-head-icon--teal">
+          <i class="fa-solid fa-briefcase-medical"></i>
+        </div>
+        <span>المعلومات المهنية</span>
+      </div>
+      <div class="dd-card-body">
+        <div class="dd-info-row">
+          <div class="dd-info-icon-wrap dd-info-icon-wrap--teal">
+            <i class="fa-solid fa-stethoscope"></i>
+          </div>
+          <div>
+            <p class="dd-info-lbl">التخصص</p>
+            <p class="dd-info-val">{{ d.specialization }}</p>
+          </div>
+        </div>
+        <div class="dd-info-row">
+          <div class="dd-info-icon-wrap dd-info-icon-wrap--gold">
+            <i class="fa-solid fa-coins"></i>
+          </div>
+          <div>
+            <p class="dd-info-lbl">سعر الكشف</p>
+            <p class="dd-info-val">{{ d.examenPrice | number }} ج.م</p>
+          </div>
+        </div>
+        <div class="dd-info-row">
+          <div class="dd-info-icon-wrap dd-info-icon-wrap--purple">
+            <i class="fa-solid fa-percent"></i>
+          </div>
+          <div>
+            <p class="dd-info-lbl">نسبة الطبيب من العائد</p>
+            <p class="dd-info-val">{{ d.doctorPersentage }}%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bio card -->
+    <div class="dd-card dd-card--full">
+      <div class="dd-card-head">
+        <div class="dd-card-head-icon dd-card-head-icon--purple">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <span>نبذة عن الطبيب</span>
+      </div>
+      <div class="dd-card-body">
+        <p class="dd-bio">{{ d.profileInfo || 'لا توجد نبذة متاحة' }}</p>
+      </div>
+    </div>
+
+    <!-- Certificate card -->
+    @if (certUrl) {
+      <div class="dd-card dd-card--full">
+        <div class="dd-card-head">
+          <div class="dd-card-head-icon dd-card-head-icon--gold">
+            <i class="fa-solid fa-certificate"></i>
+          </div>
+          <span>الشهادة / المستند الرسمي</span>
+        </div>
+        <div class="dd-card-body">
+          @if (certIsImage) {
+            <div class="dd-cert-thumb" (click)="showCertPreview.set(true)">
+              <img [src]="certUrl!" alt="شهادة الطبيب">
+              <div class="dd-cert-thumb-overlay">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+                <span>عرض الشهادة بالحجم الكامل</span>
+              </div>
+            </div>
+          } @else {
+            <a class="dd-cert-file-btn" [href]="certUrl!" target="_blank" rel="noopener">
+              <div class="dd-cert-file-icon">
+                <i class="fa-solid fa-file-pdf"></i>
+              </div>
+              <div>
+                <p class="dd-cert-file-name">ملف الشهادة الرسمي</p>
+                <p class="dd-cert-file-sub">اضغط لفتح الملف في تبويب جديد</p>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square dd-cert-ext"></i>
+            </a>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+
+}
+
+<!-- ── Certificate image lightbox ── -->
+@if (showCertPreview()) {
+  <div class="dd-cert-modal" (click)="showCertPreview.set(false)">
+    <div class="dd-cert-modal-box" (click)="$event.stopPropagation()">
+      <button class="dd-cert-modal-close" type="button" (click)="showCertPreview.set(false)">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img [src]="certUrl!" alt="شهادة الطبيب">
+    </div>
+  </div>
+}
+
+<!-- ── Edit modal ── -->
+@if (showEdit() && doctor()) {
+  <app-modal title="تعديل بيانات الطبيب" size="lg" (closed)="closeEdit()">
+    <app-doctor-form [doctor]="doctor()!" (saved)="onEditSaved()" (cancelled)="closeEdit()">
+    </app-doctor-form>
+  </app-modal>
+}

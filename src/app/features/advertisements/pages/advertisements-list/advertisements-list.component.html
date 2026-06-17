@@ -1,0 +1,203 @@
+<div class="container-fluid ad-page">
+
+  <!-- ════════════════════════════════
+       Header row
+       ════════════════════════════════ -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+
+    <div>
+      <h1 class="ad-title-h mb-1">
+        <i class="fa-solid fa-bullhorn ad-title-icon"></i>
+        الإعلانات
+      </h1>
+      <p class="ad-subtitle mb-0">
+        @if (lastUpdate()) {
+          آخر تحديث الساعة <strong>{{ lastUpdate() | date:'HH:mm' }}</strong>
+        } @else {
+          إدارة الإعلانات المعروضة على المنصة
+        }
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      @if (!loading() && advertisements().length > 0) {
+        <span class="ad-total-badge">
+          <i class="fa-solid fa-rectangle-ad"></i>
+          {{ advertisements().length }} إعلان
+        </span>
+      }
+      <button class="ad-btn ad-btn--refresh" type="button"
+              (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        تحديث
+      </button>
+      <button class="ad-btn ad-btn--add" type="button" (click)="openModal()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة إعلان
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+       Skeleton Loading
+       ════════════════════════════════ -->
+  @if (loading()) {
+    <div class="row g-3">
+      @for (_ of [1,2,3,4,5,6]; track $index) {
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="ad-card-skel">
+            <div class="ad-skel ad-skel--img"></div>
+            <div class="ad-card-skel-body">
+              <div class="ad-skel ad-skel--title mb-2"></div>
+              <div class="ad-skel ad-skel--sub"></div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ════════════════════════════════
+       Empty State
+       ════════════════════════════════ -->
+  @if (!loading() && advertisements().length === 0) {
+    <div class="ad-empty d-flex flex-column align-items-center justify-content-center gap-3 py-5">
+      <div class="ad-empty-icon">
+        <i class="fa-solid fa-rectangle-ad"></i>
+      </div>
+      <div class="text-center">
+        <h3 class="ad-empty-title">لا توجد إعلانات</h3>
+        <p class="ad-empty-sub">لم يتم إضافة أي إعلانات حتى الآن</p>
+      </div>
+      <button type="button" class="ad-btn ad-btn--add" (click)="openModal()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة أول إعلان
+      </button>
+    </div>
+  }
+
+  <!-- ════════════════════════════════
+       Ads Grid
+       ════════════════════════════════ -->
+  @if (!loading() && advertisements().length > 0) {
+    <div class="row g-3">
+      @for (ad of advertisements(); track ad.id; let i = $index) {
+        <div class="col-12 col-sm-6 col-lg-4">
+        <div class="ad-card">
+
+          <!-- Image area -->
+          <div class="ad-card-img-wrap">
+            @if (ad.imageUrl) {
+              <img [src]="ad.imageUrl" class="ad-card-img" [alt]="ad.title">
+            } @else {
+              <div class="ad-card-img-placeholder">
+                <i class="fa-solid fa-image"></i>
+              </div>
+            }
+            <!-- Index badge -->
+            <span class="ad-index-badge">{{ i + 1 }}</span>
+          </div>
+
+          <!-- Body -->
+          <div class="ad-card-body">
+            <h6 class="ad-card-title">{{ ad.title }}</h6>
+          </div>
+
+          <!-- Footer -->
+          <div class="ad-card-footer">
+            <button type="button" class="ad-del-btn" (click)="onDelete(ad)"
+                    [title]="'حذف ' + ad.title">
+              <i class="fa-solid fa-trash-can"></i>
+              حذف
+            </button>
+          </div>
+
+        </div>
+        </div>
+      }
+    </div>
+
+    <p class="ad-count-label mt-3">
+      إجمالي <strong>{{ advertisements().length }}</strong> إعلان
+    </p>
+  }
+
+</div>
+
+<!-- ════════════════════════════════
+     Add Advertisement Modal
+     ════════════════════════════════ -->
+@if (showModal()) {
+  <div class="ad-modal-backdrop" (click)="closeModal()"></div>
+  <div class="ad-modal" role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="ad-modal-header">
+      <div>
+        <h4 class="ad-modal-title">
+          <i class="fa-solid fa-circle-plus ad-modal-title-icon"></i>
+          إضافة إعلان جديد
+        </h4>
+        <p class="ad-modal-subtitle mb-0">ارفع صورة الإعلان وأدخل عنوانه</p>
+      </div>
+      <button type="button" class="ad-modal-close" (click)="closeModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <form [formGroup]="addForm" (ngSubmit)="onAdd()" novalidate>
+    <div class="ad-modal-body">
+
+      <!-- Image upload zone -->
+      <div class="ad-upload-zone" (click)="triggerFilePicker()">
+        @if (previewUrl()) {
+          <img [src]="previewUrl()!" class="ad-upload-preview" alt="">
+          <div class="ad-upload-overlay">
+            <i class="fa-solid fa-pencil"></i>
+            <span>تغيير الصورة</span>
+          </div>
+        } @else {
+          <div class="ad-upload-placeholder">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span class="ad-upload-text">اسحب الصورة هنا أو اضغط للاختيار</span>
+            <span class="ad-upload-hint">PNG, JPG, WEBP — بحد أقصى 5MB</span>
+          </div>
+        }
+      </div>
+      <input #fileInput type="file" accept="image/*" class="d-none" (change)="onFileChange($event)">
+
+      <!-- Title field -->
+      <div class="ad-field mt-4">
+        <label class="ad-label">عنوان الإعلان <span class="ad-required">*</span></label>
+        <input type="text" class="ad-input"
+               formControlName="title"
+               placeholder="مثال: عرض رمضان، خصم 50% على الاستشارات..."
+               [class.ad-input--filled]="addForm.get('title')!.value"
+               [class.ad-input--invalid]="addForm.get('title')!.invalid && addForm.get('title')!.touched">
+        <app-form-error [control]="addForm.get('title')"></app-form-error>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="ad-modal-footer">
+      <button type="button" class="ad-footer-btn ad-footer-btn--cancel"
+              (click)="closeModal()" [disabled]="adding()">
+        إلغاء
+      </button>
+      <button type="submit" class="ad-footer-btn ad-footer-btn--save"
+              [disabled]="adding()">
+        @if (adding()) {
+          <span class="ad-spinner"></span>
+          جاري الحفظ...
+        } @else {
+          <i class="fa-solid fa-floppy-disk"></i>
+          نشر الإعلان
+        }
+      </button>
+    </div>
+    </form>
+
+  </div>
+}

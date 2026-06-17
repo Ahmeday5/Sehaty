@@ -1,0 +1,259 @@
+/* ═══════════════════════
+   Doctor Card — Professional Medical Style
+   ═══════════════════════ */
+
+.dc {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 4px 12px rgba(0,0,0,.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  transition: transform .22s ease, box-shadow .22s ease;
+  position: relative;
+
+  /* left accent stripe */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; inset-inline-start: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--main-color, #14c8c7), var(--second-color, #4b4e9c));
+    border-radius: 16px 0 0 16px;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(75,78,156,.13), 0 4px 12px rgba(0,0,0,.06);
+  }
+
+  &--inactive::before {
+    background: linear-gradient(180deg, #94a3b8, #cbd5e1);
+  }
+  &--inactive .dc-avatar { opacity: .75; }
+  &--inactive .dc-name   { color: #64748b; }
+}
+
+/* ── Top bar ── */
+.dc-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 0;
+}
+
+.dc-pct {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--second-color, #4b4e9c);
+  background: rgba(75,78,156,.07);
+  border: 1px solid rgba(75,78,156,.15);
+  padding: 3px 9px;
+  border-radius: 20px;
+
+  i { font-size: 9px; }
+}
+
+.dc-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(148,163,184,.1);
+  color: #64748b;
+  border: 1px solid rgba(148,163,184,.18);
+
+  &--on {
+    background: rgba(16,185,129,.08);
+    color: #059669;
+    border-color: rgba(16,185,129,.2);
+  }
+}
+
+.dc-status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── Avatar ── */
+.dc-avatar-wrap {
+  padding: 16px 0 8px;
+  position: relative;
+}
+
+.dc-avatar {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,.1), 0 0 0 3px rgba(20,200,199,.14);
+  background: #f1f5f9;
+}
+
+/* ── Identity ── */
+.dc-identity {
+  width: 100%;
+  padding: 0 18px 12px;
+  text-align: center;
+}
+
+.dc-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 6px;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dc-spec {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--main-color, #14c8c7);
+  background: rgba(20,200,199,.07);
+  border: 1px solid rgba(20,200,199,.2);
+  padding: 3px 12px;
+  border-radius: 20px;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Stats ── */
+.dc-stats {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.dc-stat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  justify-content: center;
+}
+
+.dc-stat-div {
+  width: 1px;
+  height: 26px;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+.dc-stat-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+
+  &--blue {
+    background: rgba(75,78,156,.08);
+    color: var(--second-color, #4b4e9c);
+  }
+  &--gold {
+    background: rgba(245,158,11,.09);
+    color: #d97706;
+  }
+}
+
+.dc-stat-body {
+  strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    letter-spacing: -0.4px;
+  }
+  span {
+    font-size: 10px;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+}
+
+/* ── Actions: 4-column grid with CSS gap trick for dividers ── */
+.dc-actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 1px;
+  background: #f0f4f8;
+  border-top: 1px solid #f0f4f8;
+}
+
+.dc-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px 4px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: #fff;
+  text-decoration: none;
+  transition: background .14s, color .14s;
+
+  i { font-size: 15px; transition: transform .15s; }
+  &:hover i { transform: scale(1.15); }
+
+  span {
+    display: block;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  &--view {
+    color: #64748b;
+    &:hover { background: #f8fafc; color: #334155; }
+  }
+
+  &--edit {
+    color: var(--main-color, #14c8c7);
+    &:hover { background: rgba(20,200,199,.06); }
+  }
+
+  &--activate {
+    color: #059669;
+    &:hover { background: rgba(5,150,105,.06); }
+  }
+
+  &--deactivate {
+    color: #d97706;
+    &:hover { background: rgba(217,119,6,.06); }
+  }
+
+  &--delete {
+    color: #dc2626;
+    &:hover { background: rgba(220,38,38,.06); }
+  }
+}

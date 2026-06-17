@@ -1,0 +1,33 @@
+<div class="denied">
+  <div class="denied-card">
+    <div class="denied-icon">
+      <i class="fa-solid fa-ban"></i>
+    </div>
+
+    <h1 class="denied-code">403</h1>
+    <h2 class="denied-title">غير مصرح لك بالوصول</h2>
+    <p class="denied-msg">
+      عذراً، ليس لديك الصلاحيات الكافية للوصول إلى هذه الصفحة.
+      تواصل مع المسؤول إذا كنت تعتقد أن هذا خطأ.
+    </p>
+
+    <div class="denied-actions">
+      <button class="btn-back" type="button" (click)="goBack()">
+        <i class="fa-solid fa-arrow-right"></i>
+        الرجوع للخلف
+      </button>
+
+      @if (auth.isLoggedIn()) {
+        <a class="btn-home" routerLink="/dashboard">
+          <i class="fa-solid fa-house"></i>
+          الرئيسية
+        </a>
+      } @else {
+        <a class="btn-home" routerLink="/auth/login">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          تسجيل الدخول
+        </a>
+      }
+    </div>
+  </div>
+</div>
