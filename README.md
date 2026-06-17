@@ -1,7 +1,7 @@
-# EstashernyDashboard
+# SehatyDashboard
 
 ## Description
-EstashernyDashboard is an **Angular 18 admin dashboard** designed for the "Estasherny" medical application.  
+SehatyDashboard is an **Angular 18 admin dashboard** designed for the "Sehaty" medical application.  
 Through this dashboard, administrators can fully manage doctors, patients, and appointments, as well as monitor the platform's performance and analytics.
 
 ### Key Features
