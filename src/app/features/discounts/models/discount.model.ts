@@ -1,16 +1,11 @@
-export interface Discount {
-  id: number;
-  code: string;
-  percentage: number;
-  expiryDate: string;
-  isActive: boolean;
-  usageCount: number;
-  maxUsage: number | null;
+export interface ApplyDiscountPayload {
+  doctorId: number;
+  date: string;
+  discountPercentage: number;
 }
 
-export interface CreateDiscountPayload {
-  code: string;
-  percentage: number;
-  expiryDate: string;
-  maxUsage?: number;
+export interface DoctorOption {
+  id: number;
+  name: string;
+  specialization: string;
 }

@@ -1,26 +1,119 @@
-<div class="container-fluid mt-4" dir="rtl" style="max-width:640px">
-  <div class="mb-4">
-    <span class="page-title">إرسال إشعار</span>
-  </div>
+<div class="notif-page" dir="rtl">
 
-  <div class="card p-4">
-    <div class="mb-3">
-      <label class="form-label fw-bold">عنوان الإشعار</label>
-      <input class="form-control" [(ngModel)]="title" placeholder="عنوان الإشعار">
-    </div>
-    <div class="mb-3">
-      <label class="form-label fw-bold">محتوى الإشعار</label>
-      <textarea class="form-control" rows="5" [(ngModel)]="body" placeholder="اكتب رسالة الإشعار هنا..."></textarea>
+  <!-- Header -->
+  <div class="notif-header">
+    <div class="notif-header__icon">
+      <i class="fa-solid fa-bell"></i>
     </div>
     <div>
-      <button class="btn" style="background:var(--second-color);color:#fff;min-width:140px" (click)="onSend()" [disabled]="sending()">
-        @if (sending()) {
-          <span class="spinner-border spinner-border-sm me-2"></span>
-        } @else {
-          <i class="fa-solid fa-paper-plane me-2"></i>
-        }
-        إرسال للجميع
-      </button>
+      <h1 class="notif-header__title">إرسال إشعار</h1>
+      <p class="notif-header__sub">إرسال إشعار فوري لجميع المستخدمين عبر Firebase</p>
     </div>
+  </div>
+
+  <div class="notif-layout">
+
+    <!-- Form card -->
+    <div class="notif-card">
+      <div class="notif-card__head">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>تفاصيل الإشعار</span>
+      </div>
+
+      <div class="notif-card__body">
+
+        <!-- Topic -->
+        <div class="field-group">
+          <label>
+            الفئة المستهدفة
+            <span class="field-required">*</span>
+          </label>
+          <select class="form-select" [(ngModel)]="form.topic">
+            <option value="">— اختر الفئة —</option>
+            <option value="patient">المرضى</option>
+            <option value="doctor">الأطباء</option>
+          </select>
+        </div>
+
+        <!-- Title -->
+        <div class="field-group">
+          <label>
+            عنوان الإشعار
+            <span class="field-required">*</span>
+          </label>
+          <input class="form-control" [(ngModel)]="form.title" placeholder="مثال: تنبيه مهم" maxlength="100">
+          <span class="field-hint">{{ form.title.length }}/100</span>
+        </div>
+
+        <!-- Body -->
+        <div class="field-group">
+          <label>
+            نص الإشعار
+            <span class="field-required">*</span>
+          </label>
+          <textarea class="form-control" rows="4" [(ngModel)]="form.body" placeholder="اكتب محتوى الإشعار هنا..."
+            maxlength="500"></textarea>
+          <span class="field-hint" [class.field-hint--warn]="bodyLength > 400">
+            {{ bodyLength }}/500
+          </span>
+        </div>
+
+        <!-- Image URL (optional) -->
+        <div class="field-group">
+          <label>
+            رابط الصورة
+            <span class="field-optional">(اختياري)</span>
+          </label>
+          <div class="input-with-icon">
+            <i class="fa-solid fa-image input-icon"></i>
+            <input class="form-control has-icon" [(ngModel)]="form.imageUrl" placeholder="https://example.com/image.png"
+              dir="ltr" type="url">
+          </div>
+        </div>
+
+      </div>
+
+      <div class="notif-card__footer">
+        <button class="btn-reset" type="button" (click)="reset()" [disabled]="sending()">
+          <i class="fa-solid fa-rotate-left"></i>
+          مسح
+        </button>
+        <button class="btn-send" type="button" (click)="onSend()" [disabled]="sending()">
+          @if (sending()) {
+          <span class="spinner-border spinner-border-sm"></span>
+          <span>جاري الإرسال...</span>
+          } @else {
+          <i class="fa-solid fa-paper-plane"></i>
+          <span>إرسال للجميع</span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Preview card -->
+    <div class="notif-preview">
+      <div class="notif-card__head">
+        <i class="fa-solid fa-mobile-screen"></i>
+        <span>معاينة الإشعار</span>
+      </div>
+      <div class="phone-preview">
+        <div class="phone-notif">
+          <div class="phone-notif__header">
+            <div class="phone-notif__app-icon">
+              <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <span class="phone-notif__app-name">Sehaty</span>
+            <span class="phone-notif__time">الآن</span>
+          </div>
+          <p class="phone-notif__title">{{ form.title || 'عنوان الإشعار' }}</p>
+          <p class="phone-notif__body">{{ form.body || 'محتوى الإشعار سيظهر هنا...' }}</p>
+          @if (form.imageUrl) {
+          <img [src]="form.imageUrl" class="phone-notif__img" alt="notification image"
+            onerror="this.style.display='none'">
+          }
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

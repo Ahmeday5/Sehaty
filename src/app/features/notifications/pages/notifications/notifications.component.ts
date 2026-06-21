@@ -18,24 +18,38 @@ export class NotificationsComponent {
   private readonly toast = inject(ToastService);
 
   protected readonly sending = signal(false);
-  protected title = '';
-  protected body  = '';
+
+  protected form = {
+    title:    '',
+    body:     '',
+    topic:    '',
+    imageUrl: '',
+  };
+
+  protected get bodyLength(): number { return this.form.body.length; }
 
   protected async onSend(): Promise<void> {
-    if (!this.title.trim() || !this.body.trim()) {
-      this.toast.warning('يرجى إدخال العنوان والمحتوى');
-      return;
-    }
+    const { title, body, topic } = this.form;
+    if (!title.trim()) { this.toast.warning('يرجى إدخال عنوان الإشعار'); return; }
+    if (!body.trim())  { this.toast.warning('يرجى إدخال محتوى الإشعار'); return; }
+    if (!topic.trim()) { this.toast.warning('يرجى اختيار الفئة المستهدفة'); return; }
+
     this.sending.set(true);
     try {
-      await firstValueFrom(this.svc.send({ title: this.title, body: this.body }));
-      this.toast.success('تم إرسال الإشعار');
-      this.title = '';
-      this.body  = '';
+      const payload: any = { title: title.trim(), body: body.trim(), topic: topic.trim() };
+      if (this.form.imageUrl.trim()) payload.imageUrl = this.form.imageUrl.trim();
+
+      await firstValueFrom(this.svc.send(payload));
+      this.toast.success('تم إرسال الإشعار بنجاح');
+      this.form = { title: '', body: '', topic: '', imageUrl: '' };
     } catch (e: any) {
-      this.toast.error(e?.message ?? 'فشل الإرسال');
+      this.toast.error(e?.message ?? 'فشل إرسال الإشعار');
     } finally {
       this.sending.set(false);
     }
+  }
+
+  protected reset(): void {
+    this.form = { title: '', body: '', topic: '', imageUrl: '' };
   }
 }

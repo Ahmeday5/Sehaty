@@ -2,58 +2,81 @@
 
   <!-- Welcome banner -->
   <div class="db-banner">
-    <div class="db-banner-content">
-      <h2 class="db-banner-title">أهلاً بك في Sehaty</h2>
+    <!-- Right: welcome text + service pills -->
+    <div class="db-banner-right">
+      <h2 class="db-banner-title">أهلاً بك في شفاء</h2>
       <p class="db-banner-sub">منصة إدارة الرعاية الصحية المتكاملة — إدارة أكثر ذكاءً، رعاية أفضل</p>
+      <div class="db-banner-pills">
+        <span class="db-pill"><i class="fa-solid fa-building-columns"></i> المباني والمنشآت والمراكز الطبية</span>
+        <span class="db-pill"><i class="fa-solid fa-city"></i> المقارات</span>
+        <span class="db-pill"><i class="fa-solid fa-utensils"></i> المطاعم والمقاهي</span>
+      </div>
     </div>
-    <div class="db-banner-icon">
-      <i class="fa-solid fa-heart-pulse"></i>
+
+    <!-- Center: globe decorative -->
+    <div class="db-banner-globe">
+      <div class="db-globe-ring db-globe-ring--1"></div>
+      <div class="db-globe-ring db-globe-ring--2"></div>
+      <div class="db-globe-ring db-globe-ring--3"></div>
+      <i class="fa-solid fa-earth-americas db-globe-icon"></i>
     </div>
-    <div class="db-banner-actions">
-      <button class="db-refresh-btn" (click)="refresh()" [disabled]="loading()" title="تحديث البيانات">
-        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
-      </button>
-      @if (lastUpdate()) {
+
+    <!-- Left: THE ONE SYSTEM branding -->
+    <div class="db-banner-left">
+      <div class="db-banner-refresh">
+        <button class="db-refresh-btn" (click)="refresh()" [disabled]="loading()" title="تحديث البيانات">
+          <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        </button>
+        @if (lastUpdate()) {
         <span class="db-last-update">{{ lastUpdate() | date:'HH:mm' }}</span>
-      }
+        }
+      </div>
+      <div class="db-brand">
+        <div class="db-brand-logo">
+          <span class="db-brand-the">THE</span>
+          <span class="db-brand-one">ONE</span>
+          <span class="db-brand-system">SYSTEM</span>
+        </div>
+        <p class="db-brand-tagline">حلول ذكية.. لنمو مستدام</p>
+      </div>
     </div>
   </div>
 
   <!-- Stat cards -->
   @if (loading()) {
-    <div class="db-spinner">
-      <div class="spinner-border" style="color:var(--second-color)" role="status">
-        <span class="visually-hidden">جاري التحميل...</span>
+  <div class="db-spinner">
+    <div class="spinner-border" style="color:var(--main-color)" role="status">
+      <span class="visually-hidden">جاري التحميل...</span>
+    </div>
+  </div>
+  } @else {
+  <div class="db-cards">
+    @for (stat of cardStats(); track stat.label) {
+    <div class="db-card">
+      <div class="db-card-icon" [style.background]="stat.gradient">
+        <i class="fa-solid" [ngClass]="stat.icon"></i>
+      </div>
+      <div class="db-card-body">
+        <p class="db-card-label">{{ stat.label }}</p>
+        <h3 class="db-card-value">
+          @if (stat.isCurrency) {
+          {{ stat.value | number }} <small class="db-card-curr">ج.م</small>
+          } @else {
+          {{ stat.value | number }}
+          }
+        </h3>
+        <div class="db-card-today">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+          <span>
+            +{{ stat.valueToday | number }}
+            {{ stat.isCurrency ? 'ج.م' : '' }}
+            اليوم
+          </span>
+        </div>
       </div>
     </div>
-  } @else {
-    <div class="db-cards">
-      @for (stat of cardStats(); track stat.label) {
-        <div class="db-card">
-          <div class="db-card-icon" [style.background]="stat.gradient">
-            <i class="fa-solid" [ngClass]="stat.icon"></i>
-          </div>
-          <div class="db-card-body">
-            <p class="db-card-label">{{ stat.label }}</p>
-            <h3 class="db-card-value">
-              @if (stat.isCurrency) {
-                {{ stat.value | number }} <small class="db-card-curr">ج.م</small>
-              } @else {
-                {{ stat.value | number }}
-              }
-            </h3>
-            <div class="db-card-today">
-              <i class="fa-solid fa-arrow-trend-up"></i>
-              <span>
-                +{{ stat.valueToday | number }}
-                {{ stat.isCurrency ? 'ج.م' : '' }}
-                اليوم
-              </span>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
+    }
+  </div>
   }
 
 </div>

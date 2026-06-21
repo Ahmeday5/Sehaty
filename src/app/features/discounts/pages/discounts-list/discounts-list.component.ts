@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { DiscountsService } from '../../services/discounts.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { ConfirmService } from '../../../../core/services/confirm.service';
+import { DoctorOption } from '../../models/discount.model';
 
 @Component({
   selector: 'app-discounts-list',
@@ -21,87 +21,54 @@ import { ConfirmService } from '../../../../core/services/confirm.service';
   styleUrl: './discounts-list.component.scss',
 })
 export class DiscountsListComponent implements OnInit {
-  private readonly svc = inject(DiscountsService);
+  private readonly svc   = inject(DiscountsService);
   private readonly toast = inject(ToastService);
-  private readonly confirm = inject(ConfirmService);
 
-  protected readonly loading = signal(false);
-  protected readonly adding = signal(false);
-  protected readonly discounts = signal<any[]>([]);
-  protected readonly lastUpdate = signal<Date | null>(null);
+  protected readonly applying      = signal(false);
+  protected readonly loadingDoctors = signal(false);
+  protected readonly doctors       = signal<DoctorOption[]>([]);
 
-  protected newDiscount = {
-    code: '',
-    percentage: '',
-    description: '',
-    expiryDate: '',
+  protected applyForm = {
+    doctorId: '',
+    date: '',
+    discountPercentage: '',
   };
 
   ngOnInit(): void {
-    this.load();
+    this.loadDoctors();
   }
 
-  protected refresh(): void {
-    this.svc.invalidate();
-    this.load();
-  }
-
-  private load(): void {
-    this.loading.set(true);
-    this.svc.getAll().subscribe({
-      next: (res) => {
-        this.discounts.set(res);
-        this.lastUpdate.set(new Date());
-        this.loading.set(false);
-      },
-      error: () => {
-        this.toast.error('فشل تحميل الخصومات');
-        this.loading.set(false);
-      },
+  private loadDoctors(): void {
+    this.loadingDoctors.set(true);
+    this.svc.getDoctors().subscribe({
+      next: (list) => { this.doctors.set(list); this.loadingDoctors.set(false); },
+      error: () => { this.toast.error('فشل في جلب قائمة الأطباء'); this.loadingDoctors.set(false); },
     });
   }
 
-  protected async onAdd(): Promise<void> {
-    if (!this.newDiscount.code.trim() || !this.newDiscount.percentage) {
-      this.toast.warning('يرجى إدخال الكود والنسبة المئوية');
+  protected async onApply(): Promise<void> {
+    if (!this.applyForm.doctorId || !this.applyForm.date || !this.applyForm.discountPercentage) {
+      this.toast.warning('يرجى تعبئة جميع الحقول');
       return;
     }
-    this.adding.set(true);
+    this.applying.set(true);
     try {
-      const fd = new FormData();
-      Object.entries(this.newDiscount).forEach(([k, v]) => {
-        if (v) fd.append(k, String(v));
-      });
-      await firstValueFrom(this.svc.add(fd));
-      this.toast.success('تم إضافة الخصم');
-      this.newDiscount = {
-        code: '',
-        percentage: '',
-        description: '',
-        expiryDate: '',
-      };
-      this.load();
+      await firstValueFrom(this.svc.applyToAppointment({
+        doctorId:           +this.applyForm.doctorId,
+        date:               this.applyForm.date,
+        discountPercentage: +this.applyForm.discountPercentage,
+      }));
+      this.toast.success('تم تطبيق الخصم على المواعيد بنجاح');
+      this.applyForm = { doctorId: '', date: '', discountPercentage: '' };
     } catch (e: any) {
-      this.toast.error(e?.message ?? 'فشل الإضافة');
+      const msg: string = e?.error ?? e?.message ?? '';
+      if (msg.toLowerCase().includes('no availability')) {
+        this.toast.warning('لا توجد مواعيد متاحة للتاريخ المحدد');
+      } else {
+        this.toast.error(msg || 'فشل تطبيق الخصم');
+      }
     } finally {
-      this.adding.set(false);
-    }
-  }
-
-  protected async onDelete(id: number, code: string): Promise<void> {
-    const ok = await this.confirm.confirm({
-      title: 'حذف خصم',
-      message: `هل تريد حذف الخصم "${code}"؟`,
-      confirmText: 'حذف',
-      type: 'danger',
-    });
-    if (!ok) return;
-    try {
-      await firstValueFrom(this.svc.delete(id));
-      this.toast.success('تم حذف الخصم');
-      this.load();
-    } catch (e: any) {
-      this.toast.error(e?.message ?? 'فشل الحذف');
+      this.applying.set(false);
     }
   }
 }

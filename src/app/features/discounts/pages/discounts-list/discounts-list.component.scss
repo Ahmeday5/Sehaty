@@ -1,27 +1,112 @@
-.btn-refresh {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
-  border-radius: 8px; border: 1px solid var(--brd,#e5e7eb); background: var(--bg2,#fff);
-  color: var(--txt2,#6b7280); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
-  &:hover:not(:disabled) { background: var(--bg3,#f3f4f6); }
-  &:disabled { opacity: .5; cursor: not-allowed; }
+.disc-page {
+  padding: 24px 20px;
+  min-height: 100%;
+  max-width: 540px;
 }
 
-.page-title {
-  background: var(--second-color); color: var(--thrid-color);
-  padding: 8px 20px; border-radius: 12px; font-weight: bold; font-size: 20px;
-}
+/* ── Header ── */
+.disc-header {
+  margin-bottom: 28px;
 
-.custom-table {
-  border-collapse: separate; border-spacing: 0 8px; width: 100%; font-size: 15px;
-  th, td {
-    text-align: center; border-right: 2px solid var(--second-color);
-    border-bottom: 2px solid var(--second-color); vertical-align: middle; padding: 10px;
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    h1 { margin: 0; font-size: 1.4rem; font-weight: 700; color: var(--txt); }
+    p  { margin: 4px 0 0; font-size: 0.85rem; color: var(--txt3); }
   }
-  th:last-child, td:last-child { border-left: 2px solid var(--second-color); }
-  thead th { background: var(--thrid-color); color: var(--second-color); font-weight: bold; border-top: 2px solid var(--second-color); }
-  tbody td { background: var(--thrid-color); color: var(--second-color); font-weight: bold; border-top: 2px solid var(--second-color); }
-  tbody tr td:first-child  { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
-  tbody tr td:last-child   { border-top-left-radius: 12px;  border-bottom-left-radius: 12px; }
-  thead tr th:first-child  { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
-  thead tr th:last-child   { border-top-left-radius: 12px;  border-bottom-left-radius: 12px; }
+
+  &__icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--main-color), var(--main-dark));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 1.35rem; flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(29, 177, 122, 0.35);
+  }
+}
+
+/* ── Card ── */
+.disc-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--brd);
+  overflow: hidden;
+
+  &__head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 20px 22px 16px;
+    border-bottom: 1px solid var(--brd);
+    background: var(--bg3);
+  }
+
+  &__icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+    background: rgba(29, 177, 122, 0.12);
+    color: var(--main-color);
+  }
+
+  &__label {
+    font-weight: 700; font-size: 1rem; color: var(--txt);
+  }
+
+  &__body {
+    padding: 22px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+
+  &__footer {
+    padding: 16px 22px;
+    border-top: 1px solid var(--brd);
+    background: var(--bg3);
+  }
+}
+
+/* ── Field ── */
+.field-group {
+  label {
+    display: block;
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--txt2); margin-bottom: 6px;
+  }
+}
+
+/* ── Select loading ── */
+.select-loading {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--brd); border-radius: 8px;
+  font-size: 0.875rem; color: var(--txt3);
+  background: var(--bg3);
+}
+
+/* ── Info note ── */
+.info-note {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 14px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  font-size: 0.8rem; color: #92400e; line-height: 1.5;
+
+  i { color: #f59e0b; margin-top: 2px; flex-shrink: 0; }
+}
+
+/* ── Action button ── */
+.btn-action {
+  display: inline-flex; align-items: center; gap: 8px;
+  width: 100%; justify-content: center;
+  padding: 10px 20px; border: none; border-radius: 10px;
+  font-size: 0.9rem; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  background: var(--main-color); color: #fff;
+  box-shadow: 0 3px 10px rgba(29, 177, 122, 0.3);
+  transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &:hover:not(:disabled) { background: var(--main-dark); box-shadow: 0 4px 14px rgba(29, 177, 122, 0.45); }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
 }

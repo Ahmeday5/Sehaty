@@ -1,79 +1,76 @@
-<div class="container-fluid mt-4" dir="rtl">
-  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
-    <span class="page-title">الخصومات</span>
-    <div class="d-flex gap-2 align-items-center">
-      @if (lastUpdate()) {
-        <small class="text-muted">آخر تحديث: {{ lastUpdate() | date:'HH:mm' }}</small>
-      }
-      <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
-        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i> تحديث
+<div class="disc-page" dir="rtl">
+
+  <!-- Header -->
+  <div class="disc-header">
+    <div class="disc-header__title">
+      <div class="disc-header__icon"><i class="fa-solid fa-percent"></i></div>
+      <div>
+        <h1>تطبيق الخصومات</h1>
+        <p>تطبيق خصم على مواعيد الأطباء</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single card -->
+  <div class="disc-card">
+    <div class="disc-card__head">
+      <span class="disc-card__icon">
+        <i class="fa-solid fa-calendar-check"></i>
+      </span>
+      <span class="disc-card__label">تطبيق خصم على مواعيد طبيب</span>
+    </div>
+
+    <div class="disc-card__body">
+
+      <!-- Doctor select -->
+      <div class="field-group">
+        <label>الطبيب</label>
+        @if (loadingDoctors()) {
+          <div class="select-loading">
+            <span class="spinner-border spinner-border-sm"></span>
+            <span>جاري تحميل الأطباء...</span>
+          </div>
+        } @else {
+          <select class="form-select" [(ngModel)]="applyForm.doctorId">
+            <option value="">— اختر الطبيب —</option>
+            @for (doc of doctors(); track doc.id) {
+              <option [value]="doc.id">{{ doc.name }} — {{ doc.specialization }}</option>
+            }
+          </select>
+        }
+      </div>
+
+      <!-- Date -->
+      <div class="field-group">
+        <label>التاريخ</label>
+        <input class="form-control" type="date" [(ngModel)]="applyForm.date">
+      </div>
+
+      <!-- Percentage -->
+      <div class="field-group">
+        <label>نسبة الخصم %</label>
+        <input class="form-control" type="number" min="1" max="100"
+               [(ngModel)]="applyForm.discountPercentage" placeholder="مثال: 100">
+      </div>
+
+      <!-- Info note -->
+      <div class="info-note">
+        <i class="fa-solid fa-circle-info"></i>
+        قد تظهر رسالة &quot;لا توجد مواعيد متاحة&quot; إذا لم يكن للطبيب مواعيد في هذا التاريخ.
+      </div>
+
+    </div>
+
+    <div class="disc-card__footer">
+      <button class="btn-action" (click)="onApply()" [disabled]="applying() || loadingDoctors()">
+        @if (applying()) {
+          <span class="spinner-border spinner-border-sm"></span>
+        } @else {
+          <i class="fa-solid fa-check"></i>
+        }
+        تطبيق الخصم
       </button>
     </div>
   </div>
 
-  <!-- Add form -->
-  <div class="card mb-4 p-3">
-    <h6 class="fw-bold mb-3">إضافة خصم جديد</h6>
-    <div class="row g-2">
-      <div class="col-md-3">
-        <label class="form-label small">كود الخصم</label>
-        <input class="form-control" [(ngModel)]="newDiscount.code" placeholder="مثال: SAVE20">
-      </div>
-      <div class="col-md-2">
-        <label class="form-label small">النسبة %</label>
-        <input class="form-control" type="number" [(ngModel)]="newDiscount.percentage" placeholder="20">
-      </div>
-      <div class="col-md-3">
-        <label class="form-label small">الوصف</label>
-        <input class="form-control" [(ngModel)]="newDiscount.description" placeholder="وصف الخصم">
-      </div>
-      <div class="col-md-2">
-        <label class="form-label small">تاريخ الانتهاء</label>
-        <input class="form-control" type="date" [(ngModel)]="newDiscount.expiryDate">
-      </div>
-      <div class="col-md-2 d-flex align-items-end">
-        <button class="btn w-100" style="background:var(--second-color);color:#fff" (click)="onAdd()" [disabled]="adding()">
-          @if (adding()) { <span class="spinner-border spinner-border-sm me-1"></span> }
-          إضافة
-        </button>
-      </div>
-    </div>
-  </div>
-
-  @if (loading()) {
-    <div class="text-center py-5"><div class="spinner-border" style="color:var(--second-color)"></div></div>
-  } @else if (discounts().length === 0) {
-    <div class="text-center py-5 text-muted">لا توجد خصومات</div>
-  } @else {
-    <div class="table-responsive">
-      <table class="custom-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>كود الخصم</th>
-            <th>النسبة</th>
-            <th>الوصف</th>
-            <th>تاريخ الانتهاء</th>
-            <th>الإجراءات</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (d of discounts(); track d.id; let i = $index) {
-            <tr>
-              <td>{{ i + 1 }}</td>
-              <td><span class="badge bg-primary fs-6">{{ d.code }}</span></td>
-              <td>{{ d.percentage }}%</td>
-              <td>{{ d.description || '-' }}</td>
-              <td>{{ d.expiryDate ? (d.expiryDate | date:'yyyy/MM/dd') : '-' }}</td>
-              <td>
-                <button class="btn btn-sm btn-danger" (click)="onDelete(d.id, d.code)">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  }
 </div>

@@ -21,7 +21,7 @@
           [src]="userImage()"
           [alt]="userName()"
           class="hdr-avatar"
-          onerror="this.src='/assets/img/logo-login.png'"
+          onerror="this.src='/assets/img/logo.jpeg'"
         >
         <span class="hdr-username">{{ userName() }}</span>
         <i class="fa-solid fa-chevron-down hdr-caret" [class.hdr-caret--open]="dropdownOpen()"></i>
@@ -30,7 +30,7 @@
       @if (dropdownOpen()) {
         <div class="hdr-dropdown">
           <div class="hdr-dropdown-header">
-            <img [src]="userImage()" [alt]="userName()" class="hdr-dd-avatar" onerror="this.src='/assets/img/logo-login.png'">
+            <img [src]="userImage()" [alt]="userName()" class="hdr-dd-avatar" onerror="this.src='/assets/img/logo.jpeg'">
             <div>
               <p class="hdr-dd-name">{{ userName() }}</p>
               <p class="hdr-dd-role">{{ user()?.roles?.[0] ?? '' }}</p>

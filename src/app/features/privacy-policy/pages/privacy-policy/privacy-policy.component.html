@@ -1,27 +1,102 @@
-<div class="container-fluid mt-4" dir="rtl" style="max-width:760px">
-  <div class="mb-4">
-    <span class="page-title">سياسة الخصوصية</span>
+<div class="pp-page" dir="rtl">
+
+  <!-- Header -->
+  <div class="pp-header">
+    <div class="pp-header__icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <div>
+      <h1 class="pp-header__title">سياسة الخصوصية</h1>
+      <p class="pp-header__sub">عرض وتعديل سياسة الخصوصية للأطباء والمرضى</p>
+    </div>
   </div>
 
-  @if (loading()) {
-    <div class="text-center py-5"><div class="spinner-border" style="color:var(--second-color)"></div></div>
-  } @else {
-    <div class="card p-4">
-      <div class="mb-3">
-        <label class="form-label fw-bold">محتوى سياسة الخصوصية</label>
-        <textarea class="form-control" rows="16" [(ngModel)]="content"
-          placeholder="اكتب سياسة الخصوصية هنا..."></textarea>
+  <!-- Tab selector -->
+  <div class="pp-tabs">
+    @for (opt of pageOptions; track opt.value) {
+      <button
+        class="pp-tab"
+        [class.pp-tab--active]="selectedPage === opt.value"
+        (click)="selectPage(opt.value)"
+        [disabled]="loading"
+      >
+        <i class="fa-solid" [ngClass]="opt.icon"></i>
+        {{ opt.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Content card -->
+  <div class="pp-card">
+    <div class="pp-card__head">
+      <div class="pp-card__head-left">
+        <i class="fa-solid fa-file-lines"></i>
+        <span>{{ currentPageLabel }}</span>
       </div>
-      <div>
-        <button class="btn" style="background:var(--second-color);color:#fff;min-width:140px" (click)="onSave()" [disabled]="saving()">
-          @if (saving()) {
-            <span class="spinner-border spinner-border-sm me-2"></span>
-          } @else {
-            <i class="fa-solid fa-floppy-disk me-2"></i>
-          }
-          حفظ التغييرات
+      <button class="btn-edit" (click)="openEditor()" [disabled]="loading">
+        <i class="fa-solid fa-pen-to-square"></i>
+        تعديل المحتوى
+      </button>
+    </div>
+
+    <div class="pp-card__body">
+      @if (loading) {
+        <div class="pp-loading">
+          <div class="spinner-border" style="color:var(--main-color)"></div>
+          <span>جاري تحميل المحتوى...</span>
+        </div>
+      } @else if (!rawContent) {
+        <div class="pp-empty">
+          <i class="fa-solid fa-file-circle-question"></i>
+          <p>لا يوجد محتوى بعد. اضغط "تعديل المحتوى" لإضافة نص.</p>
+        </div>
+      } @else {
+        <div class="pp-content" [innerHTML]="safeContent"></div>
+      }
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════
+     EDITOR MODAL
+══════════════════════════════════════ -->
+@if (showModal) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+
+      <div class="modal-box__header">
+        <div class="modal-box__title">
+          <i class="fa-solid fa-pen-to-square"></i>
+          تعديل {{ currentPageLabel }}
+        </div>
+        <button class="modal-close-btn" (click)="closeModal()">
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
+
+      <div class="modal-box__body">
+        <ckeditor
+          [editor]="Editor"
+          [(ngModel)]="editorContent"
+          [config]="editorConfig"
+        ></ckeditor>
+      </div>
+
+      <div class="modal-box__footer">
+        <button class="btn-cancel" (click)="closeModal()" [disabled]="saving">
+          <i class="fa-solid fa-xmark"></i>
+          إلغاء
+        </button>
+        <button class="btn-save" (click)="save()" [disabled]="saving">
+          @if (saving) {
+            <span class="spinner-border spinner-border-sm"></span>
+            <span>جاري الحفظ...</span>
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>حفظ التغييرات</span>
+          }
+        </button>
+      </div>
+
     </div>
-  }
-</div>
+  </div>
+}

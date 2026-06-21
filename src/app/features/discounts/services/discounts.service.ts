@@ -1,37 +1,17 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { CacheService } from '../../../core/services/cache.service';
-import { Discount } from '../models/discount.model';
-
-const TTL = 10 * 60 * 1000;
-const KEY = 'discounts:all';
+import { ApplyDiscountPayload, DoctorOption } from '../models/discount.model';
 
 @Injectable({ providedIn: 'root' })
 export class DiscountsService {
-  private readonly api   = inject(ApiService);
-  private readonly cache = inject(CacheService);
+  private readonly api = inject(ApiService);
 
-  getAll(): Observable<Discount[]> {
-    const cached = this.cache.get<Discount[]>(KEY);
-    if (cached) return of(cached);
-    return this.api.get<Discount[]>('api/Dashboard/getAllDiscounts').pipe(
-      tap((list) => this.cache.set(KEY, list, TTL)),
-    );
+  getDoctors(): Observable<DoctorOption[]> {
+    return this.api.get<DoctorOption[]>('api/Dashboard/getAllDoctorsIdNameAndSpecialization');
   }
 
-  add(data: FormData): Observable<string> {
-    return this.api.postText('api/Dashboard/addDiscount', data).pipe(
-      tap(() => this.invalidate()),
-    );
+  applyToAppointment(payload: ApplyDiscountPayload): Observable<string> {
+    return this.api.postText('api/Dashboard/applyDiscountToAppointment', payload);
   }
-
-  delete(id: number): Observable<string> {
-    return this.api.deleteText(`api/Dashboard/deleteDiscount/${id}`).pipe(
-      tap(() => this.invalidate()),
-    );
-  }
-
-  invalidate(): void { this.cache.invalidate(KEY); }
 }

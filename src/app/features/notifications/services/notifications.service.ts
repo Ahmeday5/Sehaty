@@ -8,6 +8,6 @@ export class NotificationsService {
   private readonly api = inject(ApiService);
 
   send(payload: SendNotificationPayload): Observable<string> {
-    return this.api.postText('api/Dashboard/sendNotification', payload);
+    return this.api.postText('api/Notification/send', payload);
   }
 }
