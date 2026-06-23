@@ -29,7 +29,7 @@
 
 /* ── Card ── */
 .disc-card {
-  background: #fff;
+  background: var(--surface);
   border-radius: 18px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--brd);
@@ -39,7 +39,7 @@
     display: flex; align-items: center; gap: 12px;
     padding: 20px 22px 16px;
     border-bottom: 1px solid var(--brd);
-    background: var(--bg3);
+    background: var(--surface2);
   }
 
   &__icon {
@@ -62,7 +62,7 @@
   &__footer {
     padding: 16px 22px;
     border-top: 1px solid var(--brd);
-    background: var(--bg3);
+    background: var(--surface2);
   }
 }
 
@@ -81,19 +81,19 @@
   padding: 9px 12px;
   border: 1px solid var(--brd); border-radius: 8px;
   font-size: 0.875rem; color: var(--txt3);
-  background: var(--bg3);
+  background: var(--surface2);
 }
 
 /* ── Info note ── */
 .info-note {
   display: flex; align-items: flex-start; gap: 8px;
   padding: 10px 14px;
-  background: rgba(245, 158, 11, 0.08);
+  background: var(--ambersoft);
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 10px;
-  font-size: 0.8rem; color: #92400e; line-height: 1.5;
+  font-size: 0.8rem; color: var(--amber); line-height: 1.5;
 
-  i { color: #f59e0b; margin-top: 2px; flex-shrink: 0; }
+  i { color: var(--amber); margin-top: 2px; flex-shrink: 0; }
 }
 
 /* ── Action button ── */

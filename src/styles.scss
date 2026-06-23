@@ -1,5 +1,5 @@
 :root {
-  /* Brand */
+  /* ── Brand (preserved) ── */
   --main-color:   #1db17a;
   --main-dark:    #17956a;
   --main-light:   rgba(29, 177, 122, 0.12);
@@ -7,67 +7,113 @@
   --second-dark:  #15865c;
   --second-light: rgba(26, 158, 110, 0.1);
 
-  /* Backgrounds */
-  --bg-main: #f4f6fb;
-  --bg2:     #ffffff;
-  --bg3:     #f9fafb;
-  --bg4:     #f3f4f6;
+  /* ── Dark theme surfaces ── */
+  --bg:        #0B1120;
+  --bg-main:   #0B1120;
+  --surface:   #111827;
+  --surface2:  #1A2235;
+  --surface3:  #1F2A3C;
+  --bg2:       #111827;
+  --bg3:       #1A2235;
+  --bg4:       #1F2A3C;
 
-  /* Borders */
-  --brd:  #e5e7eb;
-  --brd2: #d1d5db;
+  /* ── Borders ── */
+  --border:  #1E2D42;
+  --border2: #243347;
+  --brd:     #1E2D42;
+  --brd2:    #243347;
 
-  /* Text */
-  --txt:  #111827;
-  --txt2: #374151;
-  --txt3: #6b7280;
-  --txt4: #9ca3af;
+  /* ── Text ── */
+  --text:     #E8F0FE;
+  --textsub:  #7B91B0;
+  --textmuted:#3D5068;
+  --txt:      #E8F0FE;
+  --txt2:     #A8BDD4;
+  --txt3:     #7B91B0;
+  --txt4:     #3D5068;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  /* ── Status colors ── */
+  --green:      #22C55E;
+  --greensoft:  rgba(34, 197, 94, 0.12);
+  --amber:      #F59E0B;
+  --ambersoft:  rgba(245, 158, 11, 0.12);
+  --red:        #F43F5E;
+  --redsoft:    rgba(244, 63, 94, 0.12);
+  --teal:       #14B8A6;
+  --tealsoft:   rgba(20, 184, 166, 0.12);
+  --purple:     #A78BFA;
+  --purplesoft: rgba(167, 139, 250, 0.12);
+  --blue:       #60A5FA;
+  --bluesoft:   rgba(96, 165, 250, 0.12);
 
-  /* Misc */
+  /* ── Primary soft (green-based) ── */
+  --primarysoft: rgba(29, 177, 122, 0.12);
+
+  /* ── Gradient ── */
+  --grad: linear-gradient(135deg, #17956a, #1db17a 50%, #14B8A6);
+
+  /* ── Shadows ── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.5);
+
+  /* ── Misc ── */
   --radius:     12px;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Legacy compat */
-  --thrid-color: #f4f6fb;
+  --thrid-color: #1A2235;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+  font-family: 'Cairo', 'Tajawal', 'Inter', 'Noto Sans Arabic', sans-serif;
   direction: rtl;
   color: var(--txt);
-  background: var(--bg-main);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
 }
 
 a { text-decoration: none; }
 
-/* Form control global */
+/* ── Form controls ── */
 .form-control, .form-select {
-  border-color: var(--brd);
+  border-color: var(--border);
   border-radius: 8px;
   font-family: inherit;
   font-size: 0.875rem;
   color: var(--txt);
+  background: var(--surface2);
   transition: border-color .15s, box-shadow .15s;
 
   &:focus {
     outline: none;
+    background: var(--surface2);
     border-color: var(--main-color);
-    box-shadow: 0 0 0 3px rgba(20,200,199,.18);
+    box-shadow: 0 0 0 3px rgba(29, 177, 122, 0.18);
+    color: var(--txt);
   }
 
-  &::placeholder { color: var(--txt4); }
+  &::placeholder { color: var(--textmuted); }
 }
 
-/* Container reset */
+select.form-select option,
+select option {
+  background: var(--surface2);
+  color: var(--txt);
+}
+
+/* ── Container reset ── */
 .container-fluid {
   padding-right: 16px !important;
   padding-left:  16px !important;
@@ -75,19 +121,19 @@ a { text-decoration: none; }
   margin-left:  0 !important;
 }
 
-/* Spinner size fix */
+/* ── Spinner ── */
 .spinner-border { width: 2rem; height: 2rem; }
 
-/* Shared refresh button */
+/* ── Refresh button ── */
 .btn-refresh {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
   border-radius: 8px;
-  border: 1px solid var(--brd);
-  background: var(--bg2);
-  color: var(--txt3);
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--textsub);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -95,14 +141,14 @@ a { text-decoration: none; }
   transition: background var(--transition), color var(--transition), box-shadow var(--transition);
 
   &:hover:not(:disabled) {
-    background: var(--bg4);
+    background: var(--surface3);
     color: var(--txt);
     box-shadow: var(--shadow-sm);
   }
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
-/* Shared page header utility */
+/* ── Page header ── */
 .page-header {
   display: flex;
   align-items: center;
@@ -119,7 +165,7 @@ a { text-decoration: none; }
   margin: 0;
 }
 
-/* Primary action button */
+/* ── Primary action button ── */
 .btn-primary-action {
   display: inline-flex;
   align-items: center;
@@ -133,8 +179,323 @@ a { text-decoration: none; }
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
-  transition: background var(--transition), box-shadow var(--transition);
+  transition: background var(--transition), box-shadow var(--transition), opacity var(--transition);
 
   &:hover { background: var(--main-dark); box-shadow: var(--shadow-md); }
   &:disabled { opacity: .55; cursor: not-allowed; }
 }
+
+/* ── Ghost button ── */
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 11px;
+  background: var(--surface2);
+  color: var(--textsub);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  font-family: inherit;
+  transition: all var(--transition);
+
+  &:hover { color: var(--txt); border-color: var(--border2); background: var(--surface3); }
+}
+
+/* ── Primary button ── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 11px;
+  background: var(--main-color);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: opacity var(--transition), box-shadow var(--transition);
+
+  &:hover { opacity: .85; box-shadow: var(--shadow-md); }
+  &:disabled { opacity: .55; cursor: not-allowed; }
+}
+
+/* ── Card base ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.card-sm {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+/* ── Input base ── */
+.inp {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--txt);
+  padding: 0 14px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color var(--transition);
+
+  &:focus {
+    outline: none;
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(29,177,122,.15);
+  }
+  &::placeholder { color: var(--textmuted); }
+}
+
+/* ── Badges ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-green   { background: var(--greensoft);  color: var(--green);  }
+.badge-amber   { background: var(--ambersoft);  color: var(--amber);  }
+.badge-red     { background: var(--redsoft);    color: var(--red);    }
+.badge-blue    { background: var(--bluesoft);   color: var(--blue);   }
+.badge-teal    { background: var(--tealsoft);   color: var(--teal);   }
+.badge-purple  { background: var(--purplesoft); color: var(--purple); }
+.badge-primary { background: var(--primarysoft);color: var(--main-color); }
+
+/* ── Table ── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  padding: 10px 14px;
+  text-align: right;
+  color: var(--textsub);
+  font-weight: 700;
+  font-size: 11.5px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  background: var(--surface2);
+}
+
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  color: var(--txt);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+
+/* ── Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn .3s ease both; }
+
+/* ── Dot status ── */
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════
+   Bootstrap dark overrides
+   ══════════════════════════════════ */
+
+/* Modal */
+.modal-content {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--txt) !important;
+}
+.modal-header {
+  border-color: var(--border) !important;
+  background: var(--surface2) !important;
+  color: var(--txt) !important;
+}
+.modal-footer {
+  border-color: var(--border) !important;
+  background: var(--surface2) !important;
+}
+.modal-backdrop { background-color: #000 !important; }
+.modal-title { color: var(--txt) !important; }
+.btn-close { filter: invert(1) grayscale(1) !important; }
+
+/* Form controls Bootstrap override */
+.form-control, .form-select {
+  background-color: var(--surface2) !important;
+  border-color: var(--border) !important;
+  color: var(--txt) !important;
+
+  &:focus {
+    background-color: var(--surface2) !important;
+    border-color: var(--main-color) !important;
+    color: var(--txt) !important;
+    box-shadow: 0 0 0 3px rgba(29,177,122,.18) !important;
+  }
+}
+
+/* Dropdown */
+.dropdown-menu {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+}
+.dropdown-item {
+  color: var(--textsub) !important;
+  &:hover, &:focus { background: var(--surface2) !important; color: var(--txt) !important; }
+}
+.dropdown-divider { border-color: var(--border) !important; }
+
+/* Table Bootstrap */
+.table {
+  color: var(--txt) !important;
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: var(--surface2);
+  --bs-table-hover-bg: var(--surface2);
+  --bs-table-border-color: var(--border);
+}
+.table > :not(caption) > * > * {
+  background-color: transparent !important;
+  border-bottom-color: var(--border) !important;
+  color: var(--txt) !important;
+}
+.table > thead > tr > th {
+  background: var(--surface2) !important;
+  color: var(--textsub) !important;
+}
+
+/* Pagination */
+.pagination {
+  --bs-pagination-bg: var(--surface2);
+  --bs-pagination-border-color: var(--border);
+  --bs-pagination-color: var(--textsub);
+  --bs-pagination-hover-bg: var(--surface3);
+  --bs-pagination-hover-color: var(--txt);
+  --bs-pagination-hover-border-color: var(--border2);
+  --bs-pagination-active-bg: var(--main-color);
+  --bs-pagination-active-border-color: var(--main-color);
+  --bs-pagination-active-color: #fff;
+  --bs-pagination-disabled-bg: var(--surface);
+  --bs-pagination-disabled-border-color: var(--border);
+  --bs-pagination-disabled-color: var(--textmuted);
+}
+
+/* Alert */
+.alert-success { background: var(--greensoft) !important; border-color: rgba(34,197,94,.25) !important; color: var(--green) !important; }
+.alert-danger  { background: var(--redsoft)   !important; border-color: rgba(244,63,94,.25)  !important; color: var(--red)   !important; }
+.alert-warning { background: var(--ambersoft) !important; border-color: rgba(245,158,11,.25) !important; color: var(--amber) !important; }
+.alert-info    { background: var(--tealsoft)  !important; border-color: rgba(20,184,166,.25) !important; color: var(--teal)  !important; }
+
+/* Card Bootstrap override */
+.card {
+  --bs-card-bg: var(--surface);
+  --bs-card-border-color: var(--border);
+  color: var(--txt);
+}
+.card-header, .card-footer {
+  background-color: var(--surface2) !important;
+  border-color: var(--border) !important;
+  color: var(--txt) !important;
+}
+.card-body { color: var(--txt); }
+
+/* Badge Bootstrap override */
+.badge {
+  &.bg-success { background-color: var(--greensoft) !important; color: var(--green) !important; }
+  &.bg-danger  { background-color: var(--redsoft)   !important; color: var(--red)   !important; }
+  &.bg-warning { background-color: var(--ambersoft) !important; color: var(--amber) !important; }
+  &.bg-info    { background-color: var(--tealsoft)  !important; color: var(--teal)  !important; }
+  &.bg-primary { background-color: var(--primarysoft)!important; color: var(--main-color) !important; }
+  &.bg-secondary{ background-color: rgba(123,145,176,.12) !important; color: var(--textsub) !important; }
+}
+
+/* Spinner */
+.spinner-border { color: var(--main-color); }
+
+/* Toast Bootstrap */
+.toast {
+  background: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--txt) !important;
+}
+.toast-header {
+  background: var(--surface2) !important;
+  border-color: var(--border) !important;
+  color: var(--txt) !important;
+}
+
+/* Input group */
+.input-group-text {
+  background: var(--surface2) !important;
+  border-color: var(--border) !important;
+  color: var(--textsub) !important;
+}
+
+/* Nav tabs */
+.nav-tabs {
+  border-color: var(--border) !important;
+  .nav-link {
+    color: var(--textsub);
+    &:hover { color: var(--txt); border-color: var(--border); }
+    &.active {
+      background: var(--surface) !important;
+      border-color: var(--border) var(--border) var(--surface) !important;
+      color: var(--main-color) !important;
+    }
+  }
+}
+
+/* Nav pills */
+.nav-pills .nav-link {
+  color: var(--textsub);
+  &.active { background: var(--main-color) !important; color: #fff !important; }
+  &:hover { background: var(--surface2); color: var(--txt); }
+}
+
+/* Select */
+select {
+  background-color: var(--surface2);
+  border-color: var(--border);
+  color: var(--txt);
+
+  option {
+    background: var(--surface2);
+    color: var(--txt);
+  }
+}
+
+/* Text utilities override */
+.text-muted { color: var(--textsub) !important; }
+.text-dark  { color: var(--txt) !important; }
+.border     { border-color: var(--border) !important; }
+.bg-white   { background-color: var(--surface) !important; }
+.bg-light   { background-color: var(--surface2) !important; }
+
+/* ── Google Fonts: Cairo ── */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap');

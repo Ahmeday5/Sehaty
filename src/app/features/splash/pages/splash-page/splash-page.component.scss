@@ -1,4 +1,4 @@
-/* ═══════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════
    Splash Screen — صحتي
    ═══════════════════════════════════════════ */
 
@@ -27,7 +27,7 @@
 
 .sp-orb--1 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, var(--main-color, #14c8c7), transparent 70%);
+  background: radial-gradient(circle, var(--main-color, #1db17a), transparent 70%);
   top: -120px; right: -100px;
   animation: sp-drift 8s ease-in-out infinite alternate;
 }
@@ -77,13 +77,13 @@
   width: 120px; height: 120px;
   border-radius: 50%;
   background: conic-gradient(
-    var(--main-color, #14c8c7) 0%,
-    var(--second-color, #4b4e9c) 40%,
+    var(--main-color, #1db17a) 0%,
+    var(--second-color, #1a9e6e) 40%,
     transparent 60%
   );
   padding: 3px;
   animation: sp-spin 3s linear infinite;
-  box-shadow: 0 0 40px rgba(20,200,199,.3);
+  box-shadow: 0 0 40px rgba(29,177,122,.3);
 }
 
 @keyframes sp-spin {
@@ -103,13 +103,13 @@
 .sp-logo {
   width: 72px; height: 72px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(20,200,199,.4));
+  filter: drop-shadow(0 4px 12px rgba(29,177,122,.4));
   animation: sp-logo-beat 2s ease-in-out infinite;
 }
 
 .sp-logo-fallback {
   font-size: 38px;
-  background: linear-gradient(135deg, var(--main-color, #14c8c7), var(--second-color, #4b4e9c));
+  background: linear-gradient(135deg, var(--main-color, #1db17a), var(--second-color, #1a9e6e));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: sp-logo-beat 2s ease-in-out infinite;
@@ -132,7 +132,7 @@
   color: #fff;
   margin: 0;
   letter-spacing: -1px;
-  background: linear-gradient(135deg, #fff 30%, rgba(20,200,199,.9));
+  background: linear-gradient(135deg, #fff 30%, rgba(29,177,122,.9));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -157,9 +157,9 @@
 .sp-progress-bar {
   height: 100%;
   border-radius: 99px;
-  background: linear-gradient(90deg, var(--main-color, #14c8c7), var(--second-color, #4b4e9c));
+  background: linear-gradient(90deg, var(--main-color, #1db17a), var(--second-color, #1a9e6e));
   animation: sp-fill 0.9s cubic-bezier(.4,0,.2,1) forwards;
-  box-shadow: 0 0 10px var(--main-color, #14c8c7);
+  box-shadow: 0 0 10px var(--main-color, #1db17a);
 }
 
 @keyframes sp-fill {

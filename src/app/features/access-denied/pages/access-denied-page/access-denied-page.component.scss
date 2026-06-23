@@ -3,19 +3,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9fafb;
+  background: var(--bg);
   padding: 24px;
   direction: rtl;
 }
 
 .denied-card {
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   padding: 48px 40px;
   text-align: center;
   max-width: 480px;
   width: 100%;
-  box-shadow: 0 4px 24px rgba(0,0,0,.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,.3);
+  border: 1px solid var(--border);
   animation: cardIn 0.4s ease;
 }
 
@@ -23,7 +24,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #fee2e2;
+  background: var(--redsoft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,14 +32,14 @@
 
   i {
     font-size: 2rem;
-    color: #dc2626;
+    color: var(--red);
   }
 }
 
 .denied-code {
   font-size: 4rem;
   font-weight: 900;
-  color: #dc2626;
+  color: var(--red);
   margin: 0;
   line-height: 1;
   letter-spacing: -2px;
@@ -47,13 +48,13 @@
 .denied-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  color: var(--txt);
   margin: 12px 0 8px;
 }
 
 .denied-msg {
   font-size: 0.9rem;
-  color: #6b7280;
+  color: var(--textsub);
   line-height: 1.7;
   margin-bottom: 32px;
 }
@@ -82,15 +83,15 @@
 }
 
 .btn-back {
-  background: #f3f4f6;
-  color: #374151;
-  border: none;
+  background: var(--surface2);
+  color: var(--txt);
+  border: 1px solid var(--border);
 
-  &:hover { background: #e5e7eb; }
+  &:hover { background: var(--surface3); }
 }
 
 .btn-home {
-  background: var(--main-color, #1a73e8);
+  background: var(--main-color, #1db17a);
   color: #fff;
   border: none;
 

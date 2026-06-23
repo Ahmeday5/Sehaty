@@ -45,7 +45,7 @@ import { LoaderService } from '../../../core/services/loader.service';
     }
     .spinner-ring:nth-child(2) {
       inset: 8px;
-      border-top-color: var(--second-color, #4b4e9c);
+      border-top-color: var(--second-color, #1a9e6e);
       animation-duration: 1.1s;
     }
     .spinner-ring:nth-child(3) {

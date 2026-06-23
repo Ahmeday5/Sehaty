@@ -1,16 +1,16 @@
 .app-header {
-  height: 56px;
-  background: var(--bg2, #fff);
-  border-bottom: 1px solid var(--brd, #e5e7eb);
-  box-shadow: 0 1px 8px rgba(0,0,0,.05);
+  height: 60px;
+  background: var(--surface, #111827);
+  border-bottom: 1px solid var(--border, #1E2D42);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 24px;
   position: sticky;
   top: 0;
   z-index: 100;
   flex-shrink: 0;
+  gap: 16px;
 }
 
 /* ── Right side ── */
@@ -20,29 +20,61 @@
   display: none;
   flex-direction: column;
   gap: 5px;
-  background: none;
-  border: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
+  width: 36px; height: 36px;
+  align-items: center;
+  justify-content: center;
 
   span {
     display: block;
-    width: 22px;
-    height: 2px;
-    background: var(--txt2, #6b7280);
+    width: 16px; height: 2px;
+    background: var(--textsub);
     border-radius: 2px;
     transition: background 0.12s;
   }
 
+  &:hover span { background: var(--txt); }
   @media (max-width: 991px) { display: flex; }
 }
 
 .hdr-title {
   margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--txt, #111827);
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--txt, #E8F0FE);
   letter-spacing: -0.2px;
+  flex: 1;
+}
+
+/* ── Search ── */
+.hdr-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 38px;
+  width: 260px;
+
+  input {
+    background: none;
+    border: none;
+    font-size: 13px;
+    color: var(--txt);
+    width: 100%;
+    font-family: inherit;
+    outline: none;
+
+    &::placeholder { color: var(--textmuted); }
+  }
+
+  @media (max-width: 768px) { display: none; }
 }
 
 /* ── Left side ── */
@@ -51,7 +83,52 @@
 .hdr-logo { display: flex; align-items: center; text-decoration: none; }
 .hdr-logo-img { height: 32px; object-fit: contain; }
 
-/* ── User dropdown ── */
+/* ── Date indicator ── */
+.hdr-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--textsub);
+  white-space: nowrap;
+
+  @media (max-width: 576px) { display: none; }
+}
+
+.hdr-date-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green, #22C55E);
+  flex-shrink: 0;
+}
+
+/* ── Notif button ── */
+.hdr-notif-btn {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: var(--textsub);
+  transition: background var(--transition), color var(--transition);
+
+  &:hover { background: var(--surface3); color: var(--txt); }
+}
+
+.hdr-notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--red, #F43F5E);
+  border: 2px solid var(--surface);
+}
+
+/* ── User section ── */
 .hdr-user { position: relative; }
 
 .hdr-user-btn {
@@ -64,21 +141,35 @@
   border: none;
   cursor: pointer;
   transition: background 0.12s;
-  &:hover { background: var(--bg3, #f3f4f6); }
+  &:hover { background: var(--surface2); }
 }
 
 .hdr-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--grad, linear-gradient(135deg,#17956a,#1db17a 50%,#14B8A6));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
   object-fit: cover;
-  border: 2px solid var(--brd, #e5e7eb);
+  border: none;
+}
+
+.hdr-avatar-img {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  object-fit: cover;
+  border: 2px solid var(--border);
 }
 
 .hdr-username {
   font-size: 13px;
-  font-weight: 600;
-  color: var(--txt, #111827);
+  font-weight: 700;
+  color: var(--txt, #E8F0FE);
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -87,9 +178,14 @@
   @media (max-width: 480px) { display: none; }
 }
 
+.hdr-user-role {
+  font-size: 11px;
+  color: var(--textsub);
+}
+
 .hdr-caret {
   font-size: 11px;
-  color: var(--txt3, #9ca3af);
+  color: var(--textsub);
   transition: transform 0.18s;
   &--open { transform: rotate(180deg); }
 }
@@ -99,12 +195,13 @@
   left: 0;
   top: calc(100% + 6px);
   min-width: 200px;
-  background: var(--bg2, #fff);
-  border: 1px solid var(--brd, #e5e7eb);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg, 0 12px 40px -12px rgba(0,0,0,.7));
   overflow: hidden;
   animation: dd-fade 0.15s ease;
+  z-index: 200;
 }
 
 .hdr-dropdown-header {
@@ -115,19 +212,25 @@
 }
 
 .hdr-dd-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--brd, #e5e7eb);
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: var(--grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
   flex-shrink: 0;
+
+  &--img { object-fit: cover; }
 }
 
 .hdr-dd-name {
   margin: 0;
   font-size: 13px;
   font-weight: 700;
-  color: var(--txt, #111827);
+  color: var(--txt, #E8F0FE);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,13 +240,13 @@
 .hdr-dd-role {
   margin: 0;
   font-size: 11px;
-  color: var(--txt3, #9ca3af);
+  color: var(--textsub);
 }
 
 .hdr-dropdown-divider {
   height: 1px;
-  background: var(--brd, #e5e7eb);
-  margin: 0 14px;
+  background: var(--border);
+  margin: 0;
 }
 
 .hdr-dd-item {
@@ -156,13 +259,13 @@
   border: none;
   font-size: 13px;
   cursor: pointer;
-  color: var(--txt2, #6b7280);
+  color: var(--textsub);
   transition: background 0.12s, color 0.12s;
   font-family: inherit;
   text-align: right;
 
-  &:hover { background: var(--bg3, #f3f4f6); color: var(--txt, #111827); }
-  &--logout { color: #ef4444; &:hover { background: #fef2f2; color: #dc2626; } }
+  &:hover { background: var(--surface2); color: var(--txt); }
+  &--logout { color: var(--red, #F43F5E); &:hover { background: var(--redsoft); color: var(--red); } }
 }
 
 @keyframes dd-fade {

@@ -1,8 +1,8 @@
 .btn-refresh, .btn-print {
   display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px;
-  border-radius: 8px; border: 1px solid var(--brd,#e5e7eb); background: var(--bg2,#fff);
-  color: var(--txt2,#6b7280); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
-  &:hover:not(:disabled) { background: var(--bg3,#f3f4f6); }
+  border-radius: 8px; border: 1px solid var(--border, var(--brd)); background: var(--surface);
+  color: var(--textsub); font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  &:hover:not(:disabled) { background: var(--surface2); }
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
@@ -19,7 +19,7 @@
   }
   th:last-child, td:last-child { border-left: 2px solid var(--second-color); }
   thead th { background: var(--thrid-color); color: var(--second-color); font-weight: bold; border-top: 2px solid var(--second-color); }
-  tbody td { background: var(--thrid-color); color: var(--second-color); font-weight: bold; border-top: 2px solid var(--second-color); }
+  tbody td { background: var(--surface); color: var(--txt); font-weight: bold; border-top: 2px solid var(--border); }
   tbody tr td:first-child  { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }
   tbody tr td:last-child   { border-top-left-radius: 12px;  border-bottom-left-radius: 12px; }
   thead tr th:first-child  { border-top-right-radius: 12px; border-bottom-right-radius: 12px; }

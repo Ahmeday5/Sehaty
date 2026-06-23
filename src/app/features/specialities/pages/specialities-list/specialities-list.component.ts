@@ -1,4 +1,4 @@
-import {
+﻿import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
@@ -15,7 +15,7 @@ import { FormErrorComponent } from '../../../../shared/components/form-error/for
 import { Speciality } from '../../models/speciality.model';
 
 const AVATAR_COLORS = [
-  '#4b4e9c', '#0284c7', '#059669', '#d97706',
+  '#1a9e6e', '#0284c7', '#059669', '#d97706',
   '#dc2626', '#db2777', '#0891b2', '#7c3aed',
 ];
 

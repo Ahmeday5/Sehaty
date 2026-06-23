@@ -26,7 +26,7 @@
 .pp-tab {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 9px 20px; border-radius: 10px;
-  border: 1.5px solid var(--brd); background: #fff;
+  border: 1.5px solid var(--brd); background: var(--surface);
   color: var(--txt3); font-size: 0.875rem; font-weight: 600;
   cursor: pointer; font-family: inherit;
   transition: all 0.18s;
@@ -51,7 +51,7 @@
 
 /* ── Card ── */
 .pp-card {
-  background: #fff;
+  background: var(--surface);
   border-radius: 18px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--brd);
@@ -60,7 +60,7 @@
   &__head {
     display: flex; align-items: center; justify-content: space-between;
     padding: 16px 22px; border-bottom: 1px solid var(--brd);
-    background: var(--bg3);
+    background: var(--surface2);
   }
 
   &__head-left {
@@ -127,7 +127,7 @@
 ══════════════════════════════════════ */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1050;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0,0,0,.65);
   backdrop-filter: blur(3px);
   display: flex; align-items: center; justify-content: center;
   padding: 16px;
@@ -140,9 +140,9 @@
 }
 
 .modal-box {
-  background: #fff;
+  background: var(--surface);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  box-shadow: 0 20px 60px rgba(0,0,0,.5);
   width: 100%; max-width: 860px;
   max-height: 90vh;
   display: flex; flex-direction: column;
@@ -153,7 +153,7 @@
   &__header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 18px 24px; border-bottom: 1px solid var(--brd);
-    flex-shrink: 0; background: var(--bg3);
+    flex-shrink: 0; background: var(--surface2);
   }
 
   &__title {
@@ -194,7 +194,7 @@
   &__footer {
     display: flex; align-items: center; justify-content: flex-end; gap: 10px;
     padding: 16px 24px; border-top: 1px solid var(--brd);
-    flex-shrink: 0; background: var(--bg3);
+    flex-shrink: 0; background: var(--surface2);
   }
 }
 
@@ -205,11 +205,11 @@
 
 .modal-close-btn {
   width: 34px; height: 34px; border-radius: 8px;
-  border: 1px solid var(--brd); background: #fff;
+  border: 1px solid var(--brd); background: var(--surface2);
   color: var(--txt3); font-size: 15px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
-  &:hover { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+  &:hover { background: var(--redsoft); color: var(--red); border-color: rgba(244,63,94,.3); }
 }
 
 .btn-cancel {

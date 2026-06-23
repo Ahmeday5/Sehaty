@@ -16,8 +16,8 @@
   position: relative;
   width: 90px; height: 90px;
   border-radius: 50%;
-  border: 2.5px dashed #d1d5db;
-  background: #f8fafc;
+  border: 2.5px dashed var(--border2, #243347);
+  background: var(--surface2, #1A2235);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,7 +26,7 @@
   overflow: hidden;
   transition: border-color .15s;
 
-  &:hover { border-color: var(--main-color, #14c8c7); }
+  &:hover { border-color: var(--main-color, #1db17a); }
 }
 
 .df-img-preview {
@@ -38,7 +38,7 @@
 
 .df-img-change-overlay {
   position: absolute; inset: 0;
-  background: rgba(0,0,0,.4);
+  background: rgba(0,0,0,.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,16 +51,16 @@
 
 .df-img-picker:hover .df-img-change-overlay { opacity: 1; }
 
-.df-img-icon  { font-size: 22px; color: #9ca3af; }
-.df-img-hint  { font-size: 9px;  color: #9ca3af; margin-top: 4px; }
-.df-img-sub   { font-size: 11px; color: #94a3b8; margin: 0; }
+.df-img-icon  { font-size: 22px; color: var(--textmuted, #3D5068); }
+.df-img-hint  { font-size: 9px;  color: var(--textmuted, #3D5068); margin-top: 4px; }
+.df-img-sub   { font-size: 11px; color: var(--textsub, #7B91B0); margin: 0; }
 
 /* ── Validation state on Bootstrap form-control ── */
 .df .form-control.ng-invalid.ng-touched,
 .df .form-select.ng-invalid.ng-touched {
-  border-color: #dc2626 !important;
-  background-color: #fff5f5;
-  box-shadow: 0 0 0 3px rgba(220,38,38,.08) !important;
+  border-color: var(--red, #F43F5E) !important;
+  background-color: var(--redsoft, rgba(244,63,94,.08));
+  box-shadow: 0 0 0 3px rgba(244,63,94,.1) !important;
 }
 
 /* ── Grid ── */
@@ -84,10 +84,10 @@
 .df-label {
   font-size: 12.5px;
   font-weight: 600;
-  color: #374151;
+  color: var(--textsub, #7B91B0);
 }
 
-.df-req { color: #ef4444; margin-inline-start: 2px; }
+.df-req { color: var(--red, #F43F5E); margin-inline-start: 2px; }
 
 /* ── Radio group ── */
 .df-radio-group {
@@ -101,11 +101,11 @@
   gap: 6px;
   padding: 7px 14px;
   border-radius: 8px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--border, #1E2D42);
   font-size: 13px;
   cursor: pointer;
   font-weight: 500;
-  color: #64748b;
+  color: var(--textsub, #7B91B0);
   transition: border-color .12s, background .12s, color .12s;
   flex: 1;
   justify-content: center;
@@ -115,9 +115,9 @@
   i { font-size: 12px; }
 
   &--on {
-    border-color: var(--main-color, #14c8c7);
-    background: rgba(20,200,199,.07);
-    color: #0f172a;
+    border-color: var(--main-color, #1db17a);
+    background: var(--primarysoft, rgba(29,177,122,.12));
+    color: var(--txt, #E8F0FE);
     font-weight: 600;
   }
 }
@@ -135,13 +135,13 @@
 .df-cert-title {
   font-size: 13px;
   font-weight: 600;
-  color: #374151;
+  color: var(--textsub, #7B91B0);
   margin: 0;
   display: flex;
   align-items: center;
   gap: 7px;
 
-  i { color: var(--second-color, #4b4e9c); }
+  i { color: var(--main-color, #1db17a); }
 }
 
 /* Upload zone (when no cert selected) */
@@ -151,33 +151,33 @@
   align-items: center;
   gap: 6px;
   padding: 24px 16px;
-  border: 2px dashed #e2e8f0;
+  border: 2px dashed var(--border, #1E2D42);
   border-radius: 12px;
-  background: #f8fafc;
+  background: var(--surface2, #1A2235);
   cursor: pointer;
   transition: border-color .15s, background .15s;
 
   &:hover {
-    border-color: var(--main-color, #14c8c7);
-    background: rgba(20,200,199,.04);
+    border-color: var(--main-color, #1db17a);
+    background: var(--primarysoft, rgba(29,177,122,.08));
   }
 }
 
 .df-cert-upload-icon {
   font-size: 28px;
-  color: #94a3b8;
+  color: var(--textmuted, #3D5068);
 }
 
 .df-cert-upload-title {
   font-size: 13.5px;
   font-weight: 600;
-  color: #374151;
+  color: var(--textsub, #7B91B0);
   margin: 0;
 }
 
 .df-cert-upload-sub {
   font-size: 11.5px;
-  color: #94a3b8;
+  color: var(--textmuted, #3D5068);
   margin: 0;
 }
 
@@ -195,8 +195,8 @@
   overflow: hidden;
   cursor: pointer;
   height: 140px;
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
+  background: var(--surface2, #1A2235);
+  border: 1px solid var(--border, #1E2D42);
 
   img {
     width: 100%;
@@ -209,7 +209,7 @@
 .df-cert-thumb-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.45);
+  background: rgba(0,0,0,.55);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -233,26 +233,26 @@
   gap: 12px;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1.5px solid #e2e8f0;
-  background: #f8fafc;
+  border: 1.5px solid var(--border, #1E2D42);
+  background: var(--surface2, #1A2235);
   text-decoration: none;
   transition: border-color .15s, background .15s;
 
   &:hover {
-    border-color: var(--second-color, #4b4e9c);
-    background: rgba(75,78,156,.04);
+    border-color: var(--main-color, #1db17a);
+    background: var(--primarysoft, rgba(29,177,122,.08));
   }
 }
 
 .df-cert-file-icon {
   width: 40px; height: 40px;
   border-radius: 10px;
-  background: rgba(220,38,38,.08);
+  background: var(--redsoft, rgba(244,63,94,.12));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  color: #dc2626;
+  color: var(--red, #F43F5E);
   flex-shrink: 0;
 }
 
@@ -261,7 +261,7 @@
 .df-cert-file-name {
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--txt, #E8F0FE);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -270,13 +270,13 @@
 
 .df-cert-file-sub {
   font-size: 11px;
-  color: #64748b;
+  color: var(--textsub, #7B91B0);
   margin: 2px 0 0;
 }
 
 .df-cert-ext-icon {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--textmuted, #3D5068);
   flex-shrink: 0;
 }
 
@@ -287,16 +287,16 @@
   gap: 6px;
   padding: 7px 14px;
   border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid var(--border, #1E2D42);
+  background: var(--surface, #111827);
   font-size: 12.5px;
   font-weight: 600;
-  color: #475569;
+  color: var(--textsub, #7B91B0);
   cursor: pointer;
   align-self: flex-start;
   transition: background .12s, color .12s;
 
-  &:hover { background: #f1f5f9; color: #0f172a; }
+  &:hover { background: var(--surface2, #1A2235); color: var(--txt, #E8F0FE); }
 }
 
 /* Hidden file input */
@@ -312,7 +312,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--border, #1E2D42);
   padding-top: 16px;
 }
 
@@ -332,20 +332,20 @@
   &:disabled { opacity: .55; cursor: not-allowed; }
 
   &--cancel {
-    background: #f1f5f9;
-    color: #374151;
-    border: 1px solid #e2e8f0;
-    &:hover:not(:disabled) { background: #e2e8f0; }
+    background: var(--surface2, #1A2235);
+    color: var(--textsub, #7B91B0);
+    border: 1px solid var(--border, #1E2D42);
+    &:hover:not(:disabled) { background: var(--surface3, #1F2A3C); color: var(--txt, #E8F0FE); }
   }
 
   &--save {
-    background: var(--main-color, #14c8c7);
+    background: var(--main-color, #1db17a);
     color: #fff;
     min-width: 130px;
     justify-content: center;
     &:hover:not(:disabled) {
-      background: var(--main-dark, #0ea5a4);
-      box-shadow: 0 4px 14px rgba(20,200,199,.35);
+      background: var(--main-dark, #17956a);
+      box-shadow: 0 4px 14px rgba(29,177,122,.35);
     }
   }
 }
@@ -354,7 +354,7 @@
 .df-cert-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.7);
+  background: rgba(0,0,0,.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -374,8 +374,8 @@
   max-height: 90vh;
   border-radius: 14px;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 24px 60px rgba(0,0,0,.4);
+  background: var(--surface, #111827);
+  box-shadow: 0 24px 60px rgba(0,0,0,.6);
   animation: df-scale-in .2s ease;
 
   img {
@@ -398,7 +398,7 @@
   width: 32px; height: 32px;
   border-radius: 50%;
   border: none;
-  background: rgba(0,0,0,.5);
+  background: rgba(0,0,0,.6);
   color: #fff;
   font-size: 14px;
   cursor: pointer;
@@ -408,5 +408,5 @@
   transition: background .12s;
   z-index: 1;
 
-  &:hover { background: rgba(0,0,0,.75); }
+  &:hover { background: rgba(0,0,0,.85); }
 }
