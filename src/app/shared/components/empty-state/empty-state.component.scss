@@ -1,0 +1,18 @@
+.es-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 1.8rem;
+    color: var(--txt4, #4a5568);
+  }
+}
+
+.es-title { font-size: 1rem; font-weight: 700; color: var(--txt2); }
+.es-msg   { font-size: 0.82rem; color: var(--txt3); max-width: 280px; margin: 0 auto; line-height: 1.6; }

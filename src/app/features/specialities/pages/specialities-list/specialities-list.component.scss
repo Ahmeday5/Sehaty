@@ -290,22 +290,6 @@
   100% { background-position: -200% 0; }
 }
 
-/* ── Empty state ── */
-.sl-empty-icon {
-  width: 88px; height: 88px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--surface2), var(--surface3));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-  color: var(--textmuted);
-  box-shadow: 0 4px 14px rgba(0,0,0,.2);
-}
-
-.sl-empty-title { font-size: 20px; font-weight: 700; color: var(--txt); margin: 0 0 6px; }
-.sl-empty-sub   { font-size: 13.5px; color: var(--textsub); margin: 0; }
-
 /* ── Count label ── */
 .sl-count-label {
   font-size: 13px;

@@ -1,48 +1,93 @@
 <div class="db-page">
 
-  <!-- Welcome banner -->
+  <!-- ══════════ BANNER ══════════ -->
   <div class="db-banner">
-    <!-- Right: welcome text + service pills -->
-    <div class="db-banner-right">
-      <h2 class="db-banner-title">أهلاً بك في شفاء</h2>
-      <p class="db-banner-sub">منصة إدارة الرعاية الصحية المتكاملة — إدارة أكثر ذكاءً، رعاية أفضل</p>
-      <div class="db-banner-pills">
-        <span class="db-pill"><i class="fa-solid fa-building-columns"></i> المباني والمنشآت والمراكز الطبية</span>
-        <span class="db-pill"><i class="fa-solid fa-city"></i> المقارات</span>
-        <span class="db-pill"><i class="fa-solid fa-utensils"></i> المطاعم والمقاهي</span>
-      </div>
-    </div>
 
-    <!-- Center: globe decorative -->
-    <div class="db-banner-globe">
-      <div class="db-globe-ring db-globe-ring--1"></div>
-      <div class="db-globe-ring db-globe-ring--2"></div>
-      <div class="db-globe-ring db-globe-ring--3"></div>
-      <i class="fa-solid fa-earth-americas db-globe-icon"></i>
-    </div>
+    <!-- Animated background layers -->
+    <div class="db-banner-bg-orb db-banner-bg-orb--1"></div>
+    <div class="db-banner-bg-orb db-banner-bg-orb--2"></div>
+    <div class="db-banner-bg-orb db-banner-bg-orb--3"></div>
+    <div class="db-banner-grid-lines"></div>
 
-    <!-- Left: THE ONE SYSTEM branding -->
+    <!-- Floating particles -->
+    <span class="db-particle db-particle--1"></span>
+    <span class="db-particle db-particle--2"></span>
+    <span class="db-particle db-particle--3"></span>
+    <span class="db-particle db-particle--4"></span>
+    <span class="db-particle db-particle--5"></span>
+
+    <!-- LEFT: brand + refresh — أقصى الشمال -->
     <div class="db-banner-left">
       <div class="db-banner-refresh">
         <button class="db-refresh-btn" (click)="refresh()" [disabled]="loading()" title="تحديث البيانات">
           <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
         </button>
         @if (lastUpdate()) {
-        <span class="db-last-update">{{ lastUpdate() | date:'HH:mm' }}</span>
+        <span class="db-last-update">
+          <i class="fa-regular fa-clock"></i>
+          {{ lastUpdate() | date:'HH:mm' }}
+        </span>
         }
       </div>
       <div class="db-brand">
-        <div class="db-brand-logo">
-          <span class="db-brand-the">THE</span>
-          <span class="db-brand-one">ONE</span>
-          <span class="db-brand-system">SYSTEM</span>
+        <div class="db-brand-badge">
+          <span class="db-brand-badge-inner">
+            <span class="db-brand-the">THE</span>
+            <span class="db-brand-one">ONE</span>
+            <span class="db-brand-system">SYSTEM</span>
+          </span>
+          <div class="db-brand-shimmer"></div>
         </div>
-        <p class="db-brand-tagline">حلول ذكية.. لنمو مستدام</p>
+        <p class="db-brand-tagline">
+          <i class="fa-solid fa-bolt"></i>
+          حلول ذكية.. لنمو مستدام
+        </p>
       </div>
     </div>
+
+    <!-- CENTER: animated globe — المنتصف -->
+    <div class="db-banner-globe">
+      <div class="db-globe-ring db-globe-ring--1"></div>
+      <div class="db-globe-ring db-globe-ring--2"></div>
+      <div class="db-globe-ring db-globe-ring--3"></div>
+      <div class="db-globe-core">
+        <i class="fa-solid fa-earth-americas db-globe-icon"></i>
+      </div>
+      <span class="db-orbit-dot db-orbit-dot--1"></span>
+      <span class="db-orbit-dot db-orbit-dot--2"></span>
+      <span class="db-orbit-dot db-orbit-dot--3"></span>
+    </div>
+
+    <!-- RIGHT: welcome text — أقصى اليمين -->
+    <div class="db-banner-right">
+      <div class="db-banner-eyebrow">
+        <span class="db-eyebrow-dot"></span>
+        لوحة التحكم الرئيسية
+      </div>
+      <h2 class="db-banner-title">
+        أهلاً بك في
+        <span class="db-banner-title-accent">شفاء</span>
+      </h2>
+      <p class="db-banner-sub">منصة إدارة الرعاية الصحية المتكاملة — إدارة أكثر ذكاءً، رعاية أفضل</p>
+      <div class="db-banner-pills">
+        <span class="db-pill">
+          <i class="fa-solid fa-building-columns"></i>
+          المباني والمنشآت والمراكز الطبية
+        </span>
+        <span class="db-pill">
+          <i class="fa-solid fa-city"></i>
+          المقارات
+        </span>
+        <span class="db-pill">
+          <i class="fa-solid fa-utensils"></i>
+          المطاعم والمقاهي
+        </span>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Stat cards -->
+  <!-- ══════════ KPI CARDS ══════════ -->
   @if (loading()) {
   <div class="db-spinner">
     <div class="spinner-border" style="color:var(--main-color)" role="status">
@@ -50,33 +95,158 @@
     </div>
   </div>
   } @else {
-  <div class="db-cards">
+
+  <div class="db-kpi-grid">
+    <!-- Appointments (API) -->
     @for (stat of cardStats(); track stat.label) {
-    <div class="db-card">
-      <div class="db-card-icon" [style.background]="stat.gradient">
+    <div class="db-kpi-card">
+      <div class="db-kpi-icon" [style.background]="stat.gradient">
         <i class="fa-solid" [ngClass]="stat.icon"></i>
       </div>
-      <div class="db-card-body">
-        <p class="db-card-label">{{ stat.label }}</p>
-        <h3 class="db-card-value">
+      <div class="db-kpi-body">
+        <p class="db-kpi-label">{{ stat.label }}</p>
+        <h3 class="db-kpi-value">
           @if (stat.isCurrency) {
-          {{ stat.value | number }} <small class="db-card-curr">ج.م</small>
+          {{ stat.value | number }}<small class="db-kpi-curr">ج.م</small>
           } @else {
           {{ stat.value | number }}
           }
         </h3>
-        <div class="db-card-today">
+        <div class="db-kpi-delta">
           <i class="fa-solid fa-arrow-trend-up"></i>
-          <span>
-            +{{ stat.valueToday | number }}
-            {{ stat.isCurrency ? 'ج.م' : '' }}
-            اليوم
-          </span>
+          <span>+{{ stat.valueToday | number }}{{ stat.isCurrency ? ' ج.م' : '' }} اليوم</span>
         </div>
       </div>
     </div>
     }
+    <!-- Bookings Today (local) -->
+    <div class="db-kpi-card">
+      <div class="db-kpi-icon" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%)">
+        <i class="fa-solid fa-calendar-day"></i>
+      </div>
+      <div class="db-kpi-body">
+        <p class="db-kpi-label">حجوزات اليوم</p>
+        <h3 class="db-kpi-value">1,392</h3>
+        <div class="db-kpi-delta">
+          <i class="fa-solid fa-arrow-trend-up"></i>
+          <span>94% معدل الحضور</span>
+        </div>
+      </div>
+    </div>
   </div>
-  }
+
+  <!-- ══════════ CHARTS ROW ══════════ -->
+  <div class="db-charts-row">
+
+    <!-- Revenue Bar Chart — Canvas -->
+    <div class="db-chart-card">
+      <div class="db-chart-header">
+        <div>
+          <div class="db-sec-title">الإيرادات الشهرية</div>
+          <div class="db-sec-sub">آخر 8 أشهر — بالآلاف (ج.م)</div>
+        </div>
+        <div class="db-pill-toggle">
+          <button class="db-ptoggle-btn active" (click)="setRevView('month', $event)">شهري</button>
+          <button class="db-ptoggle-btn" (click)="setRevView('week', $event)">أسبوعي</button>
+        </div>
+      </div>
+      <div class="db-bar-canvas-wrap">
+        <canvas #barCanvas class="db-bar-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Donut Chart — Canvas -->
+    <div class="db-chart-card db-chart-card--sm">
+      <div class="db-sec-title" style="margin-bottom:4px">توزيع التخصصات</div>
+      <div class="db-donut-wrap">
+        <canvas #donutCanvas class="db-donut-canvas"></canvas>
+        <div class="db-donut-center">
+          <span class="db-donut-total">284</span>
+          <span class="db-donut-lbl">طبيب</span>
+        </div>
+      </div>
+      <div class="db-donut-legend">
+        @for (item of specialties; track item.label) {
+        <div class="db-legend-row">
+          <span class="db-legend-dot" [style.background]="item.color"></span>
+          <span class="db-legend-name">{{ item.label }}</span>
+          <span class="db-legend-pct">{{ item.pct }}%</span>
+        </div>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════ BOTTOM ROW ══════════ -->
+  <div class="db-bottom-row">
+
+    <!-- Recent Bookings -->
+    <div class="db-table-card">
+      <div class="db-table-header">
+        <div class="db-sec-title" style="margin:0">آخر الحجوزات</div>
+        <span class="db-badge-count">{{ recentBookings.length }}</span>
+      </div>
+      <div class="db-booking-list">
+        @for (b of recentBookings; track b.id) {
+        <div class="db-booking-row">
+          <div class="db-booking-avatar">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div class="db-booking-info">
+            <div class="db-booking-name">{{ b.patient }} ← {{ b.doctor }}</div>
+            <div class="db-booking-time">
+              <i class="fa-regular fa-clock"></i> {{ b.time }}
+            </div>
+          </div>
+          <span class="db-status-badge" [ngClass]="b.statusClass">{{ b.status }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="db-table-card db-activity-card">
+      <div class="db-table-header">
+        <div class="db-act-header-left">
+          <div class="db-sec-title" style="margin:0">سجل النشاط</div>
+          <span class="db-act-live-dot"></span>
+          <span class="db-act-live-text">مباشر</span>
+        </div>
+        <span class="db-time-hint"><i class="fa-regular fa-clock"></i> آخر 24 ساعة</span>
+      </div>
+      <div class="db-activity-timeline">
+        @for (act of activityLog; track act.id; let last = $last) {
+        <div class="db-act-item" [attr.data-index]="$index">
+          <!-- timeline track -->
+          <div class="db-act-track">
+            <div class="db-act-node"
+                 [style.background]="act.nodeColor"
+                 [style.box-shadow]="'0 0 0 3px ' + act.bgColor + ', 0 4px 14px ' + act.nodeColor + '55'">
+              <i class="fa-solid" [ngClass]="act.icon"></i>
+            </div>
+            @if (!last) {
+              <div class="db-act-line" [style.background]="'linear-gradient(180deg,' + act.nodeColor + '40 0%, rgba(255,255,255,.04) 100%)'"></div>
+            }
+          </div>
+          <!-- content -->
+          <div class="db-act-content" [style.border-color]="act.bgColor" [style.background]="act.bgColor">
+            <div class="db-act-top">
+              <span class="db-act-text">{{ act.text }}</span>
+              <span class="db-activity-type" [ngClass]="act.typeClass">{{ act.typeLabel }}</span>
+            </div>
+            <div class="db-act-meta">
+              <i class="fa-regular fa-clock" [style.color]="act.nodeColor"></i>
+              <span>{{ act.time }}</span>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+    
+  </div>
+
+  } <!-- end @else -->
 
 </div>

@@ -74,115 +74,6 @@
   }
 }
 
-/* ── KPI stat cards ── */
-.au-kpi-card {
-  background: var(--surface, #111827);
-  border-radius: 18px;
-  border: 1.5px solid var(--border, #1E2D42);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  min-width: 150px;
-  cursor: pointer;
-  text-align: start;
-  box-shadow: 0 1px 4px rgba(0,0,0,.15);
-  transition: transform .22s cubic-bezier(.34,1.56,.64,1),
-              box-shadow .22s ease,
-              border-color .2s;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0,0,0,.3);
-    border-color: var(--border2, #243347);
-  }
-
-  &--active {
-    border-color: var(--main-color, #1db17a) !important;
-    background: var(--primarysoft, rgba(29,177,122,.08));
-    box-shadow: 0 6px 20px rgba(29,177,122,.2) !important;
-  }
-}
-
-.au-kpi-icon {
-  width: 50px; height: 50px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 21px;
-  flex-shrink: 0;
-
-  &--total    { background: var(--primarysoft, rgba(29,177,122,.12));        color: var(--main-color, #1db17a); }
-  &--admin    { background: rgba(167,139,250,.12);                            color: var(--purple, #A78BFA); }
-  &--editor   { background: rgba(20,184,166,.12);                             color: var(--teal, #14B8A6); }
-  &--sales    { background: var(--greensoft, rgba(34,197,94,.12));            color: var(--green, #22C55E); }
-  &--marketing{ background: var(--ambersoft, rgba(245,158,11,.12));           color: var(--amber, #F59E0B); }
-}
-
-.au-kpi-body   { display: flex; flex-direction: column; gap: 2px; }
-.au-kpi-num    { font-size: 28px; font-weight: 900; color: var(--txt, #E8F0FE); line-height: 1; letter-spacing: -1.5px; }
-.au-kpi-lbl    { font-size: 12px; color: var(--textsub, #7B91B0); font-weight: 500; }
-
-/* ── Search bar ── */
-.au-search-wrap {
-  position: relative;
-  max-width: 540px;
-}
-
-.au-search-ico {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--textmuted, #3D5068);
-  font-size: 15px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.au-search-input {
-  width: 100%;
-  padding: 12px 42px 12px 42px;
-  border-radius: 14px;
-  border: 1.5px solid var(--border, #1E2D42);
-  background: var(--surface2, #1A2235);
-  font-size: 14px;
-  color: var(--txt, #E8F0FE);
-  font-family: inherit;
-  direction: rtl;
-  box-shadow: 0 1px 4px rgba(0,0,0,.15);
-  transition: border-color .15s, box-shadow .18s;
-
-  &::placeholder { color: var(--textmuted, #3D5068); font-size: 13px; }
-
-  &:focus {
-    outline: none;
-    border-color: var(--main-color, #1db17a);
-    box-shadow: 0 0 0 3px rgba(29,177,122,.15), 0 2px 8px rgba(0,0,0,.2);
-  }
-}
-
-.au-search-clear {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: none;
-  background: var(--surface3, #1F2A3C);
-  color: var(--textsub, #7B91B0);
-  border-radius: 50%;
-  width: 22px; height: 22px;
-  font-size: 11px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .12s, color .12s;
-
-  &:hover { background: var(--border, #1E2D42); color: var(--txt, #E8F0FE); }
-}
-
 /* ── Skeleton loading cards ── */
 .au-skeleton {
   height: 260px;
@@ -196,22 +87,6 @@
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-/* ── Empty state ── */
-.au-empty-icon {
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  background: var(--surface2, #1A2235);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  color: var(--textmuted, #3D5068);
-  box-shadow: 0 4px 16px rgba(0,0,0,.2);
-}
-
-.au-empty-title { font-size: 20px; font-weight: 700; color: var(--txt, #E8F0FE); margin: 0 0 6px; }
-.au-empty-sub   { font-size: 14px; color: var(--textsub, #7B91B0); margin: 0; }
 
 /* ═══════════════════════════════════════
    USER CARD

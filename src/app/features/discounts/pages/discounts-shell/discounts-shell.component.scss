@@ -1,0 +1,18 @@
+.disc-page {
+  padding: 24px 20px;
+  min-height: 100%;
+}
+
+.disc-header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--main-color), var(--teal));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(29, 177, 122, 0.35);
+}

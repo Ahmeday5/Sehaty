@@ -1,0 +1,117 @@
+<div class="al-page" dir="rtl">
+
+  <!-- header -->
+  <div class="page-header">
+    <div class="d-flex align-items-center gap-2">
+      <h1 class="page-title mb-0">الحجوزات</h1>
+      @if (!loading() && filteredAppointments.length > 0) {
+        <span class="al-count">{{ filteredAppointments.length }} حجز</span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  @if (!loading() && allAppointments.length > 0) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  }
+
+  <!-- toolbar -->
+  <div class="al-toolbar">
+    <!-- search -->
+    <div class="al-search">
+      <i class="fa-solid fa-magnifying-glass al-search__icon"></i>
+      <input class="al-search__input"
+             type="search"
+             placeholder="بحث بالمريض أو الطبيب أو رقم الحجز..."
+             [(ngModel)]="searchValue"
+             (ngModelChange)="onSearch($event)">
+    </div>
+
+    <!-- status filter -->
+    <select class="al-select" [ngModel]="statusFilter()" (ngModelChange)="onStatusChange($event)">
+      @for (opt of STATUS_OPTIONS; track opt.value) {
+        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- content -->
+  @if (loading()) {
+    <div class="al-spinner">
+      <div class="al-spinner-ring"></div>
+      <p class="al-spinner-txt">جاري تحميل الحجوزات...</p>
+    </div>
+  } @else if (displayed().length === 0) {
+    <app-empty-state
+      icon="fa-calendar-xmark"
+      title="لا توجد حجوزات"
+      [message]="searchValue || statusFilter() ? 'جرّب تعديل معايير البحث أو الفلتر' : 'لا توجد حجوزات حتى الآن'">
+    </app-empty-state>
+  } @else {
+    <div class="al-table-wrap">
+      <table class="al-table">
+        <thead>
+          <tr>
+            <th>رقم الحجز</th>
+            <th>المريض</th>
+            <th>الطبيب</th>
+            <th>التخصص</th>
+            <th>الموعد</th>
+            <th>الرسوم</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (appt of displayed(); track appt.id) {
+            <tr>
+              <td class="al-td-num" dir="ltr">{{ appt.bookingNumber }}</td>
+              <td class="al-td-bold">{{ appt.patientName }}</td>
+              <td class="al-td-sub">{{ appt.doctorName }}</td>
+              <td>
+                <app-stat-badge [label]="appt.specialization" variant="blue"></app-stat-badge>
+              </td>
+              <td class="al-td-sub al-td-date">
+                <i class="fa-regular fa-clock"></i>
+                {{ appt.appointmentDate }} — {{ appt.appointmentTime }}
+              </td>
+              <td class="al-td-fees">{{ appt.fees | number }} ج.م</td>
+              <td>
+                <app-stat-badge
+                  [label]="statusLabelOf(appt.status)"
+                  [variant]="statusVariantOf(appt.status)"
+                  [dot]="true">
+                </app-stat-badge>
+              </td>
+              <td>
+                <div class="al-actions">
+                  <button class="al-btn al-btn--view" title="عرض التفاصيل">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+                  @if (appt.status !== 'Cancelled' && appt.status !== 'Completed') {
+                    <button class="al-btn al-btn--cancel" title="إلغاء الحجز"
+                            (click)="onCancel(appt)">
+                      <i class="fa-solid fa-ban"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  }
+
+</div>

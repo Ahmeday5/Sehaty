@@ -1,0 +1,53 @@
+// Only what Bootstrap can't do
+.kpi-card--active {
+  border-color: var(--main-color) !important;
+  box-shadow: 0 0 0 2px rgba(29, 177, 122, 0.2), var(--shadow-md);
+}
+
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+
+  &--default  { background: var(--surface3);                      color: var(--txt2); }
+  &--primary  { background: var(--main-light, rgba(29,177,122,.12)); color: var(--main-color); }
+  &--amber    { background: var(--ambersoft);                      color: var(--amber); }
+  &--green    { background: var(--greensoft);                      color: var(--green); }
+  &--red      { background: var(--redsoft);                        color: var(--red); }
+  &--blue     { background: var(--bluesoft);                       color: var(--blue); }
+  &--purple   { background: var(--purplesoft);                     color: var(--purple); }
+}
+
+.kpi-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--txt);
+  line-height: 1.2;
+}
+
+.kpi-lbl {
+  font-size: 0.75rem;
+  color: var(--txt3);
+  white-space: nowrap;
+}
+
+// variant right border accents
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  &:hover { transform: translateY(-2px); }
+}
+
+.kpi-border--primary { border-right: 3px solid var(--main-color); }
+.kpi-border--amber   { border-right: 3px solid var(--amber); }
+.kpi-border--green   { border-right: 3px solid var(--green); }
+.kpi-border--red     { border-right: 3px solid var(--red); }
+.kpi-border--blue    { border-right: 3px solid var(--blue); }
+.kpi-border--purple  { border-right: 3px solid var(--purple); }
+.kpi-border--default { border-right: 3px solid var(--border); }
+
+.cursor-pointer { cursor: pointer; }

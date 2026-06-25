@@ -1,0 +1,139 @@
+<div class="row g-4 fade-in">
+
+  <div class="col-12 col-lg-7">
+    <div class="card h-100">
+      <div class="card-header apply-header">
+        <div class="d-flex align-items-center gap-2">
+          <span class="apply-header__icon"><i class="fa-solid fa-calendar-check"></i></span>
+          <span class="fw-bold">تطبيق خصم على مواعيد طبيب</span>
+        </div>
+      </div>
+      <div class="card-body d-flex flex-column gap-3 p-4">
+
+        <div>
+          <label class="apply-label">الطبيب</label>
+          @if (loadingDoctors()) {
+            <div class="apply-loading">
+              <span class="spinner-border spinner-border-sm"></span>
+              <span>جاري تحميل الأطباء...</span>
+            </div>
+          } @else {
+            <select class="form-select" [ngModel]="doctorId()" (ngModelChange)="doctorId.set($event)">
+              <option value="">— اختر الطبيب —</option>
+              @for (doc of doctors(); track doc.id) {
+                <option [value]="doc.id">{{ doc.name }} — {{ doc.specialization }}</option>
+              }
+            </select>
+          }
+        </div>
+
+        <div>
+          <label class="apply-label">التاريخ</label>
+          <input class="form-control" type="date" [ngModel]="date()" (ngModelChange)="date.set($event)">
+        </div>
+
+        <div>
+          <label class="apply-label">نسبة الخصم %</label>
+          <input class="form-control" type="number" min="1" max="100"
+                 [ngModel]="discountPercentage()" (ngModelChange)="discountPercentage.set($event)" placeholder="مثال: 20">
+          <div class="d-flex flex-wrap gap-2 mt-2">
+            @for (chip of quickChips; track chip) {
+              <button class="apply-chip"
+                      [class.apply-chip--active]="discountPercentage() === chip.toString()"
+                      (click)="setChip(chip)">
+                {{ chip }}%
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="apply-info-note">
+          <i class="fa-solid fa-circle-info"></i>
+          قد تظهر رسالة &quot;لا توجد مواعيد متاحة&quot; إذا لم يكن للطبيب مواعيد في هذا التاريخ.
+        </div>
+
+      </div>
+      <div class="card-footer p-3">
+        <button class="btn-primary-action w-100 justify-content-center"
+                (click)="onApply()" [disabled]="applying() || loadingDoctors()">
+          @if (applying()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="fa-solid fa-check"></i>
+          }
+          تطبيق الخصم
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-5 d-flex flex-column gap-3">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="fw-bold" style="font-size:0.875rem">
+          <i class="fa-solid fa-clock text-muted me-1"></i>
+          معاينة المواعيد
+        </span>
+      </div>
+      <div class="card-body p-3">
+        @if (!showSlots()) {
+          <div class="apply-empty">
+            <i class="fa-regular fa-calendar-days"></i>
+            <p>اختر طبيباً وتاريخاً لعرض المواعيد</p>
+          </div>
+        } @else {
+          <div class="d-flex flex-column gap-2">
+            <div class="apply-slot">
+              <span class="badge badge-green">09:00 ص</span>
+              <span class="text-muted" style="font-size:0.8rem">سيُطبَّق الخصم</span>
+            </div>
+            <div class="apply-slot">
+              <span class="badge badge-green">10:00 ص</span>
+              <span class="text-muted" style="font-size:0.8rem">سيُطبَّق الخصم</span>
+            </div>
+            <div class="apply-slot">
+              <span class="badge badge-green">11:00 ص</span>
+              <span class="text-muted" style="font-size:0.8rem">سيُطبَّق الخصم</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card flex-grow-1">
+      <div class="card-header">
+        <span class="fw-bold" style="font-size:0.875rem">
+          <i class="fa-solid fa-history text-muted me-1"></i>
+          آخر الخصومات المُطبَّقة
+        </span>
+      </div>
+      <div class="card-body p-3">
+        <div class="d-flex flex-column gap-2">
+          <div class="apply-slot">
+            <div>
+              <p class="mb-0 fw-semibold" style="font-size:0.85rem">د. أحمد سليم</p>
+              <p class="mb-0 text-muted" style="font-size:0.75rem">2025-06-20</p>
+            </div>
+            <span class="badge badge-amber">20%</span>
+          </div>
+          <div class="apply-slot">
+            <div>
+              <p class="mb-0 fw-semibold" style="font-size:0.85rem">د. سارة محمود</p>
+              <p class="mb-0 text-muted" style="font-size:0.75rem">2025-06-18</p>
+            </div>
+            <span class="badge badge-amber">15%</span>
+          </div>
+          <div class="apply-slot">
+            <div>
+              <p class="mb-0 fw-semibold" style="font-size:0.85rem">د. محمد عبدالله</p>
+              <p class="mb-0 text-muted" style="font-size:0.75rem">2025-06-15</p>
+            </div>
+            <span class="badge badge-amber">30%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

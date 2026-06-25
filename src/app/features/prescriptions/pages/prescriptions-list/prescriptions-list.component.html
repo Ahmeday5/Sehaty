@@ -1,0 +1,113 @@
+<div class="pl-page" dir="rtl">
+
+  <!-- header -->
+  <div class="page-header">
+    <div class="d-flex align-items-center gap-2">
+      <h1 class="page-title mb-0">الوصفات الطبية</h1>
+      @if (!loading() && filteredPrescriptions.length > 0) {
+        <span class="pl-count">{{ filteredPrescriptions.length }} وصفة</span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  @if (!loading() && allPrescriptions.length > 0) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  }
+
+  <!-- toolbar -->
+  <div class="pl-toolbar">
+    <div class="pl-search">
+      <i class="fa-solid fa-magnifying-glass pl-search__icon"></i>
+      <input class="pl-search__input"
+             type="search"
+             placeholder="بحث بالمريض أو الطبيب أو الدواء..."
+             [(ngModel)]="searchValue"
+             (ngModelChange)="onSearch($event)">
+    </div>
+    <select class="pl-select" [ngModel]="statusFilter()" (ngModelChange)="onStatusChange($event)">
+      @for (opt of STATUS_OPTIONS; track opt.value) {
+        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+      }
+    </select>
+    <select class="pl-select" [ngModel]="sourceFilter()" (ngModelChange)="onSourceChange($event)">
+      @for (opt of SOURCE_OPTIONS; track opt.value) {
+        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+      }
+    </select>
+  </div>
+
+  <!-- content -->
+  @if (loading()) {
+    <div class="pl-spinner">
+      <div class="pl-spinner-ring"></div>
+      <p class="pl-spinner-txt">جاري تحميل الوصفات...</p>
+    </div>
+  } @else if (displayed().length === 0) {
+    <app-empty-state
+      icon="fa-file-prescription"
+      title="لا توجد وصفات"
+      [message]="searchValue || statusFilter() || sourceFilter() ? 'جرّب تعديل معايير البحث أو الفلتر' : 'لا توجد وصفات طبية حتى الآن'">
+    </app-empty-state>
+  } @else {
+    <div class="pl-table-wrap">
+      <table class="pl-table">
+        <thead>
+          <tr>
+            <th>رقم الوصفة</th>
+            <th>المريض</th>
+            <th>الطبيب</th>
+            <th>الأدوية</th>
+            <th>الصيدلية</th>
+            <th>المصدر</th>
+            <th>الحالة</th>
+            <th>التاريخ</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (rx of displayed(); track rx.id) {
+            <tr>
+              <td class="pl-td-num" dir="ltr">{{ rx.prescriptionNumber }}</td>
+              <td class="pl-td-bold">{{ rx.patientName }}</td>
+              <td class="pl-td-sub">{{ rx.doctorName }}</td>
+              <td class="pl-td-meds">{{ rx.medications }}</td>
+              <td class="pl-td-sub">
+                <i class="fa-solid fa-prescription-bottle-medical pl-ph-icon"></i>
+                {{ rx.pharmacyName }}
+              </td>
+              <td>
+                <app-stat-badge
+                  [label]="sourceLabelOf(rx.source)"
+                  [variant]="sourceVariantOf(rx.source)">
+                </app-stat-badge>
+              </td>
+              <td>
+                <app-stat-badge
+                  [label]="statusLabelOf(rx.status)"
+                  [variant]="statusVariantOf(rx.status)"
+                  [dot]="true">
+                </app-stat-badge>
+              </td>
+              <td class="pl-td-sub pl-td-date">
+                <i class="fa-regular fa-calendar"></i>
+                {{ rx.createdAt }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  }
+
+</div>

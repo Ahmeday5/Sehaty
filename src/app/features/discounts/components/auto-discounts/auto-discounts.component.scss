@@ -1,0 +1,24 @@
+.auto-card {
+  border-radius: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  &:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+}
+
+.auto-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.auto-toggle {
+  width: 2.5rem;
+  height: 1.35rem;
+  cursor: pointer;
+  background-color: var(--surface3);
+  border-color: var(--border);
+
+  &:checked {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+  }
+  &:focus { box-shadow: 0 0 0 3px rgba(29, 177, 122, 0.2); }
+}

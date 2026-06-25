@@ -61,19 +61,13 @@
        Empty State
        ════════════════════════════════ -->
   @if (!loading() && advertisements().length === 0) {
-    <div class="ad-empty d-flex flex-column align-items-center justify-content-center gap-3 py-5">
-      <div class="ad-empty-icon">
-        <i class="fa-solid fa-rectangle-ad"></i>
-      </div>
-      <div class="text-center">
-        <h3 class="ad-empty-title">لا توجد إعلانات</h3>
-        <p class="ad-empty-sub">لم يتم إضافة أي إعلانات حتى الآن</p>
-      </div>
-      <button type="button" class="ad-btn ad-btn--add" (click)="openModal()">
-        <i class="fa-solid fa-plus"></i>
-        إضافة أول إعلان
-      </button>
-    </div>
+    <app-empty-state
+      icon="fa-rectangle-ad"
+      title="لا توجد إعلانات"
+      message="لم يتم إضافة أي إعلانات حتى الآن"
+      actionLabel="إضافة أول إعلان"
+      (actionClick)="openModal()">
+    </app-empty-state>
   }
 
   <!-- ════════════════════════════════

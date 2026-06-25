@@ -22,91 +22,17 @@
 
   <!-- ── KPI strip ── -->
   @if (!loading() && totalCount > 0) {
-    <div class="ad-kpi-strip">
-      <div class="ad-kpi ad-kpi--total">
-        <div class="ad-kpi-icon">
-          <i class="fa-solid fa-user-doctor"></i>
-        </div>
-        <div class="ad-kpi-body">
-          <p class="ad-kpi-val">{{ totalCount }}</p>
-          <p class="ad-kpi-lbl">إجمالي الأطباء</p>
-        </div>
-      </div>
-      <div class="ad-kpi ad-kpi--active">
-        <div class="ad-kpi-icon">
-          <i class="fa-solid fa-circle-check"></i>
-        </div>
-        <div class="ad-kpi-body">
-          <p class="ad-kpi-val">{{ activeCount }}</p>
-          <p class="ad-kpi-lbl">أطباء نشطون</p>
-        </div>
-      </div>
-      <div class="ad-kpi ad-kpi--inactive">
-        <div class="ad-kpi-icon">
-          <i class="fa-solid fa-circle-xmark"></i>
-        </div>
-        <div class="ad-kpi-body">
-          <p class="ad-kpi-val">{{ inactiveCount }}</p>
-          <p class="ad-kpi-lbl">أطباء معطّلون</p>
-        </div>
-      </div>
-      <div class="ad-kpi ad-kpi--spec">
-        <div class="ad-kpi-icon">
-          <i class="fa-solid fa-stethoscope"></i>
-        </div>
-        <div class="ad-kpi-body">
-          <p class="ad-kpi-val">{{ specialities().length }}</p>
-          <p class="ad-kpi-lbl">التخصصات</p>
-        </div>
-      </div>
-    </div>
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
   }
 
-  <!-- ── Toolbar ── -->
-  <div class="ad-toolbar">
-
-    <!-- Search -->
-    <div class="ad-search-wrap">
-      <i class="fa-solid fa-magnifying-glass ad-search-icon"></i>
-      <input class="ad-search" type="search" placeholder="ابحث باسم الطبيب..."
-             [(ngModel)]="searchValue" (ngModelChange)="onSearch($event)">
-      @if (searchValue) {
-        <button class="ad-search-clear" (click)="searchValue=''; onSearch('')" type="button">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      }
-    </div>
-
-    <!-- Filters with scroll arrows -->
-    <div class="ad-filter-row">
-      @if (specialities().length > 3) {
-        <button class="ad-filter-arrow" type="button" (click)="scrollFilters(1)"
-                aria-label="التالي">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-      }
-      <div class="ad-filters" #filterWrap>
-        <button class="ad-pill" [class.ad-pill--on]="selectedFilter() === null"
-                (click)="onFilterClick(null)" type="button">
-          <i class="fa-solid fa-border-all"></i>
-          الكل
-        </button>
-        @for (s of specialities(); track s.id) {
-          <button class="ad-pill" [class.ad-pill--on]="selectedFilter() === s.name"
-                  (click)="onFilterClick(s.name)" type="button">
-            {{ s.name }}
-          </button>
-        }
-      </div>
-      @if (specialities().length > 3) {
-        <button class="ad-filter-arrow" type="button" (click)="scrollFilters(-1)"
-                aria-label="السابق">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-      }
-    </div>
-
-  </div>
+  <!-- ── Search + Filter bar ── -->
+  <app-search-filter-bar
+    [placeholder]="'بحث عن طبيب...'"
+    [filterOptions]="filterOpts()"
+    [selectedFilter]="selectedFilter()"
+    (searchChange)="onSearch($event)"
+    (filterChange)="onFilterChange($event)">
+  </app-search-filter-bar>
 
   <!-- ── Content ── -->
   @if (loading()) {
@@ -115,30 +41,23 @@
       <p class="ad-spinner-txt">جاري تحميل الأطباء...</p>
     </div>
   } @else if (displayed().length === 0) {
-    <div class="ad-empty">
-      <div class="ad-empty-icon">
-        <i class="fa-solid fa-user-doctor"></i>
-      </div>
-      <h3 class="ad-empty-title">
-        @if (searchValue || selectedFilter()) { لا توجد نتائج }
-        @else { لا يوجد أطباء بعد }
-      </h3>
-      <p class="ad-empty-sub">
-        @if (searchValue || selectedFilter()) {
-          جرّب تعديل معايير البحث أو الفلتر المحدد
-        } @else {
-          ابدأ بإضافة أول طبيب إلى المنصة
-        }
-      </p>
-      @if (!searchValue && !selectedFilter()) {
-        <button class="btn-primary-action" (click)="openAdd()">
-          <i class="fa-solid fa-user-plus"></i>
-          إضافة طبيب
-        </button>
-      }
-    </div>
+    @if (searchValue || selectedFilter()) {
+      <app-empty-state
+        icon="fa-magnifying-glass"
+        title="لا توجد نتائج"
+        message="جرّب تعديل معايير البحث أو الفلتر المحدد">
+      </app-empty-state>
+    } @else {
+      <app-empty-state
+        icon="fa-user-doctor"
+        title="لا يوجد أطباء"
+        message="ابدأ بإضافة أول طبيب إلى المنصة"
+        actionLabel="إضافة طبيب"
+        (actionClick)="openAdd()">
+      </app-empty-state>
+    }
   } @else {
-    <div class="ad-grid">
+    <div class="ad-grid mt-3">
       @for (doctor of displayed(); track doctor.id) {
         <app-doctor-card
           [doctor]="doctor"

@@ -1,0 +1,85 @@
+.cpn-code {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--ambersoft);
+  color: var(--amber);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-family: "Courier New", monospace;
+  border: 1px dashed rgba(245, 158, 11, 0.4);
+}
+
+.cpn-progress {
+  height: 5px;
+  border-radius: 4px;
+  background: var(--surface3);
+}
+
+.cpn-icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &--edit { color: var(--teal); &:hover { background: var(--tealsoft); border-color: var(--teal); } }
+  &--del  { color: var(--red);  &:hover { background: var(--redsoft);  border-color: var(--red);  } }
+}
+
+.cpn-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--txt2);
+  margin-bottom: 6px;
+}
+
+.cpn-preview {
+  border-radius: 14px;
+  border: 2px dashed var(--border2);
+  overflow: hidden;
+  background: var(--surface2);
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, var(--main-color), var(--teal));
+  }
+
+  &__code {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 1px;
+    font-family: "Courier New", monospace;
+  }
+
+  &__value {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+  }
+
+  &__divider { height: 1px; background: var(--border); }
+
+  &__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 20px;
+    font-size: 0.8rem;
+    color: var(--txt3);
+
+    i { color: var(--txt4); }
+  }
+}

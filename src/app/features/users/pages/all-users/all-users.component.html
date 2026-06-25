@@ -27,84 +27,26 @@
        KPI Stats Strip
        ══════════════════════════════════ -->
   @if (!loading() && totalCount > 0) {
-    <div class="d-flex flex-wrap gap-3 mb-4">
-
-      <button type="button" class="au-kpi-card flex-fill"
-              [class.au-kpi-card--active]="selectedRole() === null"
-              (click)="onRoleFilter(null)">
-        <div class="au-kpi-icon au-kpi-icon--total">
-          <i class="fa-solid fa-users"></i>
-        </div>
-        <div class="au-kpi-body">
-          <span class="au-kpi-num">{{ totalCount }}</span>
-          <span class="au-kpi-lbl">إجمالي المستخدمين</span>
-        </div>
-      </button>
-
-      <button type="button" class="au-kpi-card flex-fill"
-              [class.au-kpi-card--active]="selectedRole() === 'Admin'"
-              (click)="onRoleFilter('Admin')">
-        <div class="au-kpi-icon au-kpi-icon--admin">
-          <i class="fa-solid fa-user-shield"></i>
-        </div>
-        <div class="au-kpi-body">
-          <span class="au-kpi-num">{{ adminCount }}</span>
-          <span class="au-kpi-lbl">المديرون</span>
-        </div>
-      </button>
-
-      <button type="button" class="au-kpi-card flex-fill"
-              [class.au-kpi-card--active]="selectedRole() === 'Editor'"
-              (click)="onRoleFilter('Editor')">
-        <div class="au-kpi-icon au-kpi-icon--editor">
-          <i class="fa-solid fa-pen-nib"></i>
-        </div>
-        <div class="au-kpi-body">
-          <span class="au-kpi-num">{{ editorCount }}</span>
-          <span class="au-kpi-lbl">المحررون</span>
-        </div>
-      </button>
-
-      <button type="button" class="au-kpi-card flex-fill"
-              [class.au-kpi-card--active]="selectedRole() === 'Sales'"
-              (click)="onRoleFilter('Sales')">
-        <div class="au-kpi-icon au-kpi-icon--sales">
-          <i class="fa-solid fa-chart-line"></i>
-        </div>
-        <div class="au-kpi-body">
-          <span class="au-kpi-num">{{ salesCount }}</span>
-          <span class="au-kpi-lbl">المبيعات</span>
-        </div>
-      </button>
-
-      <button type="button" class="au-kpi-card flex-fill"
-              [class.au-kpi-card--active]="selectedRole() === 'Marketing'"
-              (click)="onRoleFilter('Marketing')">
-        <div class="au-kpi-icon au-kpi-icon--marketing">
-          <i class="fa-solid fa-bullhorn"></i>
-        </div>
-        <div class="au-kpi-body">
-          <span class="au-kpi-num">{{ marketingCount }}</span>
-          <span class="au-kpi-lbl">التسويق</span>
-        </div>
-      </button>
-
+    <div class="mb-4">
+      <app-kpi-strip
+        [items]="kpiItems()"
+        [clickable]="true"
+        (itemClick)="onKpiClick($event)">
+      </app-kpi-strip>
     </div>
   }
 
   <!-- ══════════════════════════════════
-       Search Bar
+       Search + Filter Bar
        ══════════════════════════════════ -->
-  <div class="au-search-wrap mb-4">
-    <i class="fa-solid fa-magnifying-glass au-search-ico"></i>
-    <input type="text" class="au-search-input"
-           placeholder="البحث بالاسم أو البريد الإلكتروني أو رقم الهاتف..."
-           [(ngModel)]="searchValue" (ngModelChange)="onSearch($event)">
-    @if (searchValue) {
-      <button type="button" class="au-search-clear" (click)="searchValue = ''; onSearch('')">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    }
+  <div class="mb-4">
+    <app-search-filter-bar
+      placeholder="بحث عن مستخدم..."
+      [filterOptions]="filterOpts"
+      [selectedFilter]="selectedRole()"
+      (searchChange)="onSearch($event)"
+      (filterChange)="onRoleFilter($event)">
+    </app-search-filter-bar>
   </div>
 
   <!-- ══════════════════════════════════
@@ -124,22 +66,13 @@
        Empty State
        ══════════════════════════════════ -->
   @if (!loading() && displayed().length === 0) {
-    <div class="au-empty d-flex flex-column align-items-center justify-content-center py-5 gap-3">
-      <div class="au-empty-icon">
-        <i class="fa-solid fa-users-slash"></i>
-      </div>
-      <div class="text-center">
-        <h3 class="au-empty-title">لا يوجد مستخدمون</h3>
-        <p class="au-empty-sub">لم يتم العثور على مستخدمين مطابقين للبحث أو الفلتر المحدد</p>
-      </div>
-      @if (selectedRole() || searchValue) {
-        <button type="button" class="au-btn au-btn--refresh"
-                (click)="selectedRole.set(null); searchValue = ''; onSearch('')">
-          <i class="fa-solid fa-filter-circle-xmark"></i>
-          إلغاء الفلتر
-        </button>
-      }
-    </div>
+    <app-empty-state
+      icon="fa-users"
+      title="لا يوجد مستخدمون"
+      message="لم يتم العثور على مستخدمين مطابقين للبحث أو الفلتر المحدد"
+      actionLabel="إضافة مستخدم"
+      (actionClick)="openAdd()">
+    </app-empty-state>
   }
 
   <!-- ══════════════════════════════════

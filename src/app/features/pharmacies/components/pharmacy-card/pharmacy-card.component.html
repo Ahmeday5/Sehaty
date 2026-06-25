@@ -1,0 +1,89 @@
+<article class="pc" [class.pc--inactive]="!pharmacy().isActive" dir="rtl">
+
+  <!-- accent stripe via ::before in SCSS -->
+
+  <!-- top bar: status + rating -->
+  <div class="pc-top">
+    <span class="pc-status" [class.pc-status--on]="pharmacy().isActive">
+      <span class="pc-status-dot"></span>
+      {{ pharmacy().isActive ? 'نشط' : 'معطّل' }}
+    </span>
+    @if (pharmacy().rating) {
+      <span class="pc-rating">
+        <i class="fa-solid fa-star"></i>
+        {{ pharmacy().rating | number:'1.1-1' }}
+      </span>
+    }
+  </div>
+
+  <!-- avatar -->
+  <div class="pc-avatar-wrap">
+    @if (pharmacy().pharmacyImage) {
+      <img class="pc-avatar" [src]="pharmacy().pharmacyImage!" [alt]="pharmacy().name">
+    } @else {
+      <div class="pc-avatar pc-avatar--placeholder">
+        <i class="fa-solid fa-prescription-bottle-medical"></i>
+      </div>
+    }
+  </div>
+
+  <!-- identity -->
+  <div class="pc-identity">
+    <h3 class="pc-name">{{ pharmacy().name }}</h3>
+    <p class="pc-owner">
+      <i class="fa-solid fa-user-tie"></i>
+      {{ pharmacy().ownerName }}
+    </p>
+  </div>
+
+  <!-- stats -->
+  <div class="pc-stats">
+    <div class="pc-stat">
+      <div class="pc-stat-icon pc-stat-icon--teal">
+        <i class="fa-solid fa-file-prescription"></i>
+      </div>
+      <div class="pc-stat-body">
+        <strong>{{ pharmacy().prescriptionsCount }}</strong>
+        <span>وصفة</span>
+      </div>
+    </div>
+    <div class="pc-stat-div"></div>
+    <div class="pc-stat">
+      <div class="pc-stat-icon pc-stat-icon--blue">
+        <i class="fa-solid fa-phone"></i>
+      </div>
+      <div class="pc-stat-body">
+        <strong>{{ pharmacy().phone }}</strong>
+        <span>التواصل</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- address -->
+  <div class="pc-address">
+    <i class="fa-solid fa-location-dot"></i>
+    <span>{{ pharmacy().address }}</span>
+  </div>
+
+  <!-- actions -->
+  <div class="pc-actions">
+    <button class="pc-action pc-action--edit" (click)="edit.emit(pharmacy())" title="تعديل">
+      <i class="fa-solid fa-pen-to-square"></i>
+      <span>تعديل</span>
+    </button>
+    <button
+      class="pc-action"
+      [class.pc-action--activate]="!pharmacy().isActive"
+      [class.pc-action--deactivate]="pharmacy().isActive"
+      (click)="toggleActive.emit(pharmacy())"
+      [title]="pharmacy().isActive ? 'تعطيل' : 'تفعيل'">
+      <i class="fa-solid" [class.fa-toggle-on]="pharmacy().isActive" [class.fa-toggle-off]="!pharmacy().isActive"></i>
+      <span>{{ pharmacy().isActive ? 'تعطيل' : 'تفعيل' }}</span>
+    </button>
+    <button class="pc-action pc-action--delete" (click)="delete.emit(pharmacy())" title="حذف">
+      <i class="fa-solid fa-trash-can"></i>
+      <span>حذف</span>
+    </button>
+  </div>
+
+</article>

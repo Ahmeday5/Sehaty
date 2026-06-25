@@ -2,18 +2,24 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { UsersService } from '../../services/users.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { FormErrorComponent } from '../../../../shared/components/form-error/form-error.component';
+import { KpiStripComponent } from '../../../../shared/components/kpi-strip/kpi-strip.component';
+import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
+import { FilterOption } from '../../../../shared/components/search-filter-bar/search-filter-bar.model';
 import { Employee } from '../../models/user.model';
 
 const ROLES_AR: Record<string, string> = {
@@ -28,7 +34,17 @@ const PER_PAGE = 12;
 @Component({
   selector: 'app-all-users',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, PaginationComponent, ModalComponent, FormErrorComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    PaginationComponent,
+    ModalComponent,
+    FormErrorComponent,
+    KpiStripComponent,
+    EmptyStateComponent,
+    SearchFilterBarComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './all-users.component.html',
   styleUrl:    './all-users.component.scss',
@@ -38,7 +54,6 @@ export class AllUsersComponent implements OnInit {
   private readonly toast   = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
   private readonly fb      = inject(FormBuilder);
-  private readonly search$ = new Subject<string>();
 
   protected readonly loading      = signal(false);
   protected readonly submitting   = signal(false);
@@ -50,15 +65,23 @@ export class AllUsersComponent implements OnInit {
   protected readonly totalPages   = signal(0);
   protected readonly displayed    = signal<Employee[]>([]);
 
-  protected searchValue = '';
   protected addForm!: FormGroup;
 
   private imageFile: File | null = null;
   private all:      Employee[] = [];
   private filtered: Employee[] = [];
+  private currentQuery = '';
 
   readonly ROLES_AR  = ROLES_AR;
   readonly ROLE_KEYS = Object.keys(ROLES_AR);
+
+  readonly filterOpts: FilterOption[] = [
+    { id: null,        label: 'الكل' },
+    { id: 'Admin',     label: 'مدير' },
+    { id: 'Editor',    label: 'محرر' },
+    { id: 'Sales',     label: 'مبيعات' },
+    { id: 'Marketing', label: 'تسويق' },
+  ];
 
   protected get totalCount():     number { return this.all.length; }
   protected get adminCount():     number { return this.all.filter((u) => (u.roles as string[])?.includes('Admin')).length; }
@@ -66,19 +89,71 @@ export class AllUsersComponent implements OnInit {
   protected get salesCount():     number { return this.all.filter((u) => (u.roles as string[])?.includes('Sales')).length; }
   protected get marketingCount(): number { return this.all.filter((u) => (u.roles as string[])?.includes('Marketing')).length; }
 
+  protected readonly kpiItems = computed<KpiItem[]>(() => [
+    {
+      icon:    'fa-users',
+      value:   String(this.totalCount),
+      label:   'إجمالي المستخدمين',
+      variant: 'primary',
+      active:  this.selectedRole() === null,
+    },
+    {
+      icon:    'fa-user-shield',
+      value:   String(this.adminCount),
+      label:   'المديرون',
+      variant: 'red',
+      active:  this.selectedRole() === 'Admin',
+    },
+    {
+      icon:    'fa-pen-nib',
+      value:   String(this.editorCount),
+      label:   'المحررون',
+      variant: 'blue',
+      active:  this.selectedRole() === 'Editor',
+    },
+    {
+      icon:    'fa-chart-line',
+      value:   String(this.salesCount),
+      label:   'المبيعات',
+      variant: 'amber',
+      active:  this.selectedRole() === 'Sales',
+    },
+    {
+      icon:    'fa-bullhorn',
+      value:   String(this.marketingCount),
+      label:   'التسويق',
+      variant: 'purple',
+      active:  this.selectedRole() === 'Marketing',
+    },
+  ]);
+
   ngOnInit(): void {
     this.buildForm();
     this.load();
-    this.search$
-      .pipe(debounceTime(250), distinctUntilChanged())
-      .subscribe((q) => this.applyFilters(q, this.selectedRole()));
   }
 
-  protected onSearch(q: string): void { this.search$.next(q); }
+  protected onSearch(q: string): void {
+    this.currentQuery = q;
+    this.applyFilters(q, this.selectedRole());
+  }
 
-  protected onRoleFilter(role: string | null): void {
-    this.selectedRole.set(role);
-    this.applyFilters(this.searchValue, role);
+  protected onRoleFilter(id: string | null): void {
+    this.selectedRole.set(id);
+    this.applyFilters(this.currentQuery, id);
+  }
+
+  protected onKpiClick(item: KpiItem): void {
+    const roleMap: Record<string, string | null> = {
+      'إجمالي المستخدمين': null,
+      'المديرون':  'Admin',
+      'المحررون':  'Editor',
+      'المبيعات':  'Sales',
+      'التسويق':   'Marketing',
+    };
+    const role = Object.prototype.hasOwnProperty.call(roleMap, item.label)
+      ? roleMap[item.label]
+      : null;
+    this.onRoleFilter(role);
   }
 
   protected openAdd(): void {
@@ -148,7 +223,7 @@ export class AllUsersComponent implements OnInit {
       next: () => {
         this.toast.success('تم حذف المستخدم بنجاح');
         this.all = this.all.filter((e) => e.id !== emp.id);
-        this.applyFilters(this.searchValue, this.selectedRole());
+        this.applyFilters(this.currentQuery, this.selectedRole());
       },
       error: () => this.toast.error('فشل حذف المستخدم'),
     });
@@ -202,7 +277,7 @@ export class AllUsersComponent implements OnInit {
     this.svc.getAll().subscribe({
       next: (data: any) => {
         this.all = Array.isArray(data) ? data : (data?.employees ?? []);
-        this.applyFilters(this.searchValue, this.selectedRole());
+        this.applyFilters(this.currentQuery, this.selectedRole());
         this.loading.set(false);
       },
       error: () => {

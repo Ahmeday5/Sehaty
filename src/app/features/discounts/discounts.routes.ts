@@ -4,8 +4,8 @@ export const discountsRoutes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./pages/discounts-list/discounts-list.component').then(
-        (m) => m.DiscountsListComponent
+      import('./pages/discounts-shell/discounts-shell.component').then(
+        (m) => m.DiscountsShellComponent
       ),
   },
 ];

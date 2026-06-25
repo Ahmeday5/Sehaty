@@ -1,0 +1,20 @@
+<div class="row g-3 fade-in">
+  @for (item of items(); track item.id) {
+    <div class="col-12 col-md-4">
+      <div class="card auto-card h-100">
+        <div class="card-body p-4">
+          <div class="auto-icon mb-3">{{ item.emoji }}</div>
+          <h6 class="fw-bold mb-1">{{ item.title }}</h6>
+          <p class="text-muted mb-3" style="font-size:0.82rem">{{ item.description }}</p>
+          <div class="d-flex align-items-center justify-content-between">
+            <span class="badge badge-{{ item.badgeVariant }} fs-6 px-3 py-2">{{ item.value }}</span>
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input auto-toggle" type="checkbox"
+                     [checked]="item.enabled" (change)="toggle(item.id)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

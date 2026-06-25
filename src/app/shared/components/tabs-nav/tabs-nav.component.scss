@@ -1,0 +1,31 @@
+.tn-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.tn-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: var(--txt3);
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+
+  &:hover { background: var(--surface3); color: var(--txt); }
+
+  &--active {
+    background: var(--main-color);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(29, 177, 122, 0.3);
+  }
+}

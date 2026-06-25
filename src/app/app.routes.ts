@@ -96,6 +96,30 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'appointments',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/appointments/appointments.routes').then(
+            (m) => m.appointmentsRoutes,
+          ),
+      },
+      {
+        path: 'prescriptions',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/prescriptions/prescriptions.routes').then(
+            (m) => m.prescriptionsRoutes,
+          ),
+      },
+      {
+        path: 'pharmacies',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/pharmacies/pharmacies.routes').then(
+            (m) => m.pharmaciesRoutes,
+          ),
+      },
+      {
         path: 'advertisements',
         canActivate: [roleGuard(['Admin', 'Editor', 'Marketing'])],
         loadChildren: () =>

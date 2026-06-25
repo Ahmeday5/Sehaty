@@ -1,0 +1,44 @@
+<div class="row g-3 fade-in">
+
+  @for (pkg of packages; track pkg.id) {
+    <div class="col-12 col-md-5">
+      <div class="card pkg-card h-100">
+        <div class="pkg-banner pkg-banner--{{ pkg.bannerVariant }}">
+          <div class="pkg-banner__emoji">{{ pkg.emoji }}</div>
+          <div>
+            <h6 class="fw-bold mb-0 text-white">{{ pkg.title }}</h6>
+            <p class="mb-0 text-white" style="font-size:0.8rem;opacity:0.85">{{ pkg.subtitle }}</p>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="pkg-price">{{ pkg.price | number }} ج.م</span>
+            <span class="pkg-old">{{ pkg.originalPrice | number }} ج.م</span>
+            <span class="badge badge-green me-auto">وفِّر {{ savingPercent(pkg) }}%</span>
+          </div>
+          <ul class="pkg-features">
+            @for (feat of pkg.features; track feat) {
+              <li><i class="fa-solid fa-check text-success ms-2"></i>{{ feat }}</li>
+            }
+          </ul>
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn-ghost flex-grow-1 justify-content-center">
+              <i class="fa-solid fa-pen"></i> تعديل
+            </button>
+            <button class="btn-ghost flex-grow-1 justify-content-center" style="color:var(--red)!important">
+              <i class="fa-solid fa-trash"></i> حذف
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="col-12 col-md-2 d-flex">
+    <button class="pkg-add w-100">
+      <i class="fa-solid fa-plus fa-lg mb-2"></i>
+      <span>إضافة باقة</span>
+    </button>
+  </div>
+
+</div>

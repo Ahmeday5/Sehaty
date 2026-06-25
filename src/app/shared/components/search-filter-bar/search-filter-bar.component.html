@@ -1,0 +1,45 @@
+<div class="sfb-wrap d-flex flex-column gap-3" dir="rtl">
+  <!-- Search -->
+  <div class="sfb-search">
+    <i class="fa-solid fa-magnifying-glass sfb-search__icon"></i>
+    <input class="sfb-search__input"
+           type="search"
+           [placeholder]="placeholder()"
+           [(ngModel)]="searchValue"
+           (ngModelChange)="onSearch($event)">
+    @if (searchValue) {
+      <button class="sfb-search__clear" (click)="clearSearch()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    }
+  </div>
+
+  <!-- Filter pills slider -->
+  @if (filterOptions().length > 0) {
+    <div class="sfb-slider">
+      <button class="sfb-arrow sfb-arrow--prev"
+              (click)="scroll(-1)"
+              [class.sfb-arrow--hidden]="!canScrollPrev"
+              aria-label="السابق">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+
+      <div class="sfb-track" #track (scroll)="onScroll()">
+        @for (opt of filterOptions(); track opt.id) {
+          <button class="sfb-pill"
+                  [class.sfb-pill--on]="selectedFilter() === opt.id"
+                  (click)="onFilter(opt.id)">
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+
+      <button class="sfb-arrow sfb-arrow--next"
+              (click)="scroll(1)"
+              [class.sfb-arrow--hidden]="!canScrollNext"
+              aria-label="التالي">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+    </div>
+  }
+</div>

@@ -81,7 +81,7 @@ export class HeaderComponent {
       '/users':          'المستخدمين',
       '/patients':       'المرضى',
       '/specialities':   'التخصصات',
-      '/discounts':      'الخصومات',
+      '/discounts':      'الخصومات والعروض',
       '/reports':        'التقارير',
       '/advertisements': 'الإعلانات',
       '/notifications':  'الإشعارات',

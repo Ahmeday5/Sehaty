@@ -38,17 +38,13 @@
   <!-- ════════════════════════════════
        Search bar
        ════════════════════════════════ -->
-  <div class="pl-search-wrap mb-4">
-    <i class="fa-solid fa-magnifying-glass pl-search-ico"></i>
-    <input type="text" class="pl-search-input"
-           placeholder="البحث باسم المريض..."
-           [(ngModel)]="searchValue"
-           (ngModelChange)="onSearch($event)">
-    @if (searchValue) {
-      <button type="button" class="pl-search-clear" (click)="clearSearch()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    }
+  <div class="mb-4">
+    <app-search-filter-bar
+      [placeholder]="'البحث باسم المريض...'"
+      [filterOptions]="[]"
+      [selectedFilter]="null"
+      (searchChange)="onSearch($event)">
+    </app-search-filter-bar>
   </div>
 
   <!-- ════════════════════════════════
@@ -97,27 +93,12 @@
 
     <!-- ── Empty State ── -->
     @if (!loading() && patients().length === 0) {
-      <div class="pl-empty d-flex flex-column align-items-center justify-content-center gap-3 py-5">
-        <div class="pl-empty-icon">
-          <i class="fa-solid fa-user-slash"></i>
-        </div>
-        <div class="text-center">
-          <h3 class="pl-empty-title">لا توجد نتائج</h3>
-          <p class="pl-empty-sub">
-            @if (searchValue) {
-              لم يتم العثور على مريض باسم "<strong>{{ searchValue }}</strong>"
-            } @else {
-              لا يوجد مرضى مسجلون في النظام حتى الآن
-            }
-          </p>
-        </div>
-        @if (searchValue) {
-          <button type="button" class="pl-btn pl-btn--refresh" (click)="clearSearch()">
-            <i class="fa-solid fa-filter-circle-xmark"></i>
-            مسح البحث
-          </button>
-        }
-      </div>
+      <app-empty-state
+        icon="fa-users-slash"
+        title="لا يوجد مرضى"
+        message="لم يتم العثور على نتائج مطابقة"
+        actionLabel="">
+      </app-empty-state>
     }
 
     <!-- ── Data Table ── -->
@@ -176,12 +157,11 @@
 
                 <!-- Status badge -->
                 <td class="pl-td">
-                  <span class="pl-status-badge"
-                        [class.pl-status-badge--active]="p.isActive"
-                        [class.pl-status-badge--inactive]="!p.isActive">
-                    <span class="pl-status-dot"></span>
-                    {{ p.isActive ? 'نشط' : 'غير نشط' }}
-                  </span>
+                  <app-stat-badge
+                    [label]="p.isActive ? 'نشط' : 'غير نشط'"
+                    [variant]="getStatusVariant(p.isActive)"
+                    [dot]="true">
+                  </app-stat-badge>
                 </td>
 
                 <!-- Registration date (hidden on lg-) -->

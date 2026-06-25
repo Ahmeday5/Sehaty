@@ -74,19 +74,13 @@
 
     <!-- ── Empty State ── -->
     @if (!loading() && specialities().length === 0) {
-      <div class="sl-empty d-flex flex-column align-items-center justify-content-center gap-3 py-5">
-        <div class="sl-empty-icon">
-          <i class="fa-solid fa-stethoscope"></i>
-        </div>
-        <div class="text-center">
-          <h3 class="sl-empty-title">لا توجد تخصصات</h3>
-          <p class="sl-empty-sub">لم يتم إضافة أي تخصصات طبية حتى الآن</p>
-        </div>
-        <button type="button" class="sl-btn sl-btn--add" (click)="openModal()">
-          <i class="fa-solid fa-plus"></i>
-          إضافة أول تخصص
-        </button>
-      </div>
+      <app-empty-state
+        icon="fa-stethoscope"
+        title="لا توجد تخصصات"
+        message="لم يتم إضافة أي تخصصات طبية حتى الآن"
+        actionLabel="إضافة أول تخصص"
+        (actionClick)="openModal()">
+      </app-empty-state>
     }
 
     <!-- ── Data Table ── -->

@@ -12,6 +12,7 @@ import { SpecialitiesService } from '../../services/specialities.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
 import { FormErrorComponent } from '../../../../shared/components/form-error/form-error.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { Speciality } from '../../models/speciality.model';
 
 const AVATAR_COLORS = [
@@ -22,7 +23,7 @@ const AVATAR_COLORS = [
 @Component({
   selector: 'app-specialities-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormErrorComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormErrorComponent, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './specialities-list.component.html',
   styleUrl: './specialities-list.component.scss',

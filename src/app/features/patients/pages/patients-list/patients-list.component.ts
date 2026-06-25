@@ -6,13 +6,14 @@
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PatientsService } from '../../services/patients.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
 import { Patient } from '../../models/patient.model';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
+import { StatBadgeComponent } from '../../../../shared/components/stat-badge/stat-badge.component';
 
 const PAGE_SIZE = 10;
 
@@ -24,7 +25,7 @@ const AVATAR_COLORS = [
 @Component({
   selector: 'app-patients-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginationComponent],
+  imports: [CommonModule, PaginationComponent, EmptyStateComponent, SearchFilterBarComponent, StatBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './patients-list.component.html',
   styleUrl:    './patients-list.component.scss',
@@ -44,22 +45,20 @@ export class PatientsListComponent implements OnInit {
 
   protected readonly pageSize = PAGE_SIZE;
 
-  private readonly search$ = new Subject<string>();
-
   protected get totalPages(): number {
     return Math.ceil(this.total() / PAGE_SIZE);
   }
 
   ngOnInit(): void {
-    this.search$
-      .pipe(debounceTime(350), distinctUntilChanged())
-      .subscribe((q) => { this.page.set(1); this.load(q); });
     this.load('');
   }
 
-  protected onSearch(val: string): void { this.search$.next(val); }
-  protected clearSearch(): void         { this.searchValue = ''; this.search$.next(''); }
+  protected onSearch(query: string): void { this.searchValue = query; this.page.set(1); this.load(query); }
   protected refresh(): void             { this.page.set(1); this.load(this.searchValue); }
+
+  protected getStatusVariant(isActive: boolean): string {
+    return isActive ? 'green' : 'default';
+  }
   protected onPageChange(p: number): void { this.page.set(p); this.load(this.searchValue); }
 
   protected async onDelete(patient: Patient): Promise<void> {

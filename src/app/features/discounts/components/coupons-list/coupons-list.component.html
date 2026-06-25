@@ -1,0 +1,163 @@
+<div class="card fade-in">
+  <div class="card-header d-flex align-items-center justify-content-between">
+    <span class="fw-bold">
+      <i class="fa-solid fa-ticket text-muted me-2"></i>
+      كوبونات الخصم
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge badge-primary">{{ coupons.length }} كوبونات</span>
+      <button class="btn-primary-action" (click)="openModal()">
+        <i class="fa-solid fa-plus"></i>
+        كوبون جديد
+      </button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>الكود</th>
+          <th>النوع</th>
+          <th>القيمة</th>
+          <th>الاستخدام</th>
+          <th>النطاق</th>
+          <th>الصلاحية</th>
+          <th>الحالة</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of coupons; track c.id) {
+          <tr>
+            <td><span class="cpn-code">{{ c.code }}</span></td>
+            <td>
+              <span [class]="c.type === 'percentage' ? 'badge badge-teal' : 'badge badge-amber'">
+                {{ c.type === 'percentage' ? 'نسبة مئوية' : 'مبلغ ثابت' }}
+              </span>
+            </td>
+            <td class="fw-bold">{{ c.value }}{{ c.type === 'percentage' ? '%' : ' ج.م' }}</td>
+            <td>
+              <div class="d-flex flex-column gap-1" style="min-width:100px">
+                <div class="d-flex justify-content-between" style="font-size:0.75rem">
+                  <span>{{ c.used }} / {{ c.maxUses }}</span>
+                  <span class="text-muted">{{ usagePercent(c) }}%</span>
+                </div>
+                <div class="progress cpn-progress">
+                  <div class="progress-bar"
+                       [style.width.%]="usagePercent(c)"
+                       [class.bg-success]="usagePercent(c) < 80"
+                       [class.bg-danger]="usagePercent(c) >= 100"></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge badge-blue">{{ c.scope }}</span></td>
+            <td style="font-size:0.8rem;white-space:nowrap">{{ c.expiry }}</td>
+            <td>
+              <span [class]="c.active ? 'badge badge-green' : 'badge badge-red'">
+                {{ c.active ? 'نشط' : 'منتهي' }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-1">
+                <button class="cpn-icon-btn cpn-icon-btn--edit" title="تعديل">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="cpn-icon-btn cpn-icon-btn--del" title="حذف">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (showModal()) {
+  <app-modal title="إضافة كوبون جديد" size="lg" (closed)="closeModal()">
+
+    <div class="row g-3" dir="rtl">
+
+      <div class="col-12 col-md-7">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="cpn-label">كود الكوبون</label>
+            <input class="form-control text-uppercase" [(ngModel)]="couponForm.code"
+                   placeholder="مثال: SUMMER25" style="letter-spacing:1px;font-weight:700">
+          </div>
+          <div class="col-6">
+            <label class="cpn-label">نوع الخصم</label>
+            <select class="form-select" [(ngModel)]="couponForm.type">
+              <option value="percentage">نسبة مئوية %</option>
+              <option value="fixed">مبلغ ثابت ج.م</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="cpn-label">القيمة</label>
+            <input class="form-control" type="number" min="1" [(ngModel)]="couponForm.value"
+                   [placeholder]="couponForm.type === 'percentage' ? '20' : '50'">
+          </div>
+          <div class="col-6">
+            <label class="cpn-label">تاريخ البداية</label>
+            <input class="form-control" type="date" [(ngModel)]="couponForm.startDate">
+          </div>
+          <div class="col-6">
+            <label class="cpn-label">تاريخ الانتهاء</label>
+            <input class="form-control" type="date" [(ngModel)]="couponForm.endDate">
+          </div>
+          <div class="col-6">
+            <label class="cpn-label">الحد الأقصى للاستخدام</label>
+            <input class="form-control" type="number" min="1" [(ngModel)]="couponForm.maxUses"
+                   placeholder="مثال: 200">
+          </div>
+          <div class="col-6">
+            <label class="cpn-label">النطاق</label>
+            <select class="form-select" [(ngModel)]="couponForm.scope">
+              <option value="all">كل الأطباء</option>
+              <option value="doctor">طبيب محدد</option>
+              <option value="speciality">تخصص محدد</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-5">
+        <label class="cpn-label mb-2">معاينة الكوبون</label>
+        <div class="cpn-preview">
+          <div class="cpn-preview__top">
+            <span class="cpn-preview__code">{{ couponForm.code || 'CODE' }}</span>
+            <span class="cpn-preview__value">
+              @if (couponForm.type === 'percentage') {
+                {{ couponForm.value || 0 }}%
+              } @else {
+                {{ couponForm.value || 0 }} ج.م
+              }
+            </span>
+          </div>
+          <div class="cpn-preview__divider"></div>
+          <div class="cpn-preview__meta">
+            <span>
+              <i class="fa-solid fa-calendar-days me-1"></i>
+              @if (couponForm.endDate) { ينتهي {{ couponForm.endDate }} } @else { بدون تاريخ انتهاء }
+            </span>
+            <span>
+              <i class="fa-solid fa-users me-1"></i>
+              @if (couponForm.maxUses) { {{ couponForm.maxUses }} استخدام } @else { غير محدود }
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div modal-footer class="card-footer d-flex justify-content-end gap-2 p-3">
+      <button class="btn-ghost" (click)="closeModal()">إلغاء</button>
+      <button class="btn-primary-action" (click)="saveCoupon()">
+        <i class="fa-solid fa-plus"></i>
+        حفظ الكوبون
+      </button>
+    </div>
+
+  </app-modal>
+}

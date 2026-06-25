@@ -1,0 +1,83 @@
+<div class="ap-page">
+
+  <!-- page header -->
+  <div class="page-header">
+    <div class="ap-title-group">
+      <h1 class="page-title">الصيدليات</h1>
+      @if (!loading() && filteredPharmacies.length > 0) {
+        <span class="ap-count">{{ filteredPharmacies.length }} صيدلية</span>
+      }
+    </div>
+    <div class="ap-header-actions">
+      <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+      </button>
+      <button class="btn-primary-action" (click)="openAdd()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة صيدلية
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI strip -->
+  @if (!loading() && totalCount > 0) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  }
+
+  <!-- Search bar -->
+  <app-search-filter-bar
+    placeholder="بحث عن صيدلية..."
+    (searchChange)="onSearch($event)">
+  </app-search-filter-bar>
+
+  <!-- Content -->
+  @if (loading()) {
+    <div class="ap-spinner">
+      <div class="ap-spinner-ring"></div>
+      <p class="ap-spinner-txt">جاري تحميل الصيدليات...</p>
+    </div>
+  } @else if (displayed().length === 0) {
+    <app-empty-state
+      icon="fa-prescription-bottle-medical"
+      title="لا توجد صيدليات"
+      message="ابدأ بإضافة أول صيدلية إلى المنصة"
+      actionLabel="إضافة صيدلية"
+      (actionClick)="openAdd()">
+    </app-empty-state>
+  } @else {
+    <div class="ap-grid mt-3">
+      @for (pharmacy of displayed(); track pharmacy.id) {
+        <app-pharmacy-card
+          [pharmacy]="pharmacy"
+          (edit)="openEdit($event)"
+          (toggleActive)="onToggleActive($event)"
+          (delete)="onDelete($event)">
+        </app-pharmacy-card>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  }
+
+</div>
+
+<!-- Add modal -->
+@if (showAddModal()) {
+  <app-modal title="إضافة صيدلية جديدة" size="lg" (closed)="closeAdd()">
+    <app-pharmacy-form (saved)="onSaved()" (cancelled)="closeAdd()"></app-pharmacy-form>
+  </app-modal>
+}
+
+<!-- Edit modal -->
+@if (editingPharmacy()) {
+  <app-modal title="تعديل بيانات الصيدلية" size="lg" (closed)="closeEdit()">
+    <app-pharmacy-form [pharmacy]="editingPharmacy()!" (saved)="onSaved()" (cancelled)="closeEdit()">
+    </app-pharmacy-form>
+  </app-modal>
+}

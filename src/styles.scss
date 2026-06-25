@@ -1,11 +1,11 @@
 :root {
   /* ── Brand (preserved) ── */
-  --main-color:   #1db17a;
-  --main-dark:    #17956a;
-  --main-light:   rgba(29, 177, 122, 0.12);
-  --second-color: #1a9e6e;
-  --second-dark:  #15865c;
-  --second-light: rgba(26, 158, 110, 0.1);
+  --main-color:   #13A0A0;
+  --main-dark:    #0A5D66;
+  --main-light:   rgba(19, 160, 160, 0.12);
+  --second-color: #0A5D66;
+  --second-dark:  #074850;
+  --second-light: rgba(10, 93, 102, 0.1);
 
   /* ── Dark theme surfaces ── */
   --bg:        #0B1120;
@@ -50,7 +50,7 @@
   --primarysoft: rgba(29, 177, 122, 0.12);
 
   /* ── Gradient ── */
-  --grad: linear-gradient(135deg, #17956a, #1db17a 50%, #14B8A6);
+  --grad: linear-gradient(135deg, #0A5D66, #13A0A0);
 
   /* ── Shadows ── */
   --shadow-sm: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);

@@ -196,17 +196,17 @@
   }
 }
 
-/* ── Actions: 4-column grid with CSS gap trick for dividers ── */
+/* ── Actions ── */
 .dc-actions {
   width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: 1px;
+  display: flex;
   background: var(--border, #1E2D42);
   border-top: 1px solid var(--border, #1E2D42);
+  gap: 1px;
 }
 
 .dc-action {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;

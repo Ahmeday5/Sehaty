@@ -1,0 +1,12 @@
+<div class="tn-wrap d-flex flex-wrap gap-2" dir="rtl">
+  @for (tab of tabs(); track tab.id) {
+    <button class="tn-tab"
+            [class.tn-tab--active]="activeTab() === tab.id"
+            (click)="tabChange.emit(tab.id)">
+      @if (tab.icon) {
+        <i class="fa-solid" [ngClass]="tab.icon"></i>
+      }
+      {{ tab.label }}
+    </button>
+  }
+</div>

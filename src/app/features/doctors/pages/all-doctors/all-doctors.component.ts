@@ -4,12 +4,12 @@ import {
   ElementRef,
   OnInit,
   ViewChild,
+  computed,
   inject,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { DoctorsService } from '../../services/doctors.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -20,6 +20,11 @@ import { DoctorCardComponent } from '../../components/doctor-card/doctor-card.co
 import { DoctorFormComponent } from '../../components/doctor-form/doctor-form.component';
 import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { KpiStripComponent } from '../../../../shared/components/kpi-strip/kpi-strip.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
+import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
+import { FilterOption } from '../../../../shared/components/search-filter-bar/search-filter-bar.model';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -33,6 +38,9 @@ const ITEMS_PER_PAGE = 12;
     DoctorFormComponent,
     ModalComponent,
     PaginationComponent,
+    KpiStripComponent,
+    EmptyStateComponent,
+    SearchFilterBarComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './all-doctors.component.html',
@@ -42,7 +50,6 @@ export class AllDoctorsComponent implements OnInit {
   private readonly svc     = inject(DoctorsService);
   private readonly toast   = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
-  private readonly search$ = new Subject<string>();
 
   @ViewChild('filterWrap') filterWrap!: ElementRef<HTMLDivElement>;
 
@@ -65,13 +72,48 @@ export class AllDoctorsComponent implements OnInit {
   protected get activeCount():   number { return this.allDoctors.filter((d) => d.isActive).length; }
   protected get inactiveCount(): number { return this.allDoctors.filter((d) => !d.isActive).length; }
 
+  protected readonly kpiItems = computed<KpiItem[]>(() => [
+    {
+      icon: 'fa-user-doctor',
+      value: String(this.totalCount),
+      label: 'إجمالي الأطباء',
+      variant: 'primary',
+    },
+    {
+      icon: 'fa-circle-check',
+      value: String(this.activeCount),
+      label: 'أطباء نشطون',
+      variant: 'green',
+    },
+    {
+      icon: 'fa-circle-xmark',
+      value: String(this.inactiveCount),
+      label: 'أطباء معطّلون',
+      variant: 'red',
+    },
+    {
+      icon: 'fa-stethoscope',
+      value: String(this.specialities().length),
+      label: 'التخصصات',
+      variant: 'blue',
+    },
+  ]);
+
+  protected readonly filterOpts = computed<FilterOption[]>(() => [
+    { id: null, label: 'الكل' },
+    ...this.specialities().map((s) => ({ id: s.name, label: s.name })),
+  ]);
+
   ngOnInit(): void {
     this.loadSpecialities();
     this.loadAllDoctors();
-    this.search$.pipe(debounceTime(300), distinctUntilChanged()).subscribe((q) => this.doSearch(q));
   }
 
-  protected onSearch(query: string): void { this.search$.next(query); }
+  protected onSearch(query: string): void { this.doSearch(query); }
+
+  protected onFilterChange(id: string | null): void {
+    this.onFilterClick(id);
+  }
 
   protected onFilterClick(name: string | null): void {
     this.selectedFilter.set(name);

@@ -9,9 +9,9 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(145deg,
-    #052318 0%,
-    #0a3d2e 40%,
-    #052318 100%);
+    #031e24 0%,
+    #052f38 40%,
+    #031e24 100%);
   overflow: hidden;
   direction: rtl;
 }
@@ -41,7 +41,7 @@
 
 .sp-orb--3 {
   width: 250px; height: 250px;
-  background: radial-gradient(circle, rgba(29,177,122,.6), transparent 70%);
+  background: radial-gradient(circle, rgba(19,160,160,.6), transparent 70%);
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   animation: sp-pulse-orb 4s ease-in-out infinite;
@@ -83,7 +83,7 @@
   );
   padding: 3px;
   animation: sp-spin 3s linear infinite;
-  box-shadow: 0 0 40px rgba(29,177,122,.3);
+  box-shadow: 0 0 40px rgba(19,160,160,.3);
 }
 
 @keyframes sp-spin {
@@ -93,7 +93,7 @@
 .sp-logo-ring-inner {
   width: 100%; height: 100%;
   border-radius: 50%;
-  background: #0a3d2e;
+  background: #052f38;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,7 +103,7 @@
 .sp-logo {
   width: 72px; height: 72px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(29,177,122,.4));
+  filter: drop-shadow(0 4px 12px rgba(19,160,160,.4));
   animation: sp-logo-beat 2s ease-in-out infinite;
 }
 
@@ -132,7 +132,7 @@
   color: #fff;
   margin: 0;
   letter-spacing: -1px;
-  background: linear-gradient(135deg, #fff 30%, rgba(29,177,122,.9));
+  background: linear-gradient(135deg, #fff 30%, rgba(19,160,160,.9));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

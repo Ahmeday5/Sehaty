@@ -14,12 +14,13 @@ import { AdvertisementsService } from '../../services/advertisements.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
 import { FormErrorComponent } from '../../../../shared/components/form-error/form-error.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { Advertisement } from '../../models/advertisement.model';
 
 @Component({
   selector: 'app-advertisements-list',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormErrorComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormErrorComponent, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './advertisements-list.component.html',
   styleUrl: './advertisements-list.component.scss',

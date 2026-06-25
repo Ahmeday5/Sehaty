@@ -1,0 +1,16 @@
+<div class="es-wrap d-flex flex-column align-items-center justify-content-center gap-3 py-5" dir="rtl">
+  <div class="es-icon">
+    <i class="fa-solid" [ngClass]="icon()"></i>
+  </div>
+  <div class="text-center">
+    <h4 class="es-title mb-1">{{ title() }}</h4>
+    @if (message()) {
+      <p class="es-msg mb-0">{{ message() }}</p>
+    }
+  </div>
+  @if (actionLabel()) {
+    <button class="btn-primary-action" (click)="actionClick.emit()">
+      {{ actionLabel() }}
+    </button>
+  }
+</div>
