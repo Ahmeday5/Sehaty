@@ -121,6 +121,32 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    label: 'الأدوات',
+    items: [
+      {
+        id: 'reports',
+        label: 'التقارير والتصدير',
+        route: '/reports',
+        icon: 'reports',
+        requiredAnyRole: ['Admin'],
+      },
+      {
+        id: 'doctor-map',
+        label: 'خريطة الأطباء',
+        route: '/doctor-map',
+        icon: 'doctor-map',
+        requiredAnyRole: ['Admin', 'Editor'],
+      },
+      {
+        id: 'ratings',
+        label: 'التقييمات',
+        route: '/ratings',
+        icon: 'ratings',
+        requiredAnyRole: ['Admin', 'Editor'],
+      },
+    ],
+  },
+  {
     label: 'النظام',
     items: [
       {

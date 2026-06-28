@@ -1,11 +1,11 @@
 :root {
-  /* ── Brand (preserved) ── */
-  --main-color:   #13A0A0;
-  --main-dark:    #0A5D66;
-  --main-light:   rgba(19, 160, 160, 0.12);
-  --second-color: #0A5D66;
-  --second-dark:  #074850;
-  --second-light: rgba(10, 93, 102, 0.1);
+  /* ── Brand ── */
+  --main-color:   #0EA5E9;
+  --main-dark:    #0284C7;
+  --main-light:   rgba(14, 165, 233, 0.12);
+  --second-color: #0284C7;
+  --second-dark:  #0369A1;
+  --second-light: rgba(2, 132, 199, 0.1);
 
   /* ── Dark theme surfaces ── */
   --bg:        #0B1120;
@@ -34,23 +34,23 @@
 
   /* ── Status colors ── */
   --green:      #22C55E;
-  --greensoft:  rgba(34, 197, 94, 0.12);
+  --greensoft:  #052E16;
   --amber:      #F59E0B;
-  --ambersoft:  rgba(245, 158, 11, 0.12);
+  --ambersoft:  #2D1F05;
   --red:        #F43F5E;
-  --redsoft:    rgba(244, 63, 94, 0.12);
+  --redsoft:    #2A0B14;
   --teal:       #14B8A6;
-  --tealsoft:   rgba(20, 184, 166, 0.12);
+  --tealsoft:   #0A2826;
   --purple:     #A78BFA;
-  --purplesoft: rgba(167, 139, 250, 0.12);
+  --purplesoft: #1E1040;
   --blue:       #60A5FA;
   --bluesoft:   rgba(96, 165, 250, 0.12);
 
-  /* ── Primary soft (green-based) ── */
-  --primarysoft: rgba(29, 177, 122, 0.12);
+  /* ── Primary soft ── */
+  --primarysoft: #0C2A3F;
 
   /* ── Gradient ── */
-  --grad: linear-gradient(135deg, #0A5D66, #13A0A0);
+  --grad: linear-gradient(135deg, #0284C7, #0EA5E9 50%, #14B8A6);
 
   /* ── Shadows ── */
   --shadow-sm: 0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
@@ -100,7 +100,7 @@ a { text-decoration: none; }
     outline: none;
     background: var(--surface2);
     border-color: var(--main-color);
-    box-shadow: 0 0 0 3px rgba(29, 177, 122, 0.18);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
     color: var(--txt);
   }
 
@@ -255,7 +255,7 @@ select option {
   &:focus {
     outline: none;
     border-color: var(--main-color);
-    box-shadow: 0 0 0 3px rgba(29,177,122,.15);
+    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
   }
   &::placeholder { color: var(--textmuted); }
 }

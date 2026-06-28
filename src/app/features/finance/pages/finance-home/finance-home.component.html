@@ -1,0 +1,289 @@
+<div class="fin-page" dir="rtl">
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Page Header
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="fin-title-group">
+      <h1 class="page-title">المالية</h1>
+      @if (lastUpdate()) {
+        <span class="fin-updated">آخر تحديث {{ lastUpdate() | date:'HH:mm' }}</span>
+      }
+    </div>
+    <div class="fin-header-actions">
+      <button class="btn-refresh" (click)="refresh()" [disabled]="loadingKpi()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loadingKpi()"></i>
+        تحديث
+      </button>
+      <button class="btn-ghost fin-export-btn">
+        <i class="fa-solid fa-file-excel"></i>
+        تصدير Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       KPI Strip
+  ══════════════════════════════════════════════════════════════════════ -->
+  @if (!loadingKpi()) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+
+    <!-- Growth deltas row -->
+    <div class="fin-deltas-row">
+      <div class="fin-delta delta-up">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+        إيرادات يونيو ↑ {{ kpiSummary()?.revenueGrowthPercent }}% عن مايو
+      </div>
+      <div class="fin-delta delta-up">
+        <i class="fa-solid fa-arrow-trend-up"></i>
+        عمولة المنصة ↑ {{ kpiSummary()?.commissionGrowthPercent }}%
+      </div>
+      <div class="fin-delta delta-dn">
+        <i class="fa-solid fa-clock"></i>
+        {{ kpiSummary()?.pendingCount }} طلبات معلّقة تنتظر التسوية
+      </div>
+    </div>
+  } @else {
+    <div class="fin-kpi-skeleton">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="fin-skeleton-card"></div>
+      }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Mid Row: Top Doctors + Pending Payments
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="fin-mid-grid">
+
+    <!-- ── Top Doctors Revenue ─────────────────────────────────────── -->
+    <div class="card fin-card">
+      <div class="fin-card-header">
+        <span class="fin-section-title">
+          <i class="fa-solid fa-trophy"></i>
+          أعلى الأطباء إيراداً
+        </span>
+        <div class="fin-pill-toggle">
+          <button
+            class="fin-pill-btn"
+            [class.active]="filter().period === 'month'"
+            (click)="setPeriod('month')">
+            الشهر
+          </button>
+          <button
+            class="fin-pill-btn"
+            [class.active]="filter().period === 'total'"
+            (click)="setPeriod('total')">
+            الكل
+          </button>
+        </div>
+      </div>
+
+      @if (loadingDoctors()) {
+        <div class="fin-inner-spinner">
+          <div class="fin-spinner-ring"></div>
+        </div>
+      } @else if (topDoctors().length === 0) {
+        <div class="fin-no-data">لا توجد بيانات</div>
+      } @else {
+        <div class="fin-doctors-list">
+          @for (doc of topDoctors(); track doc.doctorId) {
+            <div class="fin-doctor-row">
+              <div class="fin-doctor-info">
+                <span class="fin-doctor-name">{{ doc.doctorName }}</span>
+                <span class="fin-doctor-revenue">{{ formatCurrency(doc.revenue) }} ج.م</span>
+              </div>
+              <div class="fin-bar-track">
+                <div
+                  class="fin-bar-fill"
+                  [style.width.%]="doc.widthPercent">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Pending Payments ───────────────────────────────────────── -->
+    <div class="card fin-card">
+      <div class="fin-card-header">
+        <span class="fin-section-title">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          مدفوعات معلّقة
+        </span>
+        @if (pendingList().length > 0) {
+          <button
+            class="btn-primary fin-settle-all-btn"
+            [disabled]="settlingAll()"
+            (click)="settleAllPending()">
+            @if (settlingAll()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+            } @else {
+              <i class="fa-solid fa-check-double"></i>
+            }
+            تسوية الكل
+          </button>
+        }
+      </div>
+
+      @if (loadingPending()) {
+        <div class="fin-inner-spinner">
+          <div class="fin-spinner-ring"></div>
+        </div>
+      } @else if (pendingList().length === 0) {
+        <div class="fin-no-data fin-no-data--success">
+          <i class="fa-solid fa-circle-check"></i>
+          لا توجد مدفوعات معلّقة
+        </div>
+      } @else {
+        <div class="fin-pending-list">
+          @for (item of pendingList(); track item.id) {
+            <div class="fin-pending-row">
+              <div class="fin-pending-icon" [style.background]="urgencyBg(item.urgency)">
+                <i class="fa-solid fa-clock" [style.color]="urgencyClass(item.urgency)"></i>
+              </div>
+              <div class="fin-pending-info">
+                <span class="fin-pending-name">{{ item.partyName }}</span>
+                <span class="fin-pending-desc">{{ item.description }}</span>
+                <span class="fin-pending-since" [style.color]="urgencyClass(item.urgency)">
+                  منذ {{ item.daysAgo }} أيام
+                </span>
+              </div>
+              <div class="fin-pending-amount">
+                <span class="fin-pending-val" [style.color]="urgencyClass(item.urgency)">
+                  {{ formatCurrency(item.amount) }}
+                </span>
+                <span class="fin-pending-currency">ج.م</span>
+              </div>
+              <button
+                class="fin-settle-btn"
+                [style.color]="urgencyClass(item.urgency)"
+                [style.border-color]="urgencyClass(item.urgency) + '44'"
+                [style.background]="urgencyBg(item.urgency)"
+                [disabled]="isSettling(item.id)"
+                (click)="settle(item)">
+                @if (isSettling(item.id)) {
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                } @else {
+                  تسوية
+                }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Transactions Table
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="card fin-card fin-table-card">
+    <div class="fin-card-header">
+      <span class="fin-section-title">
+        <i class="fa-solid fa-list-ul"></i>
+        سجل المعاملات المالية
+      </span>
+      <div class="fin-table-controls">
+        <div class="fin-search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            class="inp fin-search-inp"
+            type="text"
+            placeholder="بحث في المعاملات..."
+            (input)="onSearch($any($event.target).value)">
+        </div>
+        <select class="inp fin-source-select" (change)="onSourceChange($any($event.target).value)">
+          <option value="all">جميع المصادر</option>
+          <option value="booking">حجوزات</option>
+          <option value="pharmacy">صيدليات</option>
+          <option value="commission">عمولات</option>
+        </select>
+        <button class="btn-ghost fin-export-btn-sm">
+          <i class="fa-solid fa-file-excel"></i>
+          Excel
+        </button>
+      </div>
+    </div>
+
+    @if (loadingTransactions()) {
+      <div class="fin-inner-spinner fin-table-spinner">
+        <div class="fin-spinner-ring"></div>
+        <span>جاري تحميل المعاملات...</span>
+      </div>
+    } @else if (displayed().length === 0) {
+      <div class="fin-no-data fin-no-data--empty">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>لا توجد نتائج مطابقة</span>
+      </div>
+    } @else {
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>رقم المعاملة</th>
+              <th>النوع</th>
+              <th>الطرف</th>
+              <th>المريض</th>
+              <th>المبلغ</th>
+              <th>العمولة</th>
+              <th>الحالة</th>
+              <th>التاريخ</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (txn of displayed(); track txn.id) {
+              <tr>
+                <td class="fin-txn-id">{{ txn.id }}</td>
+                <td>
+                  <span class="badge" [ngClass]="typeBadgeClass(txn.type)">
+                    {{ typeLabel(txn.type) }}
+                  </span>
+                </td>
+                <td class="fin-party">{{ txn.partyName }}</td>
+                <td class="fin-patient">{{ txn.patientName ?? '—' }}</td>
+                <td class="fin-amount">{{ formatCurrency(txn.amount) }} ج.م</td>
+                <td class="fin-commission">{{ formatCurrency(txn.commission) }} ج.م</td>
+                <td>
+                  <span class="badge" [ngClass]="statusBadgeClass(txn.status)">
+                    {{ statusLabel(txn.status) }}
+                  </span>
+                </td>
+                <td class="fin-date">{{ txn.date }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="fin-pagination">
+          <button
+            class="fin-page-btn"
+            [disabled]="currentPage() === 1"
+            (click)="onPageChange(currentPage() - 1)">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          @for (page of pages; track page) {
+            <button
+              class="fin-page-btn"
+              [class.active]="currentPage() === page"
+              (click)="onPageChange(page)">
+              {{ page }}
+            </button>
+          }
+          <button
+            class="fin-page-btn"
+            [disabled]="currentPage() === totalPages()"
+            (click)="onPageChange(currentPage() + 1)">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+</div>

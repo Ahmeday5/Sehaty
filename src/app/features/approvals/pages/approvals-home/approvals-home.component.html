@@ -1,0 +1,238 @@
+<div class="apr-page" dir="rtl">
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Page Header
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="apr-title-group">
+      <h1 class="page-title">مراجعة الطلبات</h1>
+      @if (pendingList().length > 0) {
+        <span class="apr-badge-pending">{{ pendingList().length }} بانتظار المراجعة</span>
+      }
+      @if (lastUpdate()) {
+        <span class="apr-updated">آخر تحديث {{ lastUpdate() | date:'HH:mm' }}</span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="loadingKpi()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loadingKpi()"></i>
+      تحديث
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       KPI Strip
+  ══════════════════════════════════════════════════════════════════════ -->
+  @if (!loadingKpi()) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  } @else {
+    <div class="apr-kpi-skeleton">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="apr-skeleton-card"></div>
+      }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       Pending Approvals
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="card apr-card">
+    <div class="apr-card-header">
+      <span class="apr-section-title">
+        <i class="fa-solid fa-clipboard-list"></i>
+        طلبات بانتظار الموافقة
+      </span>
+      @if (!loadingPending() && pendingList().length > 0) {
+        <span class="apr-count-chip">{{ pendingList().length }}</span>
+      }
+    </div>
+
+    @if (loadingPending()) {
+      <div class="apr-spinner-wrap">
+        <div class="apr-spinner"></div>
+        <span>جاري التحميل...</span>
+      </div>
+    } @else if (pendingList().length === 0) {
+      <div class="apr-empty apr-empty--success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>لا توجد طلبات معلّقة — تم مراجعة الكل!</span>
+      </div>
+    } @else {
+      <div class="apr-pending-list">
+        @for (item of pendingList(); track item.id) {
+          <div class="apr-request-card" [class.apr-request-card--missing]="item.docStatus === 'missing'">
+
+            <!-- Avatar -->
+            <div class="apr-avatar">{{ item.initial }}</div>
+
+            <!-- Info -->
+            <div class="apr-info">
+              <div class="apr-info-top">
+                <span class="apr-doctor-name">{{ item.doctorName }}</span>
+                <span class="badge badge-blue">{{ item.specialization }}</span>
+                <span class="apr-submitted">{{ item.submittedLabel }}</span>
+              </div>
+              <div class="apr-meta">
+                <span class="apr-meta-item">
+                  <i class="fa-solid fa-hospital"></i>
+                  {{ item.clinic }}
+                </span>
+                <span class="apr-meta-item">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                  {{ item.degree }}
+                </span>
+              </div>
+              <div class="apr-meta-row2">
+                <span class="apr-phone">
+                  <i class="fa-solid fa-phone"></i>
+                  {{ item.phone }}
+                </span>
+                @if (item.docStatus === 'uploaded') {
+                  <span class="apr-doc-status apr-doc-status--ok">
+                    <i class="fa-solid fa-circle-check"></i>
+                    وثيقة المؤهل مرفوعة
+                  </span>
+                } @else {
+                  <span class="apr-doc-status apr-doc-status--missing">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    لا توجد وثيقة
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="apr-actions">
+              <button
+                class="apr-btn apr-btn--approve"
+                [disabled]="isActionBusy(item.id)"
+                (click)="onApprove(item)">
+                @if (isApproving(item.id)) {
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-check"></i>
+                }
+                قبول
+              </button>
+              <button
+                class="apr-btn apr-btn--reject"
+                [disabled]="isActionBusy(item.id)"
+                (click)="onReject(item)">
+                @if (isRejecting(item.id)) {
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                } @else {
+                  <i class="fa-solid fa-xmark"></i>
+                }
+                رفض
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       History Table
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div class="card apr-card">
+    <div class="apr-card-header">
+      <span class="apr-section-title">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        سجل قرارات المراجعة
+      </span>
+      <div class="apr-hist-controls">
+        <div class="apr-search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            class="inp apr-search-inp"
+            type="text"
+            placeholder="بحث..."
+            (input)="onHistSearch($any($event.target).value)">
+        </div>
+        <select class="inp apr-filter-select" (change)="onDecisionFilter($any($event.target).value)">
+          <option value="all">الكل</option>
+          <option value="approved">مقبول</option>
+          <option value="rejected">مرفوض</option>
+        </select>
+      </div>
+    </div>
+
+    @if (loadingHistory()) {
+      <div class="apr-spinner-wrap">
+        <div class="apr-spinner"></div>
+        <span>جاري التحميل...</span>
+      </div>
+    } @else if (histDisplayed().length === 0) {
+      <div class="apr-empty">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>لا توجد نتائج مطابقة</span>
+      </div>
+    } @else {
+      <div class="apr-table-wrap">
+        <table class="apr-table">
+          <thead>
+            <tr>
+              <th>الطبيب</th>
+              <th>التخصص</th>
+              <th>القرار</th>
+              <th>المشرف</th>
+              <th>التاريخ</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of histDisplayed(); track item.id) {
+              <tr>
+                <td class="apr-td-name">{{ item.doctorName }}</td>
+                <td>
+                  <span class="badge badge-blue">{{ item.specialization }}</span>
+                </td>
+                <td>
+                  @if (item.decision === 'approved') {
+                    <span class="badge badge-green">
+                      <i class="fa-solid fa-check"></i>
+                      مقبول
+                    </span>
+                  } @else {
+                    <span class="badge badge-red">
+                      <i class="fa-solid fa-xmark"></i>
+                      مرفوض
+                    </span>
+                  }
+                </td>
+                <td class="apr-td-supervisor">{{ item.supervisor }}</td>
+                <td class="apr-td-date">{{ item.date }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (histTotalPages() > 1) {
+        <div class="apr-pagination">
+          <button
+            class="apr-page-btn"
+            [disabled]="histCurrentPage() === 1"
+            (click)="onHistPageChange(histCurrentPage() - 1)">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          @for (page of histPages; track page) {
+            <button
+              class="apr-page-btn"
+              [class.active]="histCurrentPage() === page"
+              (click)="onHistPageChange(page)">
+              {{ page }}
+            </button>
+          }
+          <button
+            class="apr-page-btn"
+            [disabled]="histCurrentPage() === histTotalPages()"
+            (click)="onHistPageChange(histCurrentPage() + 1)">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+</div>

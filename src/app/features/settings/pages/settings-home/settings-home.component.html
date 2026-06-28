@@ -1,0 +1,301 @@
+<div class="stg-page" dir="rtl">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Page Header
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <h1 class="page-title">الإعدادات</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="stg-loading">
+      <div class="stg-spinner"></div>
+      <span>جاري تحميل الإعدادات...</span>
+    </div>
+  } @else {
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Tabs
+    ══════════════════════════════════════════════════════════════════ -->
+    <div class="stg-tabs">
+      <button
+        class="stg-tab"
+        [class.stg-tab--active]="activeTab() === 'system'"
+        (click)="setTab('system')">
+        <i class="fa-solid fa-sliders"></i>
+        النظام
+      </button>
+      <button
+        class="stg-tab"
+        [class.stg-tab--active]="activeTab() === 'notifications'"
+        (click)="setTab('notifications')">
+        <i class="fa-solid fa-bell"></i>
+        الإشعارات
+      </button>
+      <button
+        class="stg-tab"
+        [class.stg-tab--active]="activeTab() === 'appearance'"
+        (click)="setTab('appearance')">
+        <i class="fa-solid fa-palette"></i>
+        الواجهة
+      </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         System Settings
+    ══════════════════════════════════════════════════════════════════ -->
+    @if (activeTab() === 'system') {
+      <div class="card stg-card">
+        <div class="stg-sec-title">
+          <i class="fa-solid fa-sliders"></i>
+          إعدادات النظام
+        </div>
+
+        <div class="stg-form">
+
+          <div class="stg-field">
+            <label class="stg-label">اسم التطبيق</label>
+            <input class="inp" type="text" [(ngModel)]="system.appName">
+          </div>
+
+          <div class="stg-row-2">
+            <div class="stg-field">
+              <label class="stg-label">رسوم الكشف الافتراضية (ج.م)</label>
+              <input class="inp" type="number" [(ngModel)]="system.defaultFee" min="0">
+            </div>
+            <div class="stg-field">
+              <label class="stg-label">وقت الجلسة (دقيقة)</label>
+              <input class="inp" type="number" [(ngModel)]="system.sessionDuration" min="5">
+            </div>
+          </div>
+
+          <!-- Toggle: maintenance mode -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">وضع الصيانة</span>
+              <span class="stg-toggle-sub">يمنع المرضى من تسجيل الدخول مؤقتاً</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="system.maintenanceMode"
+              (click)="system.maintenanceMode = !system.maintenanceMode"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <!-- Toggle: doctor registration -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">تسجيل الأطباء الجدد</span>
+              <span class="stg-toggle-sub">السماح بتقديم طلبات انضمام جديدة</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="system.doctorRegistration"
+              (click)="system.doctorRegistration = !system.doctorRegistration"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <!-- Toggle: allow patient cancel -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">السماح للمريض بإلغاء الحجز</span>
+              <span class="stg-toggle-sub">يمكن للمريض إلغاء حجزه قبل الموعد</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="system.allowPatientCancel"
+              (click)="system.allowPatientCancel = !system.allowPatientCancel"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <!-- Toggle: auto confirm bookings -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">تأكيد الحجوزات تلقائياً</span>
+              <span class="stg-toggle-sub">بدون موافقة الطبيب — غير موصى به</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="system.autoConfirmBookings"
+              (click)="system.autoConfirmBookings = !system.autoConfirmBookings"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <button
+            class="btn-primary stg-save-btn"
+            [disabled]="savingSystem()"
+            (click)="saveSystem()">
+            @if (savingSystem()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i> جاري الحفظ...
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
+            }
+          </button>
+
+        </div>
+      </div>
+    }
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Notification Settings
+    ══════════════════════════════════════════════════════════════════ -->
+    @if (activeTab() === 'notifications') {
+      <div class="card stg-card">
+        <div class="stg-sec-title">
+          <i class="fa-solid fa-bell"></i>
+          إعدادات الإشعارات
+        </div>
+
+        <div class="stg-form">
+
+          <!-- Toggle: email on new booking -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">إيميل عند حجز جديد</span>
+              <span class="stg-toggle-sub">إرسال إشعار للمشرف عند كل حجز</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="notifications.emailOnNewBooking"
+              (click)="notifications.emailOnNewBooking = !notifications.emailOnNewBooking"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <!-- Toggle: email on cancel -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">إيميل عند إلغاء حجز</span>
+              <span class="stg-toggle-sub">إشعار فوري عند أي إلغاء</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="notifications.emailOnCancel"
+              (click)="notifications.emailOnCancel = !notifications.emailOnCancel"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <!-- Toggle: sms reminder -->
+          <div class="stg-toggle-row">
+            <div class="stg-toggle-info">
+              <span class="stg-toggle-label">SMS تذكير للمريض</span>
+              <span class="stg-toggle-sub">رسالة تذكير قبل الموعد</span>
+            </div>
+            <button
+              class="stg-toggle-btn"
+              [class.stg-toggle-btn--on]="notifications.smsOnReminder"
+              (click)="notifications.smsOnReminder = !notifications.smsOnReminder"
+              type="button">
+              <span class="stg-toggle-knob"></span>
+            </button>
+          </div>
+
+          <div class="stg-field">
+            <label class="stg-label">إرسال التذكير قبل الموعد بـ (ساعة)</label>
+            <input
+              class="inp"
+              type="number"
+              [(ngModel)]="notifications.reminderHoursBefore"
+              min="1" max="72"
+              [disabled]="!notifications.smsOnReminder">
+          </div>
+
+          <div class="stg-field">
+            <label class="stg-label">إيميلات المشرفين (افصل بفاصلة)</label>
+            <input class="inp" type="text" [(ngModel)]="notifications.adminEmailsRaw"
+              placeholder="admin@example.com, manager@example.com">
+          </div>
+
+          <button
+            class="btn-primary stg-save-btn"
+            [disabled]="savingNotif()"
+            (click)="saveNotifications()">
+            @if (savingNotif()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i> جاري الحفظ...
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
+            }
+          </button>
+
+        </div>
+      </div>
+    }
+
+    <!-- ══════════════════════════════════════════════════════════════
+         Appearance Settings
+    ══════════════════════════════════════════════════════════════════ -->
+    @if (activeTab() === 'appearance') {
+      <div class="card stg-card">
+        <div class="stg-sec-title">
+          <i class="fa-solid fa-palette"></i>
+          إعدادات الواجهة
+        </div>
+
+        <div class="stg-form">
+
+          <div class="stg-field">
+            <label class="stg-label">اللغة الافتراضية</label>
+            <select class="inp" [(ngModel)]="appearance.language">
+              <option value="ar">العربية</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+
+          <div class="stg-row-2">
+            <div class="stg-field">
+              <label class="stg-label">المنطقة الزمنية</label>
+              <select class="inp" [(ngModel)]="appearance.timezone">
+                <option value="Africa/Cairo">القاهرة (GMT+2)</option>
+                <option value="Asia/Riyadh">الرياض (GMT+3)</option>
+                <option value="Asia/Dubai">دبي (GMT+4)</option>
+                <option value="Europe/London">لندن (GMT+0)</option>
+              </select>
+            </div>
+            <div class="stg-field">
+              <label class="stg-label">صيغة التاريخ</label>
+              <select class="inp" [(ngModel)]="appearance.dateFormat">
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="stg-field">
+            <label class="stg-label">اللون الرئيسي</label>
+            <div class="stg-color-row">
+              <input type="color" class="stg-color-picker" [(ngModel)]="appearance.primaryColor">
+              <input class="inp stg-color-text" type="text" [(ngModel)]="appearance.primaryColor"
+                placeholder="#2563eb">
+            </div>
+          </div>
+
+          <button
+            class="btn-primary stg-save-btn"
+            [disabled]="savingApp()"
+            (click)="saveAppearance()">
+            @if (savingApp()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i> جاري الحفظ...
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
+            }
+          </button>
+
+        </div>
+      </div>
+    }
+
+  }
+
+</div>

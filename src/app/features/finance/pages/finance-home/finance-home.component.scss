@@ -1,0 +1,518 @@
+// ══════════════════════════════════════════════════════════════════════════════
+// Finance Home — Styles
+// ══════════════════════════════════════════════════════════════════════════════
+
+.fin-page { padding: 4px 0; }
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.fin-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fin-updated {
+  font-size: 11.5px;
+  color: var(--textsub);
+  background: var(--surface2);
+  padding: 2px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.fin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fin-export-btn {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i { color: #22c55e; }
+}
+
+// ── Delta row ────────────────────────────────────────────────────────────────
+
+.fin-deltas-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.fin-delta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+
+  &.delta-up {
+    color: var(--green);
+    background: var(--greensoft);
+  }
+
+  &.delta-dn {
+    color: var(--amber);
+    background: var(--ambersoft);
+  }
+}
+
+// ── KPI skeleton ─────────────────────────────────────────────────────────────
+
+.fin-kpi-skeleton {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px) { grid-template-columns: 1fr; }
+}
+
+.fin-skeleton-card {
+  height: 80px;
+  border-radius: var(--radius, 12px);
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: fin-shimmer 1.4s infinite;
+}
+
+@keyframes fin-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Mid Grid ─────────────────────────────────────────────────────────────────
+
+.fin-mid-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+
+  @media (max-width: 840px) { grid-template-columns: 1fr; }
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+
+.fin-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.fin-table-card { padding: 20px; }
+
+// ── Card header ──────────────────────────────────────────────────────────────
+
+.fin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 8px;
+}
+
+.fin-section-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i {
+    color: var(--main-color);
+    font-size: 13px;
+  }
+}
+
+// ── Pill toggle ──────────────────────────────────────────────────────────────
+
+.fin-pill-toggle {
+  display: flex;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.fin-pill-btn {
+  border: none;
+  background: transparent;
+  color: var(--textsub);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.active {
+    background: var(--main-color);
+    color: #fff;
+  }
+
+  &:hover:not(.active) { color: var(--text); }
+}
+
+// ── Spinners ─────────────────────────────────────────────────────────────────
+
+.fin-inner-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 30px 0;
+  color: var(--textsub);
+  font-size: 13px;
+}
+
+.fin-table-spinner { padding: 50px 0; }
+
+.fin-spinner-ring {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--main-color);
+  animation: fin-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes fin-spin { to { transform: rotate(360deg); } }
+
+// ── No-data ───────────────────────────────────────────────────────────────────
+
+.fin-no-data {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 30px 0;
+  font-size: 13px;
+  color: var(--textsub);
+
+  &--success {
+    color: var(--green);
+    i { font-size: 16px; }
+  }
+
+  &--empty {
+    flex-direction: column;
+    gap: 6px;
+    padding: 50px 0;
+
+    i { font-size: 28px; color: var(--border2); }
+    span { font-size: 13px; color: var(--textsub); }
+  }
+}
+
+// ── Doctors list ─────────────────────────────────────────────────────────────
+
+.fin-doctors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.fin-doctor-row { display: flex; flex-direction: column; gap: 6px; }
+
+.fin-doctor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fin-doctor-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fin-doctor-revenue {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.fin-bar-track {
+  height: 8px;
+  border-radius: 6px;
+  background: var(--border2);
+  overflow: hidden;
+}
+
+.fin-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--main-color), var(--teal, #14B8A6));
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ── Pending list ─────────────────────────────────────────────────────────────
+
+.fin-pending-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.fin-pending-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child { border-bottom: none; }
+}
+
+.fin-pending-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  i { font-size: 16px; }
+}
+
+.fin-pending-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.fin-pending-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fin-pending-desc {
+  font-size: 11.5px;
+  color: var(--textsub);
+}
+
+.fin-pending-since {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fin-pending-amount {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.fin-pending-val {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.fin-pending-currency {
+  display: block;
+  font-size: 10.5px;
+  color: var(--textsub);
+}
+
+.fin-settle-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { filter: brightness(1.1); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.fin-settle-all-btn {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ── Table controls ───────────────────────────────────────────────────────────
+
+.fin-table-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fin-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  i {
+    position: absolute;
+    right: 10px;
+    color: var(--textsub);
+    font-size: 12px;
+    pointer-events: none;
+  }
+}
+
+.fin-search-inp {
+  width: 180px;
+  height: 34px;
+  padding-right: 30px;
+  font-size: 12.5px;
+
+  @media (max-width: 600px) { width: 140px; }
+}
+
+.fin-source-select {
+  width: 150px;
+  height: 34px;
+  font-size: 12.5px;
+}
+
+.fin-export-btn-sm {
+  height: 34px;
+  padding: 0 12px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  i { color: #22c55e; }
+}
+
+// ── Table ────────────────────────────────────────────────────────────────────
+
+.fin-table-wrap {
+  overflow-x: auto;
+  margin: 0 -4px;
+}
+
+.fin-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+
+  thead tr {
+    border-bottom: 2px solid var(--border2);
+  }
+
+  th {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--textsub);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+    &:hover { background: var(--surface2); }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.fin-txn-id {
+  direction: ltr;
+  font-size: 11.5px;
+  color: var(--textsub);
+  font-family: monospace;
+}
+
+.fin-party {
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.fin-patient { color: var(--textsub); }
+
+.fin-amount {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fin-commission {
+  font-weight: 700;
+  color: var(--green);
+}
+
+.fin-date {
+  font-size: 12px;
+  color: var(--textsub);
+  white-space: nowrap;
+}
+
+// ── Pagination ───────────────────────────────────────────────────────────────
+
+.fin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding-top: 18px;
+}
+
+.fin-page-btn {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--textsub);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0 6px;
+
+  &:hover:not(:disabled):not(.active) {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  &.active {
+    background: var(--main-color);
+    border-color: var(--main-color);
+    color: #fff;
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}

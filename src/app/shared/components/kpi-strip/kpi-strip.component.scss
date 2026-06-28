@@ -4,36 +4,46 @@
   box-shadow: 0 0 0 2px rgba(29, 177, 122, 0.2), var(--shadow-md);
 }
 
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px !important;
+}
+
 .kpi-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   flex-shrink: 0;
 
-  &--default  { background: var(--surface3);                      color: var(--txt2); }
+  &--default  { background: var(--surface3);                        color: var(--txt2); }
   &--primary  { background: var(--main-light, rgba(29,177,122,.12)); color: var(--main-color); }
-  &--amber    { background: var(--ambersoft);                      color: var(--amber); }
-  &--green    { background: var(--greensoft);                      color: var(--green); }
-  &--red      { background: var(--redsoft);                        color: var(--red); }
-  &--blue     { background: var(--bluesoft);                       color: var(--blue); }
-  &--purple   { background: var(--purplesoft);                     color: var(--purple); }
+  &--amber    { background: var(--ambersoft);                        color: var(--amber); }
+  &--green    { background: var(--greensoft);                        color: var(--green); }
+  &--red      { background: var(--redsoft);                          color: var(--red); }
+  &--blue     { background: var(--bluesoft);                         color: var(--blue); }
+  &--purple   { background: var(--purplesoft);                       color: var(--purple); }
 }
 
 .kpi-val {
-  font-size: 1.15rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--txt);
-  line-height: 1.2;
+  line-height: 1.1;
+  margin-top: 2px;
 }
 
 .kpi-lbl {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--txt3);
   white-space: nowrap;
+  margin-top: -4px;
 }
 
 // variant right border accents

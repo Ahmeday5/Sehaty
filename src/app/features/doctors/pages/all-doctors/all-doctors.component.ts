@@ -1,20 +1,20 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
-  ElementRef,
   OnInit,
-  ViewChild,
-  computed,
   inject,
   signal,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { DoctorsService } from '../../services/doctors.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
-import { Doctor } from '../../models/doctor.model';
+import { Doctor, DoctorsListParams } from '../../models/doctor.model';
 import { Speciality } from '../../../specialities/models/speciality.model';
 import { DoctorCardComponent } from '../../components/doctor-card/doctor-card.component';
 import { DoctorFormComponent } from '../../components/doctor-form/doctor-form.component';
@@ -26,7 +26,7 @@ import { SearchFilterBarComponent } from '../../../../shared/components/search-f
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 import { FilterOption } from '../../../../shared/components/search-filter-bar/search-filter-bar.model';
 
-const ITEMS_PER_PAGE = 12;
+const PAGE_SIZE = 12;
 
 @Component({
   selector: 'app-all-doctors',
@@ -50,53 +50,28 @@ export class AllDoctorsComponent implements OnInit {
   private readonly svc     = inject(DoctorsService);
   private readonly toast   = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly cdr     = inject(ChangeDetectorRef);
 
-  @ViewChild('filterWrap') filterWrap!: ElementRef<HTMLDivElement>;
+  protected readonly loading        = signal(false);
+  protected readonly specialities   = signal<Speciality[]>([]);
+  protected readonly displayed      = signal<Doctor[]>([]);
+  protected readonly total          = signal(0);
+  protected readonly currentPage    = signal(1);
+  protected readonly showAddModal   = signal(false);
+  protected readonly editingDoctor  = signal<Doctor | null>(null);
+  protected readonly lastUpdate     = signal<Date | null>(null);
+  protected readonly activeFilter   = signal<string | null>(null);
+  protected readonly activeStatus   = signal<boolean | undefined>(undefined);
 
-  protected readonly loading          = signal(false);
-  protected readonly specialities     = signal<Speciality[]>([]);
-  protected readonly selectedFilter   = signal<string | null>(null);
-  protected readonly currentPage      = signal(1);
-  protected readonly showAddModal     = signal(false);
-  protected readonly editingDoctor    = signal<Doctor | null>(null);
-  protected readonly lastUpdate       = signal<Date | null>(null);
   protected searchValue = '';
+  private readonly search$ = new Subject<string>();
 
-  private allDoctors: Doctor[] = [];
-  protected filteredDoctors: Doctor[] = [];
-
-  protected readonly totalPages = signal(0);
-  protected readonly displayed  = signal<Doctor[]>([]);
-
-  protected get totalCount():    number { return this.allDoctors.length; }
-  protected get activeCount():   number { return this.allDoctors.filter((d) => d.isActive).length; }
-  protected get inactiveCount(): number { return this.allDoctors.filter((d) => !d.isActive).length; }
+  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
+  protected readonly pageSize = PAGE_SIZE;
 
   protected readonly kpiItems = computed<KpiItem[]>(() => [
-    {
-      icon: 'fa-user-doctor',
-      value: String(this.totalCount),
-      label: 'إجمالي الأطباء',
-      variant: 'primary',
-    },
-    {
-      icon: 'fa-circle-check',
-      value: String(this.activeCount),
-      label: 'أطباء نشطون',
-      variant: 'green',
-    },
-    {
-      icon: 'fa-circle-xmark',
-      value: String(this.inactiveCount),
-      label: 'أطباء معطّلون',
-      variant: 'red',
-    },
-    {
-      icon: 'fa-stethoscope',
-      value: String(this.specialities().length),
-      label: 'التخصصات',
-      variant: 'blue',
-    },
+    { icon: 'fa-user-doctor',  value: String(this.total()),           label: 'إجمالي الأطباء',  variant: 'primary' },
+    { icon: 'fa-stethoscope',  value: String(this.specialities().length), label: 'التخصصات',    variant: 'blue'    },
   ]);
 
   protected readonly filterOpts = computed<FilterOption[]>(() => [
@@ -105,51 +80,43 @@ export class AllDoctorsComponent implements OnInit {
   ]);
 
   ngOnInit(): void {
-    this.loadSpecialities();
-    this.loadAllDoctors();
-  }
+    this.svc.getAllSpecialities().subscribe({ next: (d) => this.specialities.set(d) });
+    this.load();
 
-  protected onSearch(query: string): void { this.doSearch(query); }
-
-  protected onFilterChange(id: string | null): void {
-    this.onFilterClick(id);
-  }
-
-  protected onFilterClick(name: string | null): void {
-    this.selectedFilter.set(name);
-    this.currentPage.set(1);
-    if (name === null) {
-      this.setDisplayed(this.allDoctors);
-      return;
-    }
-    this.loading.set(true);
-    this.svc.getDoctorsBySpecialization(name).subscribe({
-      next: (data) => { this.setDisplayed(data); this.loading.set(false); },
-      error: () => { this.setDisplayed([]); this.loading.set(false); },
+    this.search$.pipe(debounceTime(350), distinctUntilChanged()).subscribe((q) => {
+      this.searchValue = q;
+      this.currentPage.set(1);
+      this.load();
     });
   }
 
-  protected onPageChange(page: number): void {
-    this.currentPage.set(page);
-    this.updatePage();
+  protected onSearch(query: string): void    { this.search$.next(query); }
+  protected onFilterChange(id: string | null): void {
+    this.activeFilter.set(id);
+    this.currentPage.set(1);
+    this.load();
   }
+
+  protected onStatusFilter(val: boolean | undefined): void {
+    this.activeStatus.set(val);
+    this.currentPage.set(1);
+    this.load();
+  }
+
+  protected onPageChange(page: number): void { this.currentPage.set(page); this.load(); }
 
   protected openAdd(): void  { this.showAddModal.set(true);  }
   protected closeAdd(): void { this.showAddModal.set(false); }
-
   protected openEdit(doctor: Doctor): void  { this.editingDoctor.set(doctor); }
   protected closeEdit(): void               { this.editingDoctor.set(null);   }
 
   protected onSaved(): void {
     this.showAddModal.set(false);
     this.editingDoctor.set(null);
-    this.refresh();
+    this.load();
   }
 
-  protected refresh(): void {
-    this.svc.invalidate();
-    this.loadAllDoctors();
-  }
+  protected refresh(): void { this.load(); }
 
   protected async onToggleActive(doctor: Doctor): Promise<void> {
     const action = doctor.isActive ? 'تعطيل' : 'تفعيل';
@@ -164,7 +131,7 @@ export class AllDoctorsComponent implements OnInit {
       ? this.svc.deactivateDoctor(doctor.id)
       : this.svc.activateDoctor(doctor.id);
     call$.subscribe({
-      next: () => { this.toast.success(`تم ${action} الطبيب`); this.refresh(); },
+      next:  () => { this.toast.success(`تم ${action} الطبيب`); this.load(); },
       error: (e) => this.toast.error(e?.message ?? `فشل ${action} الطبيب`),
     });
   }
@@ -180,61 +147,36 @@ export class AllDoctorsComponent implements OnInit {
     try {
       await firstValueFrom(this.svc.deleteDoctor(doctor.id));
       this.toast.success('تم حذف الطبيب بنجاح');
-      this.refresh();
+      this.load();
     } catch {
       this.toast.error('فشل حذف الطبيب');
     }
   }
 
-  protected scrollFilters(dir: number): void {
-    const el = this.filterWrap?.nativeElement;
-    if (!el) return;
-    el.scrollBy({ left: dir * 220, behavior: 'smooth' });
-  }
-
-  private loadSpecialities(): void {
-    this.svc.getAllSpecialities().subscribe({ next: (data) => this.specialities.set(data) });
-  }
-
-  private loadAllDoctors(): void {
+  private load(): void {
     this.loading.set(true);
-    this.svc.getAllDoctors().subscribe({
-      next: (data) => {
-        this.allDoctors = data;
-        this.setDisplayed(data);
+
+    const params: DoctorsListParams = {
+      page:     this.currentPage(),
+      pageSize: PAGE_SIZE,
+    };
+    if (this.searchValue.trim())        params.name           = this.searchValue.trim();
+    if (this.activeFilter())            params.specialization = this.activeFilter()!;
+    if (this.activeStatus() !== undefined) params.isActive    = this.activeStatus();
+
+    this.svc.getDoctors(params).subscribe({
+      next: (res) => {
+        this.displayed.set(res.data ?? []);
+        this.total.set(res.total ?? 0);
         this.lastUpdate.set(new Date());
         this.loading.set(false);
       },
-      error: () => this.loading.set(false),
-    });
-  }
-
-  private doSearch(query: string): void {
-    if (!query.trim()) {
-      const sf = this.selectedFilter();
-      this.setDisplayed(sf ? this.allDoctors.filter((d) => d.specialization === sf) : this.allDoctors);
-      return;
-    }
-    this.loading.set(true);
-    this.svc.searchByName(query).subscribe({
-      next: (data) => {
-        const sf = this.selectedFilter();
-        this.setDisplayed(sf ? data.filter((d) => d.specialization === sf) : data);
+      error: () => {
+        this.displayed.set([]);
+        this.total.set(0);
         this.loading.set(false);
+        this.toast.error('فشل تحميل بيانات الأطباء');
       },
-      error: () => { this.setDisplayed([]); this.loading.set(false); },
     });
-  }
-
-  private setDisplayed(data: Doctor[]): void {
-    this.filteredDoctors = data;
-    this.totalPages.set(Math.ceil(data.length / ITEMS_PER_PAGE));
-    this.currentPage.set(1);
-    this.updatePage();
-  }
-
-  private updatePage(): void {
-    const start = (this.currentPage() - 1) * ITEMS_PER_PAGE;
-    this.displayed.set(this.filteredDoctors.slice(start, start + ITEMS_PER_PAGE));
   }
 }

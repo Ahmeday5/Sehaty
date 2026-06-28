@@ -2,31 +2,26 @@
 
   <!-- ══════════ BANNER ══════════ -->
   <div class="db-banner">
-
-    <!-- Animated background layers -->
     <div class="db-banner-bg-orb db-banner-bg-orb--1"></div>
     <div class="db-banner-bg-orb db-banner-bg-orb--2"></div>
     <div class="db-banner-bg-orb db-banner-bg-orb--3"></div>
     <div class="db-banner-grid-lines"></div>
-
-    <!-- Floating particles -->
     <span class="db-particle db-particle--1"></span>
     <span class="db-particle db-particle--2"></span>
     <span class="db-particle db-particle--3"></span>
     <span class="db-particle db-particle--4"></span>
     <span class="db-particle db-particle--5"></span>
 
-    <!-- LEFT: brand + refresh — أقصى الشمال -->
     <div class="db-banner-left">
       <div class="db-banner-refresh">
         <button class="db-refresh-btn" (click)="refresh()" [disabled]="loading()" title="تحديث البيانات">
           <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
         </button>
         @if (lastUpdate()) {
-        <span class="db-last-update">
-          <i class="fa-regular fa-clock"></i>
-          {{ lastUpdate() | date:'HH:mm' }}
-        </span>
+          <span class="db-last-update">
+            <i class="fa-regular fa-clock"></i>
+            {{ lastUpdate() | date:'HH:mm' }}
+          </span>
         }
       </div>
       <div class="db-brand">
@@ -45,7 +40,6 @@
       </div>
     </div>
 
-    <!-- CENTER: animated globe — المنتصف -->
     <div class="db-banner-globe">
       <div class="db-globe-ring db-globe-ring--1"></div>
       <div class="db-globe-ring db-globe-ring--2"></div>
@@ -58,7 +52,6 @@
       <span class="db-orbit-dot db-orbit-dot--3"></span>
     </div>
 
-    <!-- RIGHT: welcome text — أقصى اليمين -->
     <div class="db-banner-right">
       <div class="db-banner-eyebrow">
         <span class="db-eyebrow-dot"></span>
@@ -70,108 +63,137 @@
       </h2>
       <p class="db-banner-sub">منصة إدارة الرعاية الصحية المتكاملة — إدارة أكثر ذكاءً، رعاية أفضل</p>
       <div class="db-banner-pills">
-        <span class="db-pill">
-          <i class="fa-solid fa-building-columns"></i>
-          المباني والمنشآت والمراكز الطبية
-        </span>
-        <span class="db-pill">
-          <i class="fa-solid fa-city"></i>
-          المقارات
-        </span>
-        <span class="db-pill">
-          <i class="fa-solid fa-utensils"></i>
-          المطاعم والمقاهي
-        </span>
+        <span class="db-pill"><i class="fa-solid fa-building-columns"></i> المباني والمنشآت</span>
+        <span class="db-pill"><i class="fa-solid fa-city"></i> المقارات</span>
+        <span class="db-pill"><i class="fa-solid fa-utensils"></i> المطاعم والمقاهي</span>
       </div>
     </div>
-
   </div>
 
   <!-- ══════════ KPI CARDS ══════════ -->
   @if (loading()) {
-  <div class="db-spinner">
-    <div class="spinner-border" style="color:var(--main-color)" role="status">
-      <span class="visually-hidden">جاري التحميل...</span>
+    <div class="db-spinner">
+      <div class="spinner-border" style="color:var(--main-color)" role="status">
+        <span class="visually-hidden">جاري التحميل...</span>
+      </div>
     </div>
-  </div>
   } @else {
 
   <div class="db-kpi-grid">
-    <!-- Appointments (API) -->
     @for (stat of cardStats(); track stat.label) {
-    <div class="db-kpi-card">
-      <div class="db-kpi-icon" [style.background]="stat.gradient">
-        <i class="fa-solid" [ngClass]="stat.icon"></i>
-      </div>
-      <div class="db-kpi-body">
-        <p class="db-kpi-label">{{ stat.label }}</p>
-        <h3 class="db-kpi-value">
-          @if (stat.isCurrency) {
-          {{ stat.value | number }}<small class="db-kpi-curr">ج.م</small>
-          } @else {
-          {{ stat.value | number }}
-          }
-        </h3>
-        <div class="db-kpi-delta">
-          <i class="fa-solid fa-arrow-trend-up"></i>
-          <span>+{{ stat.valueToday | number }}{{ stat.isCurrency ? ' ج.م' : '' }} اليوم</span>
+      <div class="db-kpi-card">
+        <div class="db-kpi-icon" [style.background]="stat.gradient">
+          <i class="fa-solid" [ngClass]="stat.icon"></i>
+        </div>
+        <div class="db-kpi-body">
+          <p class="db-kpi-label">{{ stat.label }}</p>
+          <h3 class="db-kpi-value">
+            @if (stat.isCurrency) {
+              {{ stat.value | number }}<small class="db-kpi-curr">ج.م</small>
+            } @else {
+              {{ stat.value | number }}
+            }
+          </h3>
+          <div class="db-kpi-delta">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+            <span>{{ stat.valueSub }}</span>
+          </div>
         </div>
       </div>
-    </div>
     }
-    <!-- Bookings Today (local) -->
-    <div class="db-kpi-card">
-      <div class="db-kpi-icon" style="background:linear-gradient(135deg,#10b981 0%,#059669 100%)">
-        <i class="fa-solid fa-calendar-day"></i>
-      </div>
-      <div class="db-kpi-body">
-        <p class="db-kpi-label">حجوزات اليوم</p>
-        <h3 class="db-kpi-value">1,392</h3>
-        <div class="db-kpi-delta">
-          <i class="fa-solid fa-arrow-trend-up"></i>
-          <span>94% معدل الحضور</span>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- ══════════ CHARTS ROW ══════════ -->
   <div class="db-charts-row">
 
-    <!-- Revenue Bar Chart — Canvas -->
+    <!-- ── Revenue Bar Chart ─────────────────────────────────────── -->
     <div class="db-chart-card">
       <div class="db-chart-header">
         <div>
-          <div class="db-sec-title">الإيرادات الشهرية</div>
-          <div class="db-sec-sub">آخر 8 أشهر — بالآلاف (ج.م)</div>
+          <div class="db-sec-title">
+            الإيرادات
+            @if (revMode() === 'month') { الشهرية } @else { الأسبوعية }
+          </div>
+          <div class="db-sec-sub">
+            آخر {{ revCount() }}
+            @if (revMode() === 'month') { شهور } @else { أسابيع }
+          </div>
         </div>
-        <div class="db-pill-toggle">
-          <button class="db-ptoggle-btn active" (click)="setRevView('month', $event)">شهري</button>
-          <button class="db-ptoggle-btn" (click)="setRevView('week', $event)">أسبوعي</button>
+
+        <div class="db-chart-controls">
+          <!-- type toggle -->
+          <div class="db-pill-toggle">
+            <button
+              class="db-ptoggle-btn"
+              [class.active]="revMode() === 'month'"
+              (click)="setRevView('month', $event)">
+              شهري
+            </button>
+            <button
+              class="db-ptoggle-btn"
+              [class.active]="revMode() === 'week'"
+              (click)="setRevView('week', $event)">
+              أسبوعي
+            </button>
+          </div>
+          <!-- count input -->
+          <div class="db-count-input-wrap" title="عدد الفترات المعروضة">
+            <i class="fa-solid fa-list-ol db-count-icon"></i>
+            <input
+              class="db-count-input"
+              type="number"
+              [value]="revCount()"
+              min="2" max="60"
+              (change)="onRevCountChange(+$any($event.target).value)"
+              (keydown.enter)="onRevCountChange(+$any($event.target).value)">
+          </div>
         </div>
       </div>
+
       <div class="db-bar-canvas-wrap">
         <canvas #barCanvas class="db-bar-canvas"></canvas>
+        @if (revLoading()) {
+          <div class="db-chart-loading-overlay">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </div>
+        }
       </div>
     </div>
 
-    <!-- Donut Chart — Canvas -->
+    <!-- ── Specialty Donut ────────────────────────────────────────── -->
     <div class="db-chart-card db-chart-card--sm">
       <div class="db-sec-title" style="margin-bottom:4px">توزيع التخصصات</div>
+
       <div class="db-donut-wrap">
         <canvas #donutCanvas class="db-donut-canvas"></canvas>
         <div class="db-donut-center">
-          <span class="db-donut-total">284</span>
-          <span class="db-donut-lbl">طبيب</span>
+          @if (donutTooltip(); as tip) {
+            <span class="db-donut-total" [style.color]="tip.color">{{ tip.count | number }}</span>
+            <span class="db-donut-lbl">{{ tip.pct | number:'1.1-1' }}%</span>
+          } @else {
+            <span class="db-donut-total">{{ donutTotal() | number }}</span>
+            <span class="db-donut-lbl">طبيب</span>
+          }
         </div>
       </div>
-      <div class="db-donut-legend">
-        @for (item of specialties; track item.label) {
-        <div class="db-legend-row">
-          <span class="db-legend-dot" [style.background]="item.color"></span>
-          <span class="db-legend-name">{{ item.label }}</span>
-          <span class="db-legend-pct">{{ item.pct }}%</span>
+
+      <!-- tooltip bar -->
+      @if (donutTooltip(); as tip) {
+        <div class="db-donut-tip">
+          <span class="db-donut-tip-dot" [style.background]="tip.color"></span>
+          <strong>{{ tip.label }}</strong>
+          <span class="db-donut-tip-count">{{ tip.count }} طبيب</span>
         </div>
+      }
+
+      <div class="db-donut-legend">
+        @for (item of specialties(); track item.label) {
+          <div class="db-legend-row">
+            <span class="db-legend-dot" [style.background]="item.color"></span>
+            <span class="db-legend-name">{{ item.label }}</span>
+            <span class="db-legend-count">{{ item.count }}</span>
+            <span class="db-legend-pct">{{ item.pct | number:'1.1-1' }}%</span>
+          </div>
         }
       </div>
     </div>
@@ -181,31 +203,61 @@
   <!-- ══════════ BOTTOM ROW ══════════ -->
   <div class="db-bottom-row">
 
-    <!-- Recent Bookings -->
+    <!-- ── Latest Appointments ──────────────────────────────────── -->
     <div class="db-table-card">
       <div class="db-table-header">
         <div class="db-sec-title" style="margin:0">آخر الحجوزات</div>
-        <span class="db-badge-count">{{ recentBookings.length }}</span>
-      </div>
-      <div class="db-booking-list">
-        @for (b of recentBookings; track b.id) {
-        <div class="db-booking-row">
-          <div class="db-booking-avatar">
-            <i class="fa-solid fa-calendar-check"></i>
+        <div class="db-table-controls">
+          @if (apptLoading()) {
+            <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--main-color);font-size:12px"></i>
+          }
+          <span class="db-badge-count">{{ recentBookings().length }}</span>
+          <!-- count input -->
+          <div class="db-count-input-wrap" title="عدد الحجوزات المعروضة">
+            <i class="fa-solid fa-list-ol db-count-icon"></i>
+            <input
+              class="db-count-input"
+              type="number"
+              [value]="apptCount()"
+              min="1" max="100"
+              (change)="onApptCountChange(+$any($event.target).value)"
+              (keydown.enter)="onApptCountChange(+$any($event.target).value)">
           </div>
-          <div class="db-booking-info">
-            <div class="db-booking-name">{{ b.patient }} ← {{ b.doctor }}</div>
-            <div class="db-booking-time">
-              <i class="fa-regular fa-clock"></i> {{ b.time }}
-            </div>
-          </div>
-          <span class="db-status-badge" [ngClass]="b.statusClass">{{ b.status }}</span>
         </div>
+      </div>
+
+      <div class="db-booking-list">
+        @for (b of recentBookings(); track b.id) {
+          <div class="db-booking-row">
+            <div class="db-booking-avatar">
+              <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <div class="db-booking-info">
+              <div class="db-booking-names">
+                <span class="db-booking-person db-booking-person--patient">
+                  <i class="fa-solid fa-user"></i>{{ b.patient }}
+                </span>
+                <i class="fa-solid fa-arrow-right-long db-booking-arrow"></i>
+                <span class="db-booking-person db-booking-person--doctor">
+                  <i class="fa-solid fa-user-doctor"></i>{{ b.doctor }}
+                </span>
+              </div>
+              <div class="db-booking-time">
+                <i class="fa-regular fa-clock"></i> {{ b.time }}
+              </div>
+            </div>
+            <span class="db-status-badge" [ngClass]="b.statusClass">{{ b.status }}</span>
+          </div>
+        } @empty {
+          <div class="db-empty-state">
+            <i class="fa-regular fa-calendar-xmark"></i>
+            <span>لا توجد حجوزات</span>
+          </div>
         }
       </div>
     </div>
 
-    <!-- Activity Log -->
+    <!-- ── Activity Log ─────────────────────────────────────────── -->
     <div class="db-table-card db-activity-card">
       <div class="db-table-header">
         <div class="db-act-header-left">
@@ -213,38 +265,77 @@
           <span class="db-act-live-dot"></span>
           <span class="db-act-live-text">مباشر</span>
         </div>
-        <span class="db-time-hint"><i class="fa-regular fa-clock"></i> آخر 24 ساعة</span>
-      </div>
-      <div class="db-activity-timeline">
-        @for (act of activityLog; track act.id; let last = $last) {
-        <div class="db-act-item" [attr.data-index]="$index">
-          <!-- timeline track -->
-          <div class="db-act-track">
-            <div class="db-act-node"
-                 [style.background]="act.nodeColor"
-                 [style.box-shadow]="'0 0 0 3px ' + act.bgColor + ', 0 4px 14px ' + act.nodeColor + '55'">
-              <i class="fa-solid" [ngClass]="act.icon"></i>
-            </div>
-            @if (!last) {
-              <div class="db-act-line" [style.background]="'linear-gradient(180deg,' + act.nodeColor + '40 0%, rgba(255,255,255,.04) 100%)'"></div>
-            }
+        <div class="db-table-controls">
+          @if (actLoading()) {
+            <i class="fa-solid fa-circle-notch fa-spin" style="color:var(--main-color);font-size:12px"></i>
+          }
+          <!-- hours input -->
+          <div class="db-count-input-wrap" title="نطاق الساعات">
+            <i class="fa-regular fa-clock db-count-icon"></i>
+            <input
+              class="db-count-input"
+              type="number"
+              [value]="actHours()"
+              min="1" max="720"
+              (change)="onActParamsChange(+$any($event.target).value, actCount())"
+              (keydown.enter)="onActParamsChange(+$any($event.target).value, actCount())"
+              title="عدد الساعات الماضية">
+            <span class="db-count-unit">س</span>
           </div>
-          <!-- content -->
-          <div class="db-act-content" [style.border-color]="act.bgColor" [style.background]="act.bgColor">
-            <div class="db-act-top">
-              <span class="db-act-text">{{ act.text }}</span>
-              <span class="db-activity-type" [ngClass]="act.typeClass">{{ act.typeLabel }}</span>
-            </div>
-            <div class="db-act-meta">
-              <i class="fa-regular fa-clock" [style.color]="act.nodeColor"></i>
-              <span>{{ act.time }}</span>
-            </div>
+          <!-- count input -->
+          <div class="db-count-input-wrap" title="عدد السجلات">
+            <i class="fa-solid fa-list-ol db-count-icon"></i>
+            <input
+              class="db-count-input"
+              type="number"
+              [value]="actCount()"
+              min="1" max="200"
+              (change)="onActParamsChange(actHours(), +$any($event.target).value)"
+              (keydown.enter)="onActParamsChange(actHours(), +$any($event.target).value)">
           </div>
         </div>
+      </div>
+
+      <div class="db-activity-timeline">
+        @for (act of activityLog(); track act.id; let last = $last) {
+          <div class="db-act-item">
+            <div class="db-act-track">
+              <div class="db-act-node"
+                   [style.background]="act.nodeColor"
+                   [style.box-shadow]="'0 0 0 3px ' + act.bgColor + ', 0 4px 14px ' + act.nodeColor + '55'">
+                <i class="fa-solid" [ngClass]="act.icon"></i>
+              </div>
+              @if (!last) {
+                <div class="db-act-line"
+                     [style.background]="'linear-gradient(180deg,' + act.nodeColor + '40 0%, rgba(255,255,255,.04) 100%)'">
+                </div>
+              }
+            </div>
+            <div class="db-act-content" [style.border-color]="act.bgColor" [style.background]="act.bgColor">
+              <div class="db-act-top">
+                <div class="db-act-texts">
+                  <span class="db-act-title">{{ act.title }}</span>
+                  @if (act.description) {
+                    <span class="db-act-desc">{{ act.description }}</span>
+                  }
+                </div>
+                <span class="db-activity-type" [ngClass]="act.typeClass">{{ act.typeLabel }}</span>
+              </div>
+              <div class="db-act-meta">
+                <i class="fa-regular fa-clock" [style.color]="act.nodeColor"></i>
+                <span>{{ act.time }}</span>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <div class="db-empty-state">
+            <i class="fa-regular fa-bell-slash"></i>
+            <span>لا يوجد نشاط في هذه الفترة</span>
+          </div>
         }
       </div>
     </div>
-    
+
   </div>
 
   } <!-- end @else -->

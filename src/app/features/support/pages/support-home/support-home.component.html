@@ -1,0 +1,259 @@
+<div class="spt-page" dir="rtl">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Page Header
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="spt-title-group">
+      <h1 class="page-title">الدعم الفني</h1>
+      @if (kpiSummary()?.urgentCount) {
+        <span class="spt-badge-urgent">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          {{ kpiSummary()!.urgentCount }} عاجلة
+        </span>
+      }
+      @if (lastUpdate()) {
+        <span class="spt-updated">آخر تحديث {{ lastUpdate() | date:'HH:mm' }}</span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="loadingKpi()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loadingKpi()"></i>
+      تحديث
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       KPI Strip
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (!loadingKpi()) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  } @else {
+    <div class="spt-kpi-skeleton">
+      @for (i of [1,2,3,4]; track i) { <div class="spt-skeleton-card"></div> }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Main 2-col layout
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="spt-grid">
+
+    <!-- ── Tickets List ────────────────────────────────────────── -->
+    <div class="card spt-card">
+
+      <!-- Header + filters -->
+      <div class="spt-list-header">
+        <span class="spt-section-title">
+          <i class="fa-solid fa-ticket"></i>
+          التذاكر المفتوحة
+          @if (!loadingTickets()) {
+            <span class="spt-count-chip">{{ filtered().length }}</span>
+          }
+        </span>
+        <div class="spt-filters">
+          <div class="spt-search-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input
+              class="inp spt-search-inp"
+              type="text"
+              placeholder="بحث..."
+              (input)="onSearch($any($event.target).value)">
+          </div>
+          <select class="inp spt-sel" (change)="onPartyFilter($any($event.target).value)">
+            <option value="all">الكل</option>
+            <option value="patient">مريض</option>
+            <option value="doctor">طبيب</option>
+            <option value="pharmacy">صيدلية</option>
+          </select>
+          <select class="inp spt-sel" (change)="onPriorityFilter($any($event.target).value)">
+            <option value="all">كل الأولويات</option>
+            <option value="urgent">عاجل</option>
+            <option value="normal">عادي</option>
+            <option value="low">منخفض</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- List body -->
+      @if (loadingTickets()) {
+        <div class="spt-spinner-wrap">
+          <div class="spt-spinner"></div>
+          <span>جاري التحميل...</span>
+        </div>
+      } @else if (filtered().length === 0) {
+        <div class="spt-empty">
+          <i class="fa-solid fa-inbox"></i>
+          <span>لا توجد تذاكر مطابقة</span>
+        </div>
+      } @else {
+        <div class="spt-ticket-list">
+          @for (ticket of filtered(); track ticket.id) {
+            <div
+              class="spt-ticket"
+              [class.spt-ticket--urgent]="ticket.priority === 'urgent'"
+              [class.spt-ticket--active]="isActive(ticket)"
+              (click)="selectTicket(ticket)">
+
+              <div class="spt-ticket-main">
+                <div class="spt-ticket-top">
+                  <span class="spt-ticket-title">{{ ticket.title }}</span>
+                  <span class="spt-priority" [ngClass]="priorityClass(ticket.priority)">
+                    {{ priorityLabel(ticket.priority) }}
+                  </span>
+                </div>
+                <div class="spt-ticket-sub">
+                  <span>{{ ticket.partyName }}</span>
+                  <span class="badge" [ngClass]="partyBadgeClass(ticket.partyType)" style="font-size:10px;padding:1px 7px">
+                    {{ partyLabel(ticket.partyType) }}
+                  </span>
+                </div>
+                <div class="spt-ticket-preview">{{ ticket.preview }}</div>
+              </div>
+
+              <div class="spt-ticket-meta">
+                <span class="spt-status" [ngClass]="statusClass(ticket.status)">
+                  {{ statusLabel(ticket.status) }}
+                </span>
+                <span class="spt-time-ago">{{ ticket.timeAgo }}</span>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- ── Ticket Detail Panel ─────────────────────────────────── -->
+    <div class="card spt-card spt-detail-card">
+
+      @if (!activeTicket() && !loadingDetail()) {
+        <div class="spt-detail-empty">
+          <i class="fa-regular fa-comments"></i>
+          <span>اختر تذكرة لعرض التفاصيل والرد</span>
+        </div>
+
+      } @else if (loadingDetail()) {
+        <div class="spt-spinner-wrap">
+          <div class="spt-spinner"></div>
+        </div>
+
+      } @else {
+        <div class="spt-detail-body">
+
+          <!-- ── Header row: title + close btn ── -->
+          <div class="spt-dh-row">
+            <div class="spt-dh-title-wrap">
+              <span class="spt-dh-title">{{ activeTicket()!.title }}</span>
+              <span class="spt-dh-meta">
+                TK-{{ activeTicket()!.id.toString().padStart(3,'0') }} ·
+                {{ activeTicket()!.partyName }} ·
+                {{ activeTicket()!.timeAgo }}
+              </span>
+            </div>
+            @if (!isTicketClosed()) {
+              <button
+                class="spt-close-ticket-btn"
+                [disabled]="closingTicket()"
+                (click)="closeTicket()">
+                @if (closingTicket()) {
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                } @else {
+                  إغلاق
+                }
+              </button>
+            } @else {
+              <span class="spt-closed-chip">
+                <i class="fa-solid fa-circle-check"></i>
+                مغلقة
+              </span>
+            }
+          </div>
+
+          <!-- ── User message block ── -->
+          <div class="spt-msg-block">
+            <div class="spt-msg-block-label">رسالة المستخدم:</div>
+            <div class="spt-msg-block-body">
+              {{ activeTicket()!.messages[0]?.body ?? activeTicket()!.preview }}
+            </div>
+          </div>
+
+          <!-- ── User info grid ── -->
+          <div class="spt-info-block">
+            <div class="spt-info-block-label">معلومات المستخدم</div>
+            <div class="spt-info-grid">
+              <div class="spt-info-item">
+                <span class="spt-info-key">النوع:</span>
+                <strong>{{ partyLabel(activeTicket()!.partyType) }}</strong>
+              </div>
+              <div class="spt-info-item">
+                <span class="spt-info-key">الأولوية:</span>
+                <span class="spt-priority" [ngClass]="priorityClass(activeTicket()!.priority)">
+                  {{ priorityLabel(activeTicket()!.priority) }}
+                </span>
+              </div>
+              <div class="spt-info-item">
+                <span class="spt-info-key">الحالة:</span>
+                <span class="spt-status" [ngClass]="statusClass(activeTicket()!.status)">
+                  {{ statusLabel(activeTicket()!.status) }}
+                </span>
+              </div>
+              <div class="spt-info-item">
+                <span class="spt-info-key">وقت الفتح:</span>
+                <strong>{{ activeTicket()!.timeAgo }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Previous replies (if any beyond first) ── -->
+          @if (activeTicket()!.messages.length > 1) {
+            <div class="spt-prev-replies">
+              @for (msg of activeTicket()!.messages.slice(1); track msg.id) {
+                <div class="spt-reply-item" [class.spt-reply-item--support]="msg.senderType === 'support'">
+                  <span class="spt-reply-sender">{{ msg.sender }}</span>
+                  <span class="spt-reply-body">{{ msg.body }}</span>
+                  <span class="spt-reply-time">{{ msg.time }}</span>
+                </div>
+              }
+              <div #messagesEnd></div>
+            </div>
+          } @else {
+            <div #messagesEnd></div>
+          }
+
+          <!-- ── Reply box ── -->
+          @if (!isTicketClosed()) {
+            <div class="spt-reply-section">
+              <label class="spt-reply-label">ردّ على التذكرة</label>
+              <textarea
+                class="inp spt-reply-inp"
+                rows="3"
+                placeholder="اكتب ردك هنا..."
+                [(ngModel)]="replyText"
+                (keydown)="onReplyKey($event)">
+              </textarea>
+              <div class="spt-reply-actions">
+                <button
+                  class="btn-primary spt-send-btn"
+                  [disabled]="!replyText.trim() || sendingReply()"
+                  (click)="sendReply()">
+                  @if (sendingReply()) {
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                  } @else {
+                    <i class="fa-solid fa-paper-plane"></i>
+                  }
+                  إرسال الرد
+                </button>
+                <button class="btn-ghost spt-transfer-btn">
+                  <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                  تحويل
+                </button>
+              </div>
+            </div>
+          }
+
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

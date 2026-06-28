@@ -36,15 +36,39 @@
   </div>
 
   <!-- ════════════════════════════════
-       Search bar
+       Search bars (name + phone)
        ════════════════════════════════ -->
-  <div class="mb-4">
-    <app-search-filter-bar
-      [placeholder]="'البحث باسم المريض...'"
-      [filterOptions]="[]"
-      [selectedFilter]="null"
-      (searchChange)="onSearch($event)">
-    </app-search-filter-bar>
+  <div class="pl-search-row mb-4">
+    <div class="pl-search-field">
+      <i class="fa-solid fa-magnifying-glass pl-search-icon"></i>
+      <input
+        class="pl-search-input"
+        type="text"
+        placeholder="بحث باسم المريض..."
+        [value]="nameValue"
+        (input)="onNameSearch($any($event.target).value)"
+        dir="rtl">
+      @if (nameValue) {
+        <button class="pl-search-clear" (click)="onNameSearch('')" type="button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+    </div>
+    <div class="pl-search-field">
+      <i class="fa-solid fa-phone pl-search-icon"></i>
+      <input
+        class="pl-search-input"
+        type="text"
+        placeholder="بحث برقم الهاتف..."
+        [value]="phoneValue"
+        (input)="onPhoneSearch($any($event.target).value)"
+        dir="ltr">
+      @if (phoneValue) {
+        <button class="pl-search-clear" (click)="onPhoneSearch('')" type="button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      }
+    </div>
   </div>
 
   <!-- ════════════════════════════════

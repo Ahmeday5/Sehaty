@@ -136,6 +136,38 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'finance',
+        canActivate: [roleGuard(['Admin'])],
+        loadChildren: () =>
+          import('./features/finance/finance.routes').then(
+            (m) => m.financeRoutes,
+          ),
+      },
+      {
+        path: 'approvals',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/approvals/approvals.routes').then(
+            (m) => m.approvalsRoutes,
+          ),
+      },
+      {
+        path: 'support',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/support/support.routes').then(
+            (m) => m.supportRoutes,
+          ),
+      },
+      {
+        path: 'audit',
+        canActivate: [roleGuard(['Admin'])],
+        loadChildren: () =>
+          import('./features/audit/audit.routes').then(
+            (m) => m.auditRoutes,
+          ),
+      },
+      {
         path: 'reports',
         canActivate: [roleGuard(['Admin'])],
         loadChildren: () =>
@@ -144,11 +176,35 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'doctor-map',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/doctor-map/doctor-map.routes').then(
+            (m) => m.doctorMapRoutes,
+          ),
+      },
+      {
+        path: 'ratings',
+        canActivate: [roleGuard(['Admin', 'Editor'])],
+        loadChildren: () =>
+          import('./features/ratings/ratings.routes').then(
+            (m) => m.ratingsRoutes,
+          ),
+      },
+      {
         path: 'privacy-policy',
         canActivate: [roleGuard(['Admin', 'Editor'])],
         loadChildren: () =>
           import('./features/privacy-policy/privacy-policy.routes').then(
             (m) => m.privacyPolicyRoutes,
+          ),
+      },
+      {
+        path: 'settings',
+        canActivate: [roleGuard(['Admin'])],
+        loadChildren: () =>
+          import('./features/settings/settings.routes').then(
+            (m) => m.settingsRoutes,
           ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },

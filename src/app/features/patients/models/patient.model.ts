@@ -10,8 +10,15 @@ export interface Patient {
 }
 
 export interface PatientsResponse {
-  total: number;
-  page: number;
+  total:    number;
+  page:     number;
   pageSize: number;
-  data: Patient[];
+  data:     Patient[];
+}
+
+export interface PatientsListParams {
+  name?:        string;
+  phoneNumber?: string;
+  page:         number;
+  pageSize:     number;
 }

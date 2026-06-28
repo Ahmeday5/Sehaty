@@ -1,0 +1,230 @@
+<div class="aud-page" dir="rtl">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Page Header
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <div class="aud-title-group">
+      <h1 class="page-title">سجل التدقيق</h1>
+      @if (lastUpdate()) {
+        <span class="aud-updated">آخر تحديث {{ lastUpdate() | date:'HH:mm' }}</span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="loadingKpi()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loadingKpi()"></i>
+      تحديث
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       KPI Strip
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (!loadingKpi()) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  } @else {
+    <div class="aud-kpi-skeleton">
+      @for (i of [1,2,3,4]; track i) { <div class="aud-skeleton-card"></div> }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Filter Bar
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="card aud-filter-card">
+
+    <!-- Row 1: search full-width -->
+    <div class="aud-filter-row">
+      <div class="aud-search-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          class="inp aud-search-inp"
+          type="text"
+          placeholder="بحث في الإجراء أو الهدف أو المشرف..."
+          (input)="onSearch($any($event.target).value)">
+      </div>
+    </div>
+
+    <!-- Row 2: selects + date + export -->
+    <div class="aud-filter-row">
+      <select class="inp aud-sel" (change)="onEventTypeChange($any($event.target).value)">
+        <option value="all">جميع الأحداث</option>
+        <option value="login">تسجيل دخول</option>
+        <option value="edit">تعديل بيانات</option>
+        <option value="delete">حذف</option>
+        <option value="approve_reject">قبول / رفض</option>
+        <option value="send_notification">إرسال إشعار</option>
+        <option value="export">تصدير</option>
+      </select>
+
+      <select class="inp aud-sel" (change)="onAdminChange($any($event.target).value)">
+        <option value="all">جميع المشرفين</option>
+        @for (name of adminNames; track name) {
+          <option [value]="name">{{ name }}</option>
+        }
+      </select>
+
+      <input
+        type="date"
+        class="inp aud-date-inp"
+        (change)="onDateChange($any($event.target).value)">
+
+      <button class="btn-ghost aud-export-btn">
+        <i class="fa-solid fa-file-excel"></i>
+        تصدير
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Active Sessions
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="card aud-card">
+    <div class="aud-card-header">
+      <span class="aud-section-title">
+        <i class="fa-solid fa-circle-nodes"></i>
+        الجلسات النشطة
+      </span>
+      @if (!loadingSessions()) {
+        <span class="aud-count-chip aud-count-chip--green">
+          {{ sessions().length }} نشطة
+        </span>
+      }
+    </div>
+
+    @if (loadingSessions()) {
+      <div class="aud-spinner-wrap">
+        <div class="aud-spinner"></div>
+      </div>
+    } @else {
+      <div class="aud-sessions-list">
+        @for (session of sessions(); track session.id) {
+          <div class="aud-session" [class.aud-session--me]="session.isCurrentUser">
+
+            <div class="aud-session-avatar" [class.aud-session-avatar--me]="session.isCurrentUser">
+              {{ session.initial }}
+            </div>
+
+            <div class="aud-session-info">
+              <div class="aud-session-name">
+                {{ session.adminName }}
+                @if (session.isCurrentUser) {
+                  <span class="aud-me-chip">أنت</span>
+                }
+              </div>
+              <div class="aud-session-meta">{{ session.role }} · {{ session.browser }}</div>
+            </div>
+
+            <div class="aud-session-right">
+              <span class="aud-session-ip">IP: {{ session.ip }}</span>
+              <span class="aud-session-since">{{ session.sinceLabel }}</span>
+            </div>
+
+            @if (!session.isCurrentUser) {
+              <button
+                class="aud-terminate-btn"
+                [disabled]="isTerminating(session.id)"
+                (click)="terminateSession(session)">
+                @if (isTerminating(session.id)) {
+                  <i class="fa-solid fa-circle-notch fa-spin"></i>
+                } @else {
+                  إنهاء
+                }
+              </button>
+            }
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Full Audit Log Table
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="card aud-card">
+    <div class="aud-card-header">
+      <span class="aud-section-title">
+        <i class="fa-solid fa-scroll"></i>
+        سجل كامل
+      </span>
+      @if (!loadingLog()) {
+        <span class="aud-today-count">{{ _filteredLog.length }} إجراء</span>
+      }
+    </div>
+
+    @if (loadingLog()) {
+      <div class="aud-spinner-wrap">
+        <div class="aud-spinner"></div>
+        <span>جاري تحميل السجل...</span>
+      </div>
+    } @else if (displayed().length === 0) {
+      <div class="aud-empty">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>لا توجد نتائج مطابقة</span>
+      </div>
+    } @else {
+      <div class="aud-table-wrap">
+        <table class="aud-table">
+          <thead>
+            <tr>
+              <th>المشرف</th>
+              <th>الإجراء</th>
+              <th>الهدف</th>
+              <th>مستوى الخطر</th>
+              <th>IP</th>
+              <th>الوقت</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (entry of displayed(); track entry.id) {
+              <tr>
+                <td>
+                  <div class="aud-admin-cell">
+                    <div class="aud-admin-avatar">{{ entry.initial }}</div>
+                    <span class="aud-admin-name">{{ entry.adminName }}</span>
+                  </div>
+                </td>
+                <td class="aud-action">{{ entry.action }}</td>
+                <td class="aud-target">{{ entry.target }}</td>
+                <td>
+                  <span class="aud-risk" [ngClass]="riskClass(entry.riskLevel)">
+                    {{ riskLabel(entry.riskLevel) }}
+                  </span>
+                </td>
+                <td class="aud-ip">{{ entry.ip }}</td>
+                <td class="aud-time">{{ entry.time }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages() > 1) {
+        <div class="aud-pagination">
+          <button
+            class="aud-page-btn"
+            [disabled]="currentPage() === 1"
+            (click)="onPageChange(currentPage() - 1)">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          @for (page of pages; track page) {
+            <button
+              class="aud-page-btn"
+              [class.active]="currentPage() === page"
+              (click)="onPageChange(page)">
+              {{ page }}
+            </button>
+          }
+          <button
+            class="aud-page-btn"
+            [disabled]="currentPage() === totalPages()"
+            (click)="onPageChange(currentPage() + 1)">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+        </div>
+      }
+    }
+  </div>
+
+</div>

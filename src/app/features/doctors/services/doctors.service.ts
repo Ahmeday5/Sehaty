@@ -1,17 +1,21 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { CacheService } from '../../../core/services/cache.service';
 import { Speciality } from '../../specialities/models/speciality.model';
-import { Doctor, DoctorIdNameSpec } from '../models/doctor.model';
-
-const CACHE_KEY    = 'doctors:all';
-const CACHE_TTL_MS = 10 * 60 * 1000;
+import {
+  Doctor,
+  DoctorIdNameSpec,
+  DoctorsListParams,
+  DoctorsListResponse,
+} from '../models/doctor.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class DoctorsService {
-  private readonly api   = inject(ApiService);
-  private readonly cache = inject(CacheService);
+  private readonly api  = inject(ApiService);
+  private readonly http = inject(HttpClient);
+  private readonly base = environment.apiUrl.replace(/\/+$/, '');
 
   getAllSpecialities(): Observable<Speciality[]> {
     return this.api.get<Speciality[]>('api/Dashboard/getAllSpecialities').pipe(
@@ -19,67 +23,43 @@ export class DoctorsService {
     );
   }
 
-  getAllDoctors(): Observable<Doctor[]> {
-    const cached = this.cache.get<Doctor[]>(CACHE_KEY);
-    if (cached) return of(cached);
+  // ── New unified server-side endpoint ───────────────────────────────────────
+  getDoctors(params: DoctorsListParams): Observable<DoctorsListResponse> {
+    let p = new HttpParams()
+      .set('page',     String(params.page))
+      .set('pageSize', String(params.pageSize));
+    if (params.name?.trim())           p = p.set('name',           params.name.trim());
+    if (params.specialization?.trim()) p = p.set('specialization', params.specialization.trim());
+    if (params.isActive !== undefined) p = p.set('isActive',       String(params.isActive));
 
-    return this.api.get<Doctor[]>('api/Dashboard/getAllDoctors').pipe(
-      map((res) => {
-        const list: Doctor[] = Array.isArray(res) ? res : (res as any)?.data ?? [];
-        this.cache.set(CACHE_KEY, list, CACHE_TTL_MS);
-        return list;
-      }),
+    return this.http.get<DoctorsListResponse>(
+      `${this.base}/api/Dashboard/getDoctors`, { params: p }
     );
   }
 
-  getDoctorsBySpecialization(specialization: string): Observable<Doctor[]> {
-    return this.api
-      .get<Doctor[]>('api/Dashboard/getDoctorsBySpecialization', { params: { specialization } })
-      .pipe(map((res) => (Array.isArray(res) ? res : (res as any)?.data ?? [])));
-  }
-
-  searchByName(name: string): Observable<Doctor[]> {
-    return this.api
-      .get<Doctor[]>('api/Dashboard/searchByDoctorName', { params: { name } })
-      .pipe(map((res) => (Array.isArray(res) ? res : [])));
-  }
-
+  // ── Legacy helpers kept for details / form pages ───────────────────────────
   getDoctorById(id: number): Observable<Doctor> {
     return this.api.get<Doctor>(`api/Dashboard/getDoctor/${id}`);
   }
 
   addDoctor(formData: FormData): Observable<string> {
-    return this.api.postText('api/Dashboard/addDoctor', formData).pipe(
-      map((res) => { this.invalidate(); return res; }),
-    );
+    return this.api.postText('api/Dashboard/addDoctor', formData);
   }
 
   updateDoctor(id: number, formData: FormData): Observable<string> {
-    return this.api.putText(`api/Dashboard/updateDoctor/${id}`, formData).pipe(
-      map((res) => { this.invalidate(); return res; }),
-    );
+    return this.api.putText(`api/Dashboard/updateDoctor/${id}`, formData);
   }
 
   deleteDoctor(id: number): Observable<string> {
-    return this.api.deleteText(`api/Dashboard/deleteDoctor/${id}`).pipe(
-      map((res) => { this.invalidate(); return res; }),
-    );
+    return this.api.deleteText(`api/Dashboard/deleteDoctor/${id}`);
   }
 
   activateDoctor(id: number): Observable<string> {
-    return this.api.putText(`api/Dashboard/activateDoctor/${id}`, null).pipe(
-      map((res) => { this.invalidate(); return res; }),
-    );
+    return this.api.putText(`api/Dashboard/activateDoctor/${id}`, null);
   }
 
   deactivateDoctor(id: number): Observable<string> {
-    return this.api.putText(`api/Dashboard/deactivateDoctor/${id}`, null).pipe(
-      map((res) => { this.invalidate(); return res; }),
-    );
-  }
-
-  getAllDoctorsNames(): Observable<{ doctorNames: string[] }> {
-    return this.api.get<{ doctorNames: string[] }>('api/Dashboard/getAllDoctorsNames');
+    return this.api.putText(`api/Dashboard/deactivateDoctor/${id}`, null);
   }
 
   getAllDoctorsIdNameSpecialization(): Observable<DoctorIdNameSpec[]> {
@@ -87,6 +67,4 @@ export class DoctorsService {
       .get<DoctorIdNameSpec[]>('api/Dashboard/getAllDoctorsIDNameAndSpecialization')
       .pipe(map((res) => (Array.isArray(res) ? res : (res as any)?.data ?? [])));
   }
-
-  invalidate(): void { this.cache.invalidate(CACHE_KEY); }
 }

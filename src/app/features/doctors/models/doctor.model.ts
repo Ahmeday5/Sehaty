@@ -15,7 +15,26 @@ export interface Doctor {
   doctorCertificate: string | null;
   isActive: boolean;
   deviceToken: string | null;
+  qualification: string | null;
+  clinicName: string | null;
+  clinicPhone1: string | null;
+  clinicPhone2: string | null;
   token: string | null;
+}
+
+export interface DoctorsListParams {
+  name?:           string;
+  specialization?: string;
+  isActive?:       boolean;
+  page:            number;
+  pageSize:        number;
+}
+
+export interface DoctorsListResponse {
+  total:    number;
+  page:     number;
+  pageSize: number;
+  data:     Doctor[];
 }
 
 export interface DoctorSummary {

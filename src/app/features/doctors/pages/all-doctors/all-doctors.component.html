@@ -4,8 +4,8 @@
   <div class="page-header">
     <div class="ad-title-group">
       <h1 class="page-title">الأطباء</h1>
-      @if (!loading() && filteredDoctors.length > 0) {
-        <span class="ad-count">{{ filteredDoctors.length }} طبيب</span>
+      @if (!loading() && total() > 0) {
+        <span class="ad-count">{{ total() }} طبيب</span>
       }
     </div>
     <div class="ad-header-actions">
@@ -21,18 +21,40 @@
   </div>
 
   <!-- ── KPI strip ── -->
-  @if (!loading() && totalCount > 0) {
-    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
-  }
+  <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
 
   <!-- ── Search + Filter bar ── -->
   <app-search-filter-bar
-    [placeholder]="'بحث عن طبيب...'"
+    placeholder="بحث عن طبيب..."
     [filterOptions]="filterOpts()"
-    [selectedFilter]="selectedFilter()"
+    [selectedFilter]="activeFilter()"
     (searchChange)="onSearch($event)"
     (filterChange)="onFilterChange($event)">
   </app-search-filter-bar>
+
+  <!-- ── Status filter tabs ── -->
+  <div class="ad-status-tabs">
+    <button
+      class="ad-status-tab"
+      [class.active]="activeStatus() === undefined"
+      (click)="onStatusFilter(undefined)">
+      الكل
+    </button>
+    <button
+      class="ad-status-tab ad-status-tab--active"
+      [class.active]="activeStatus() === true"
+      (click)="onStatusFilter(true)">
+      <span class="ad-status-dot ad-status-dot--on"></span>
+      نشط
+    </button>
+    <button
+      class="ad-status-tab ad-status-tab--inactive"
+      [class.active]="activeStatus() === false"
+      (click)="onStatusFilter(false)">
+      <span class="ad-status-dot ad-status-dot--off"></span>
+      معطّل
+    </button>
+  </div>
 
   <!-- ── Content ── -->
   @if (loading()) {
@@ -41,7 +63,7 @@
       <p class="ad-spinner-txt">جاري تحميل الأطباء...</p>
     </div>
   } @else if (displayed().length === 0) {
-    @if (searchValue || selectedFilter()) {
+    @if (searchValue || activeFilter()) {
       <app-empty-state
         icon="fa-magnifying-glass"
         title="لا توجد نتائج"
@@ -68,10 +90,10 @@
       }
     </div>
 
-    @if (totalPages() > 1) {
+    @if (totalPages > 1) {
       <app-pagination
         [currentPage]="currentPage()"
-        [totalPages]="totalPages()"
+        [totalPages]="totalPages"
         (pageChange)="onPageChange($event)">
       </app-pagination>
     }

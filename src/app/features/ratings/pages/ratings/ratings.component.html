@@ -1,0 +1,174 @@
+<div class="rtg-page" dir="rtl">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Page Header
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="page-header">
+    <h1 class="page-title">التقييمات</h1>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       KPI Strip
+  ══════════════════════════════════════════════════════════════════ -->
+  @if (!loadingKpi()) {
+    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+  } @else {
+    <div class="rtg-kpi-skeleton">
+      @for (i of [1,2,3,4]; track i) { <div class="rtg-skeleton-card"></div> }
+    </div>
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Two-column grid
+  ══════════════════════════════════════════════════════════════════ -->
+  <div class="rtg-grid">
+
+    <!-- ── LEFT: reviews list ────────────────────────────────────── -->
+    <div class="card rtg-card">
+
+      <div class="rtg-list-header">
+        <div class="rtg-sec-title">التقييمات</div>
+        <select
+          class="inp rtg-filter-sel"
+          (change)="onFilterChange($any($event.target).value)">
+          <option value="pending">بانتظار المراجعة</option>
+          <option value="all">جميع التقييمات</option>
+          <option value="flagged">مُبلَّغ عنها</option>
+          <option value="low">تقييم منخفض ≤2</option>
+        </select>
+      </div>
+
+      @if (loadingList()) {
+        <div class="rtg-spinner-wrap"><div class="rtg-spinner"></div></div>
+      } @else if (displayed().length === 0) {
+        <div class="rtg-empty">
+          <i class="fa-solid fa-star-half-stroke"></i>
+          <span>لا توجد تقييمات في هذه الفئة</span>
+        </div>
+      } @else {
+        <div class="rtg-list">
+          @for (review of displayed(); track review.id) {
+            <div class="rtg-review-card" [class.rtg-review-card--flagged]="review.flagged">
+
+              <!-- Header row -->
+              <div class="rtg-review-top">
+                <div class="rtg-avatar">{{ review.initial }}</div>
+                <div class="rtg-meta">
+                  <div class="rtg-name-row">
+                    <span class="rtg-patient-name">{{ review.patientName }}</span>
+                    @if (review.flagged) {
+                      <span class="rtg-flag-chip">⚑ مُبلَّغ عنه</span>
+                    }
+                  </div>
+                  <div class="rtg-doctor-date">{{ review.doctorName }} · {{ review.dateLabel }}</div>
+                </div>
+                <div class="rtg-stars">
+                  @for (filled of starsArray(review.stars); track $index) {
+                    <span class="rtg-star" [class.rtg-star--filled]="filled">★</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Review text -->
+              <div class="rtg-review-text">"{{ review.text }}"</div>
+
+              <!-- Actions -->
+              <div class="rtg-actions">
+                <button
+                  class="rtg-btn rtg-btn--publish"
+                  [disabled]="isPublishing(review.id) || review.status === 'published'"
+                  (click)="publishReview(review)">
+                  @if (isPublishing(review.id)) {
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                  } @else {
+                    ✅
+                  }
+                  {{ review.status === 'published' ? 'منشور' : 'نشر' }}
+                </button>
+
+                <button
+                  class="rtg-btn rtg-btn--delete"
+                  [disabled]="isDeleting(review.id)"
+                  (click)="deleteReview(review)">
+                  @if (isDeleting(review.id)) {
+                    <i class="fa-solid fa-circle-notch fa-spin"></i>
+                  } @else {
+                    🗑️
+                  }
+                  حذف
+                </button>
+              </div>
+
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+
+    <!-- ── RIGHT: stats ──────────────────────────────────────────── -->
+    <div class="rtg-col">
+
+      <!-- Rating distribution -->
+      <div class="card rtg-card">
+        <div class="rtg-sec-title">توزيع التقييمات</div>
+        @if (loadingStats()) {
+          <div class="rtg-spinner-wrap"><div class="rtg-spinner"></div></div>
+        } @else {
+          <div class="rtg-dist-list">
+            @for (row of distribution(); track row.star) {
+              <div class="rtg-dist-row">
+                <span class="rtg-dist-num">{{ row.star }}</span>
+                <span class="rtg-dist-star">★</span>
+                <div class="rtg-dist-bar-wrap">
+                  <div
+                    class="rtg-dist-bar"
+                    [class.rtg-dist-bar--green]="row.color === 'green'"
+                    [class.rtg-dist-bar--amber]="row.color === 'amber'"
+                    [class.rtg-dist-bar--red]="row.color === 'red'"
+                    [style.width.%]="row.percent">
+                  </div>
+                </div>
+                <span class="rtg-dist-count">{{ row.count }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Top / bottom doctors -->
+      <div class="card rtg-card">
+        <div class="rtg-sec-title">أفضل وأسوأ الأطباء تقييماً</div>
+        @if (loadingStats()) {
+          <div class="rtg-spinner-wrap"><div class="rtg-spinner"></div></div>
+        } @else {
+          <!-- Top -->
+          <div class="rtg-rank-label rtg-rank-label--top">🏆 الأعلى تقييماً</div>
+          <div class="rtg-rank-list">
+            @for (d of topDoctors(); track d.name) {
+              <div class="rtg-rank-item">
+                <span class="rtg-rank-num">{{ d.rank }}</span>
+                <span class="rtg-rank-name">{{ d.name }}</span>
+                <span class="rtg-rank-score rtg-rank-score--top">⭐ {{ d.rating }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Bottom -->
+          <div class="rtg-rank-label rtg-rank-label--bottom">📉 الأدنى تقييماً</div>
+          <div class="rtg-rank-list">
+            @for (d of bottomDoctors(); track d.name) {
+              <div class="rtg-rank-item">
+                <span class="rtg-rank-name">{{ d.name }}</span>
+                <span class="rtg-rank-score rtg-rank-score--bottom">⭐ {{ d.rating }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { PatientsResponse } from '../models/patient.model';
+import { PatientsListParams, PatientsResponse } from '../models/patient.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -11,24 +11,16 @@ export class PatientsService {
   private readonly api  = inject(ApiService);
   private readonly base = environment.apiUrl.replace(/\/+$/, '');
 
-  // Use HttpClient directly to bypass ApiService.unwrap(), which would
-  // strip the wrapper object and return only the `data` array.
-  getAll(page = 1, pageSize = 10): Observable<PatientsResponse> {
-    const params = new HttpParams()
-      .set('page', String(page))
-      .set('pageSize', String(pageSize));
-    return this.http.get<PatientsResponse>(
-      `${this.base}/api/Dashboard/getAllPatients`, { params }
-    );
-  }
+  // Unified endpoint — supports name + phoneNumber search + pagination
+  getPatients(params: PatientsListParams): Observable<PatientsResponse> {
+    let p = new HttpParams()
+      .set('page',     String(params.page))
+      .set('pageSize', String(params.pageSize));
+    if (params.name?.trim())        p = p.set('name',        params.name.trim());
+    if (params.phoneNumber?.trim()) p = p.set('phoneNumber', params.phoneNumber.trim());
 
-  searchByName(name: string, page = 1, pageSize = 10): Observable<PatientsResponse> {
-    const params = new HttpParams()
-      .set('name', name)
-      .set('page', String(page))
-      .set('pageSize', String(pageSize));
     return this.http.get<PatientsResponse>(
-      `${this.base}/api/Dashboard/searchPatientsByName`, { params }
+      `${this.base}/api/Dashboard/getPatients`, { params: p }
     );
   }
 

@@ -6,14 +6,12 @@
            [class.kpi-card--active]="item.active"
            [class.cursor-pointer]="clickable()"
            (click)="onClick(item)">
-        <div class="card-body d-flex align-items-center gap-3 p-3">
+        <div class="card-body kpi-body">
           <div [class]="'kpi-icon kpi-icon--' + item.variant">
             <i class="fa-solid" [ngClass]="item.icon"></i>
           </div>
-          <div>
-            <div class="kpi-val">{{ item.value }}</div>
-            <div class="kpi-lbl">{{ item.label }}</div>
-          </div>
+          <div class="kpi-val">{{ item.value }}</div>
+          <div class="kpi-lbl">{{ item.label }}</div>
         </div>
       </div>
     </div>

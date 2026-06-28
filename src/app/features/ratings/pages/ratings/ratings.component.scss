@@ -1,0 +1,346 @@
+// ══════════════════════════════════════════════════════════════════════════════
+// Ratings — Styles
+// ══════════════════════════════════════════════════════════════════════════════
+
+.rtg-page { padding: 4px 0; }
+
+// ── KPI skeleton ─────────────────────────────────────────────────────────────
+
+.rtg-kpi-skeleton {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px) { grid-template-columns: 1fr; }
+}
+
+.rtg-skeleton-card {
+  height: 100px;
+  border-radius: var(--radius, 12px);
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: rtg-shimmer 1.4s infinite;
+}
+
+@keyframes rtg-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Two-column layout ─────────────────────────────────────────────────────────
+
+.rtg-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  align-items: start;
+
+  @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.rtg-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────────
+
+.rtg-card { padding: 20px; }
+
+.rtg-sec-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+// ── Spinner / empty ───────────────────────────────────────────────────────────
+
+.rtg-spinner-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 28px 0;
+}
+
+.rtg-spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--main-color);
+  animation: rtg-spin .8s linear infinite;
+}
+
+@keyframes rtg-spin { to { transform: rotate(360deg); } }
+
+.rtg-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 0;
+  color: var(--textsub);
+  font-size: 13px;
+
+  i { font-size: 28px; color: var(--border); }
+}
+
+// ── List header ───────────────────────────────────────────────────────────────
+
+.rtg-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .rtg-sec-title { margin-bottom: 0; }
+}
+
+.rtg-filter-sel {
+  width: 150px;
+  height: 32px;
+  font-size: 12px;
+}
+
+// ── Reviews list ──────────────────────────────────────────────────────────────
+
+.rtg-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rtg-review-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  transition: border-color .15s;
+
+  &--flagged { border-color: color-mix(in srgb, var(--red) 30%, transparent); }
+}
+
+// ── Review top row ────────────────────────────────────────────────────────────
+
+.rtg-review-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.rtg-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--main-color);
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.rtg-meta { flex: 1; min-width: 0; }
+
+.rtg-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.rtg-patient-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.rtg-flag-chip {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: var(--redsoft);
+  color: var(--red);
+}
+
+.rtg-doctor-date {
+  font-size: 12px;
+  color: var(--textsub);
+}
+
+.rtg-stars {
+  display: flex;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+.rtg-star {
+  font-size: 16px;
+  color: var(--border);
+
+  &--filled { color: var(--amber); }
+}
+
+// ── Review text ───────────────────────────────────────────────────────────────
+
+.rtg-review-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  padding: 10px 12px;
+  background: var(--surface3, var(--surface));
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+// ── Action buttons ────────────────────────────────────────────────────────────
+
+.rtg-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rtg-btn {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 12.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  transition: all .2s;
+
+  &:disabled { opacity: .55; cursor: not-allowed; }
+
+  &--publish {
+    background: var(--greensoft);
+    color: var(--green);
+    border-color: color-mix(in srgb, var(--green) 30%, transparent);
+
+    &:hover:not(:disabled) { background: var(--green); color: #fff; }
+  }
+
+  &--delete {
+    background: var(--redsoft);
+    color: var(--red);
+    border-color: color-mix(in srgb, var(--red) 30%, transparent);
+
+    &:hover:not(:disabled) { background: var(--red); color: #fff; }
+  }
+}
+
+// ── Distribution ──────────────────────────────────────────────────────────────
+
+.rtg-dist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rtg-dist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rtg-dist-num {
+  font-size: 13px;
+  font-weight: 700;
+  width: 16px;
+  flex-shrink: 0;
+  color: var(--text);
+}
+
+.rtg-dist-star {
+  font-size: 13px;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+
+.rtg-dist-bar-wrap {
+  flex: 1;
+  height: 8px;
+  border-radius: 6px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.rtg-dist-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width .5s ease;
+
+  &--green { background: var(--green);  }
+  &--amber { background: var(--amber);  }
+  &--red   { background: var(--red);    }
+}
+
+.rtg-dist-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--textsub);
+  width: 36px;
+  flex-shrink: 0;
+}
+
+// ── Doctor ranking ────────────────────────────────────────────────────────────
+
+.rtg-rank-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 8px;
+
+  &--top    { color: var(--green); }
+  &--bottom { color: var(--textsub); margin-top: 14px; }
+}
+
+.rtg-rank-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.rtg-rank-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+
+  &:last-child { border-bottom: none; }
+}
+
+.rtg-rank-num {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--amber);
+  width: 16px;
+  flex-shrink: 0;
+}
+
+.rtg-rank-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+}
+
+.rtg-rank-score {
+  font-weight: 800;
+  font-size: 12.5px;
+  flex-shrink: 0;
+
+  &--top    { color: var(--amber); }
+  &--bottom { color: var(--textsub); }
+}

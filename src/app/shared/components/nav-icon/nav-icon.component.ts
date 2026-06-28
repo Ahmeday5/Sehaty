@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 export type NavIconName =
   | 'house' | 'doctors' | 'add-user' | 'users' | 'patients' | 'specialities'
   | 'discount' | 'ads' | 'bell' | 'chart' | 'document' | 'logout' | 'settings'
-  | 'pharmacy' | 'calendar' | 'prescription' | 'finance' | 'approvals' | 'support' | 'audit';
+  | 'pharmacy' | 'calendar' | 'prescription' | 'finance' | 'approvals' | 'support' | 'audit'
+  | 'reports' | 'doctor-map' | 'ratings';
 
 const ICON_CLASSES: Record<NavIconName, string> = {
   'house':        'fa-solid fa-house',
@@ -27,6 +28,9 @@ const ICON_CLASSES: Record<NavIconName, string> = {
   'approvals':    'fa-solid fa-clipboard-check',
   'support':      'fa-solid fa-headset',
   'audit':        'fa-solid fa-scroll',
+  'reports':      'fa-solid fa-file-export',
+  'doctor-map':   'fa-solid fa-map-location-dot',
+  'ratings':      'fa-solid fa-star-half-stroke',
 };
 
 @Component({

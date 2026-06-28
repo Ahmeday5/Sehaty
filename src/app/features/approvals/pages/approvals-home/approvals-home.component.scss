@@ -1,0 +1,431 @@
+// ══════════════════════════════════════════════════════════════════════════════
+// Approvals Home — Styles
+// ══════════════════════════════════════════════════════════════════════════════
+
+.apr-page { padding: 4px 0; }
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.apr-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.apr-badge-pending {
+  background: var(--ambersoft);
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+}
+
+.apr-updated {
+  font-size: 11.5px;
+  color: var(--textsub);
+  background: var(--surface2);
+  padding: 2px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+// ── KPI skeleton ─────────────────────────────────────────────────────────────
+
+.apr-kpi-skeleton {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 500px) { grid-template-columns: 1fr; }
+}
+
+.apr-skeleton-card {
+  height: 100px;
+  border-radius: var(--radius, 12px);
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: apr-shimmer 1.4s infinite;
+}
+
+@keyframes apr-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+
+.apr-card {
+  padding: 20px;
+  margin-bottom: 18px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.apr-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.apr-section-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  i { color: var(--main-color); font-size: 13px; }
+}
+
+.apr-count-chip {
+  background: var(--ambersoft);
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+
+.apr-spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 0;
+  color: var(--textsub);
+  font-size: 13px;
+}
+
+.apr-spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--main-color);
+  animation: apr-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes apr-spin { to { transform: rotate(360deg); } }
+
+// ── Empty states ──────────────────────────────────────────────────────────────
+
+.apr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 0;
+  color: var(--textsub);
+  font-size: 13px;
+
+  i { font-size: 28px; color: var(--border2); }
+
+  &--success {
+    i { color: var(--green); }
+    color: var(--green);
+  }
+}
+
+// ── Pending list ──────────────────────────────────────────────────────────────
+
+.apr-pending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.apr-request-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--main-color) 40%, transparent);
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  }
+
+  &--missing {
+    border-color: color-mix(in srgb, var(--red) 30%, transparent);
+    background: color-mix(in srgb, var(--red) 3%, transparent);
+  }
+}
+
+// ── Avatar ────────────────────────────────────────────────────────────────────
+
+.apr-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  background: var(--main-color);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+// ── Info ──────────────────────────────────────────────────────────────────────
+
+.apr-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.apr-info-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.apr-doctor-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.apr-submitted {
+  font-size: 11px;
+  color: var(--textsub);
+}
+
+.apr-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.apr-meta-item {
+  font-size: 12.5px;
+  color: var(--textsub);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  i { color: var(--main-color); font-size: 11px; width: 12px; }
+}
+
+.apr-meta-row2 {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.apr-phone {
+  font-size: 12px;
+  color: var(--textsub);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  i { color: var(--textsub); font-size: 11px; }
+}
+
+.apr-doc-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &--ok      { color: var(--green); }
+  &--missing { color: var(--red); }
+
+  i { font-size: 12px; }
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+
+.apr-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.apr-btn {
+  height: 38px;
+  padding: 0 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+
+  &--approve {
+    background: var(--greensoft);
+    color: var(--green);
+    border-color: color-mix(in srgb, var(--green) 30%, transparent);
+
+    &:hover:not(:disabled) {
+      background: var(--green);
+      color: #fff;
+    }
+  }
+
+  &--reject {
+    background: var(--redsoft);
+    color: var(--red);
+    border-color: color-mix(in srgb, var(--red) 30%, transparent);
+
+    &:hover:not(:disabled) {
+      background: var(--red);
+      color: #fff;
+    }
+  }
+
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ── History controls ──────────────────────────────────────────────────────────
+
+.apr-hist-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.apr-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  i {
+    position: absolute;
+    right: 10px;
+    color: var(--textsub);
+    font-size: 12px;
+    pointer-events: none;
+  }
+}
+
+.apr-search-inp {
+  width: 160px;
+  height: 34px;
+  padding-right: 30px;
+  font-size: 12.5px;
+}
+
+.apr-filter-select {
+  width: 130px;
+  height: 34px;
+  font-size: 12.5px;
+}
+
+// ── History table ─────────────────────────────────────────────────────────────
+
+.apr-table-wrap { overflow-x: auto; }
+
+.apr-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+
+  thead tr { border-bottom: 2px solid var(--border2); }
+
+  th {
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--textsub);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+
+    &:hover { background: var(--surface2); }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.apr-td-name       { font-weight: 700; color: var(--text); }
+.apr-td-supervisor { color: var(--textsub); font-size: 12.5px; }
+.apr-td-date       { color: var(--textsub); font-size: 12px; white-space: nowrap; }
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+
+.apr-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding-top: 18px;
+}
+
+.apr-page-btn {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--textsub);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0 6px;
+
+  &:hover:not(:disabled):not(.active) {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  &.active {
+    background: var(--main-color);
+    border-color: var(--main-color);
+    color: #fff;
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+
+@media (max-width: 640px) {
+  .apr-request-card { flex-wrap: wrap; }
+
+  .apr-actions {
+    flex-direction: row;
+    width: 100%;
+
+    .apr-btn { flex: 1; justify-content: center; }
+  }
+}

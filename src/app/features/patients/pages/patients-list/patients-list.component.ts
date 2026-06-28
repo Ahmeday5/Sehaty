@@ -1,4 +1,4 @@
-﻿import {
+import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
@@ -6,10 +6,13 @@
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { PatientsService } from '../../services/patients.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
-import { Patient } from '../../models/patient.model';
+import { Patient, PatientsListParams } from '../../models/patient.model';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
@@ -25,7 +28,7 @@ const AVATAR_COLORS = [
 @Component({
   selector: 'app-patients-list',
   standalone: true,
-  imports: [CommonModule, PaginationComponent, EmptyStateComponent, SearchFilterBarComponent, StatBadgeComponent],
+  imports: [CommonModule, FormsModule, PaginationComponent, EmptyStateComponent, SearchFilterBarComponent, StatBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './patients-list.component.html',
   styleUrl:    './patients-list.component.scss',
@@ -41,25 +44,40 @@ export class PatientsListComponent implements OnInit {
   protected readonly page       = signal(1);
   protected readonly lastUpdate = signal<Date | null>(null);
 
-  protected searchValue = '';
+  // ── Search state ──────────────────────────────────────────────────────────
+  protected nameValue  = '';
+  protected phoneValue = '';
+
+  private readonly nameSearch$  = new Subject<string>();
+  private readonly phoneSearch$ = new Subject<string>();
 
   protected readonly pageSize = PAGE_SIZE;
-
-  protected get totalPages(): number {
-    return Math.ceil(this.total() / PAGE_SIZE);
-  }
+  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
 
   ngOnInit(): void {
-    this.load('');
+    this.load();
+
+    this.nameSearch$.pipe(debounceTime(350), distinctUntilChanged()).subscribe((q) => {
+      this.nameValue = q;
+      this.page.set(1);
+      this.load();
+    });
+
+    this.phoneSearch$.pipe(debounceTime(350), distinctUntilChanged()).subscribe((q) => {
+      this.phoneValue = q;
+      this.page.set(1);
+      this.load();
+    });
   }
 
-  protected onSearch(query: string): void { this.searchValue = query; this.page.set(1); this.load(query); }
-  protected refresh(): void             { this.page.set(1); this.load(this.searchValue); }
+  protected onNameSearch(query: string):  void { this.nameSearch$.next(query);  }
+  protected onPhoneSearch(query: string): void { this.phoneSearch$.next(query); }
 
-  protected getStatusVariant(isActive: boolean): string {
-    return isActive ? 'green' : 'default';
-  }
-  protected onPageChange(p: number): void { this.page.set(p); this.load(this.searchValue); }
+  protected refresh(): void { this.page.set(1); this.load(); }
+
+  protected onPageChange(p: number): void { this.page.set(p); this.load(); }
+
+  protected getStatusVariant(isActive: boolean): string { return isActive ? 'green' : 'default'; }
 
   protected async onDelete(patient: Patient): Promise<void> {
     const ok = await this.confirm.confirm({
@@ -70,22 +88,16 @@ export class PatientsListComponent implements OnInit {
     });
     if (!ok) return;
     this.svc.deletePatient(patient.id).subscribe({
-      next: () => {
-        this.toast.success('تم حذف المريض بنجاح');
-        this.load(this.searchValue);
-      },
+      next:  () => { this.toast.success('تم حذف المريض بنجاح'); this.load(); },
       error: () => this.toast.error('فشل حذف المريض'),
     });
   }
 
-  protected rowIndex(i: number): number {
-    return (this.page() - 1) * PAGE_SIZE + i + 1;
-  }
+  protected rowIndex(i: number): number { return (this.page() - 1) * PAGE_SIZE + i + 1; }
 
   protected calcAge(birthday: string): number {
     if (!birthday) return 0;
-    const today = new Date();
-    const birth = new Date(birthday);
+    const today = new Date(), birth = new Date(birthday);
     let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
@@ -95,25 +107,25 @@ export class PatientsListComponent implements OnInit {
   protected initials(name: string): string {
     if (!name) return '?';
     const parts = name.trim().split(/\s+/).filter((p) => p.length > 0);
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-    return parts[0]?.[0]?.toUpperCase() ?? '?';
+    return parts.length >= 2
+      ? (parts[0][0] + parts[1][0]).toUpperCase()
+      : parts[0]?.[0]?.toUpperCase() ?? '?';
   }
 
   protected avatarColor(name: string): string {
     let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
   }
 
-  private load(name: string): void {
+  private load(): void {
     this.loading.set(true);
-    const obs$ = name.trim()
-      ? this.svc.searchByName(name.trim(), this.page(), PAGE_SIZE)
-      : this.svc.getAll(this.page(), PAGE_SIZE);
 
-    obs$.subscribe({
+    const params: PatientsListParams = { page: this.page(), pageSize: PAGE_SIZE };
+    if (this.nameValue.trim())  params.name        = this.nameValue.trim();
+    if (this.phoneValue.trim()) params.phoneNumber = this.phoneValue.trim();
+
+    this.svc.getPatients(params).subscribe({
       next: (res) => {
         this.patients.set(res?.data ?? []);
         this.total.set(res?.total ?? 0);
