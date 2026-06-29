@@ -1,197 +1,245 @@
-<div class="container-fluid ad-page">
+<div class="adv-page">
 
-  <!-- ════════════════════════════════
-       Header row
-       ════════════════════════════════ -->
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
-
-    <div>
-      <h1 class="ad-title-h mb-1">
-        <i class="fa-solid fa-bullhorn ad-title-icon"></i>
-        الإعلانات
-      </h1>
-      <p class="ad-subtitle mb-0">
-        @if (lastUpdate()) {
-          آخر تحديث الساعة <strong>{{ lastUpdate() | date:'HH:mm' }}</strong>
-        } @else {
-          إدارة الإعلانات المعروضة على المنصة
-        }
-      </p>
+  <!-- ══════════════════════════════════════════
+       PAGE HEADER
+  ══════════════════════════════════════════ -->
+  <div class="adv-header">
+    <div class="adv-header__left">
+      <div class="adv-header__icon-wrap">
+        <i class="fa-solid fa-rectangle-ad"></i>
+      </div>
+      <div>
+        <h1 class="adv-header__title">الإعلانات</h1>
+        <p class="adv-header__sub">
+          @if (totalCount() > 0) {
+            <span class="adv-header__count">{{ totalCount() }}</span> إعلان نشط على المنصة
+          } @else {
+            إدارة الإعلانات المعروضة على تطبيق سيهاتي
+          }
+        </p>
+      </div>
     </div>
-
-    <div class="d-flex gap-2 align-items-center flex-wrap">
-      @if (!loading() && advertisements().length > 0) {
-        <span class="ad-total-badge">
-          <i class="fa-solid fa-rectangle-ad"></i>
-          {{ advertisements().length }} إعلان
-        </span>
-      }
-      <button class="ad-btn ad-btn--refresh" type="button"
+    <div class="adv-header__actions">
+      <button class="adv-btn adv-btn--ghost" type="button"
               (click)="refresh()" [disabled]="loading()">
-        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        <i class="fa-solid fa-arrows-rotate" [class.fa-spin]="loading()"></i>
         تحديث
       </button>
-      <button class="ad-btn ad-btn--add" type="button" (click)="openModal()">
+      <button class="adv-btn adv-btn--primary" type="button" (click)="openModal()">
         <i class="fa-solid fa-plus"></i>
         إضافة إعلان
       </button>
     </div>
   </div>
 
-  <!-- ════════════════════════════════
-       Skeleton Loading
-       ════════════════════════════════ -->
+  <!-- ══════════════════════════════════════════
+       SKELETON
+  ══════════════════════════════════════════ -->
   @if (loading()) {
-    <div class="row g-3">
+    <div class="adv-grid">
       @for (_ of [1,2,3,4,5,6]; track $index) {
-        <div class="col-12 col-sm-6 col-lg-4">
-          <div class="ad-card-skel">
-            <div class="ad-skel ad-skel--img"></div>
-            <div class="ad-card-skel-body">
-              <div class="ad-skel ad-skel--title mb-2"></div>
-              <div class="ad-skel ad-skel--sub"></div>
-            </div>
+        <div class="adv-skel-card">
+          <div class="adv-skel adv-skel--img"></div>
+          <div class="adv-skel-body">
+            <div class="adv-skel adv-skel--line adv-skel--w70 mb-2"></div>
+            <div class="adv-skel adv-skel--line adv-skel--w40"></div>
           </div>
         </div>
       }
     </div>
   }
 
-  <!-- ════════════════════════════════
-       Empty State
-       ════════════════════════════════ -->
-  @if (!loading() && advertisements().length === 0) {
-    <app-empty-state
-      icon="fa-rectangle-ad"
-      title="لا توجد إعلانات"
-      message="لم يتم إضافة أي إعلانات حتى الآن"
-      actionLabel="إضافة أول إعلان"
-      (actionClick)="openModal()">
-    </app-empty-state>
+  <!-- ══════════════════════════════════════════
+       EMPTY STATE
+  ══════════════════════════════════════════ -->
+  @if (!loading() && items().length === 0) {
+    <div class="adv-empty">
+      <div class="adv-empty__icon-ring">
+        <i class="fa-solid fa-rectangle-ad"></i>
+      </div>
+      <h3 class="adv-empty__title">لا توجد إعلانات بعد</h3>
+      <p class="adv-empty__sub">أضف أول إعلان وابدأ في الوصول لمستخدمي التطبيق</p>
+      <button class="adv-btn adv-btn--primary" type="button" (click)="openModal()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة أول إعلان
+      </button>
+    </div>
   }
 
-  <!-- ════════════════════════════════
-       Ads Grid
-       ════════════════════════════════ -->
-  @if (!loading() && advertisements().length > 0) {
-    <div class="row g-3">
-      @for (ad of advertisements(); track ad.id; let i = $index) {
-        <div class="col-12 col-sm-6 col-lg-4">
-        <div class="ad-card">
+  <!-- ══════════════════════════════════════════
+       ADS GRID
+  ══════════════════════════════════════════ -->
+  @if (!loading() && items().length > 0) {
+    <div class="adv-grid">
+      @for (ad of items(); track ad.id; let i = $index) {
+        <div class="adv-card" [class.adv-card--deleting]="deleting() === ad.id">
 
-          <!-- Image area -->
-          <div class="ad-card-img-wrap">
+          <!-- image -->
+          <div class="adv-card__img-wrap">
             @if (ad.imageUrl) {
-              <img [src]="ad.imageUrl" class="ad-card-img" [alt]="ad.title">
+              <img class="adv-card__img" [src]="ad.imageUrl" [alt]="ad.title"
+                   loading="lazy" onerror="this.style.display='none'">
             } @else {
-              <div class="ad-card-img-placeholder">
+              <div class="adv-card__img-ph">
                 <i class="fa-solid fa-image"></i>
               </div>
             }
-            <!-- Index badge -->
-            <span class="ad-index-badge">{{ i + 1 }}</span>
-          </div>
 
-          <!-- Body -->
-          <div class="ad-card-body">
-            <h6 class="ad-card-title">{{ ad.title }}</h6>
-          </div>
+            <!-- overlay on hover -->
+            <div class="adv-card__overlay">
+              <span class="adv-card__overlay-num"># {{ (currentPage() - 1) * 10 + i + 1 }}</span>
+            </div>
 
-          <!-- Footer -->
-          <div class="ad-card-footer">
-            <button type="button" class="ad-del-btn" (click)="onDelete(ad)"
+            <!-- zoom fab -->
+            @if (ad.imageUrl) {
+              <button class="adv-card__zoom-fab" type="button"
+                      (click)="openLightbox(ad)" title="عرض الصورة">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+              </button>
+            }
+
+            <!-- delete fab -->
+            <button class="adv-card__del-fab" type="button"
+                    (click)="onDelete(ad)"
+                    [disabled]="deleting() !== null"
                     [title]="'حذف ' + ad.title">
-              <i class="fa-solid fa-trash-can"></i>
-              حذف
+              @if (deleting() === ad.id) {
+                <span class="adv-fab-spin"></span>
+              } @else {
+                <i class="fa-solid fa-trash-can"></i>
+              }
             </button>
           </div>
 
-        </div>
+          <!-- body -->
+          <div class="adv-card__body">
+            <p class="adv-card__title" [title]="ad.title">{{ ad.title }}</p>
+            <div class="adv-card__meta">
+              <span class="adv-card__id">#{{ ad.id }}</span>
+              <span class="adv-card__live">
+                <span class="adv-live-dot"></span>
+                نشط
+              </span>
+            </div>
+          </div>
+
         </div>
       }
     </div>
 
-    <p class="ad-count-label mt-3">
-      إجمالي <strong>{{ advertisements().length }}</strong> إعلان
-    </p>
+    <!-- pagination -->
+    @if (totalPages() > 1) {
+      <div class="adv-pagination-wrap">
+        <app-pagination
+          [currentPage]="currentPage()"
+          [totalPages]="totalPages()"
+          (pageChange)="onPageChange($event)">
+        </app-pagination>
+      </div>
+    }
   }
 
 </div>
 
-<!-- ════════════════════════════════
-     Add Advertisement Modal
-     ════════════════════════════════ -->
-@if (showModal()) {
-  <div class="ad-modal-backdrop" (click)="closeModal()"></div>
-  <div class="ad-modal" role="dialog" aria-modal="true">
 
-    <!-- Header -->
-    <div class="ad-modal-header">
-      <div>
-        <h4 class="ad-modal-title">
-          <i class="fa-solid fa-circle-plus ad-modal-title-icon"></i>
-          إضافة إعلان جديد
-        </h4>
-        <p class="ad-modal-subtitle mb-0">ارفع صورة الإعلان وأدخل عنوانه</p>
+<!-- ══════════════════════════════════════════
+     ADD MODAL
+══════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════
+     LIGHTBOX
+══════════════════════════════════════════ -->
+@if (lightboxAd()) {
+  <div class="adv-lb" (click)="closeLightbox()" role="dialog" aria-modal="true">
+
+    <!-- close -->
+    <button class="adv-lb__close" type="button" (click)="closeLightbox()" title="إغلاق">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <!-- image panel — stop propagation so clicking image doesn't close -->
+    <div class="adv-lb__panel" (click)="$event.stopPropagation()">
+      <img class="adv-lb__img" [src]="lightboxAd()!.imageUrl!" [alt]="lightboxAd()!.title">
+      <div class="adv-lb__caption">
+        <i class="fa-solid fa-rectangle-ad adv-lb__caption-icon"></i>
+        {{ lightboxAd()!.title }}
       </div>
-      <button type="button" class="ad-modal-close" (click)="closeModal()">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
 
-    <!-- Body -->
-    <form [formGroup]="addForm" (ngSubmit)="onAdd()" novalidate>
-    <div class="ad-modal-body">
+  </div>
+}
 
-      <!-- Image upload zone -->
-      <div class="ad-upload-zone" (click)="triggerFilePicker()">
+
+@if (showModal()) {
+  <app-modal title="إضافة إعلان جديد" size="md" (closed)="closeModal()">
+
+    <form [formGroup]="addForm" (ngSubmit)="onAdd()" novalidate>
+
+      <!-- Drop Zone -->
+      <div class="adv-drop"
+           [class.adv-drop--error]="imageError()"
+           [class.adv-drop--filled]="previewUrl()"
+           (click)="triggerFilePicker()"
+           (drop)="onDrop($event)"
+           (dragover)="onDragOver($event)"
+           role="button" tabindex="0">
+
         @if (previewUrl()) {
-          <img [src]="previewUrl()!" class="ad-upload-preview" alt="">
-          <div class="ad-upload-overlay">
-            <i class="fa-solid fa-pencil"></i>
+          <img [src]="previewUrl()!" class="adv-drop__preview" alt="">
+          <div class="adv-drop__change-overlay">
+            <i class="fa-solid fa-camera"></i>
             <span>تغيير الصورة</span>
           </div>
         } @else {
-          <div class="ad-upload-placeholder">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span class="ad-upload-text">اسحب الصورة هنا أو اضغط للاختيار</span>
-            <span class="ad-upload-hint">PNG, JPG, WEBP — بحد أقصى 5MB</span>
+          <div class="adv-drop__placeholder">
+            <div class="adv-drop__icon-ring">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <span class="adv-drop__primary-txt">اسحب الصورة هنا أو اضغط للرفع</span>
+            <span class="adv-drop__hint-txt">PNG · JPG · WEBP — حد أقصى 5 MB</span>
           </div>
         }
       </div>
-      <input #fileInput type="file" accept="image/*" class="d-none" (change)="onFileChange($event)">
 
-      <!-- Title field -->
-      <div class="ad-field mt-4">
-        <label class="ad-label">عنوان الإعلان <span class="ad-required">*</span></label>
-        <input type="text" class="ad-input"
+      @if (imageError()) {
+        <p class="adv-field-err">يرجى اختيار صورة للإعلان</p>
+      }
+
+      <input #fileInput type="file" accept="image/*" class="d-none"
+             (change)="onFileChange($event)">
+
+      <!-- Title -->
+      <div class="adv-field mt-4">
+        <label class="adv-label">
+          عنوان الإعلان
+          <span class="adv-req">*</span>
+        </label>
+        <input class="adv-input" type="text"
                formControlName="title"
-               placeholder="مثال: عرض رمضان، خصم 50% على الاستشارات..."
-               [class.ad-input--filled]="addForm.get('title')!.value"
-               [class.ad-input--invalid]="addForm.get('title')!.invalid && addForm.get('title')!.touched">
+               placeholder="مثال: خصم 20% على الاستشارات هذا الأسبوع..."
+               [class.adv-input--invalid]="addForm.get('title')!.invalid && addForm.get('title')!.touched">
         <app-form-error [control]="addForm.get('title')"></app-form-error>
       </div>
 
-    </div>
+      <!-- footer inside form -->
+      <div class="adv-modal-footer">
+        <button type="button" class="adv-modal-btn adv-modal-btn--cancel"
+                (click)="closeModal()" [disabled]="adding()">
+          <i class="fa-solid fa-xmark"></i>
+          إلغاء
+        </button>
+        <button type="submit" class="adv-modal-btn adv-modal-btn--save"
+                [disabled]="adding()">
+          @if (adding()) {
+            <span class="adv-btn-spinner"></span>
+            جاري النشر...
+          } @else {
+            <i class="fa-solid fa-paper-plane"></i>
+            نشر الإعلان
+          }
+        </button>
+      </div>
 
-    <!-- Footer -->
-    <div class="ad-modal-footer">
-      <button type="button" class="ad-footer-btn ad-footer-btn--cancel"
-              (click)="closeModal()" [disabled]="adding()">
-        إلغاء
-      </button>
-      <button type="submit" class="ad-footer-btn ad-footer-btn--save"
-              [disabled]="adding()">
-        @if (adding()) {
-          <span class="ad-spinner"></span>
-          جاري الحفظ...
-        } @else {
-          <i class="fa-solid fa-floppy-disk"></i>
-          نشر الإعلان
-        }
-      </button>
-    </div>
     </form>
 
-  </div>
+  </app-modal>
 }

@@ -224,22 +224,26 @@
   border-top: 1px solid var(--border, #1E2D42);
 }
 
-.au-delete-btn {
+.au-delete-btn,
+.au-edit-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 9px 16px;
+  padding: 9px 12px;
   border-radius: 12px;
-  border: 1.5px solid rgba(244,63,94,.25);
-  background: var(--surface, #111827);
-  color: var(--red, #F43F5E);
   font-size: 13px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
   transition: background .18s, border-color .18s,
               box-shadow .18s, transform .18s;
+}
+
+.au-delete-btn {
+  border: 1.5px solid rgba(244,63,94,.25);
+  background: var(--surface, #111827);
+  color: var(--red, #F43F5E);
 
   &:hover {
     background: var(--redsoft, rgba(244,63,94,.12));
@@ -247,6 +251,25 @@
     box-shadow: 0 4px 14px rgba(244,63,94,.2);
     transform: translateY(-1px);
   }
+}
+
+.au-edit-btn {
+  border: 1.5px solid rgba(29,177,122,.25);
+  background: var(--surface, #111827);
+  color: var(--main-color, #1db17a);
+
+  &:hover {
+    background: var(--primarysoft, rgba(29,177,122,.12));
+    border-color: var(--main-color, #1db17a);
+    box-shadow: 0 4px 14px rgba(29,177,122,.2);
+    transform: translateY(-1px);
+  }
+}
+
+.au-optional {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--textmuted, #3D5068);
 }
 
 /* ═══════════════════════════════════

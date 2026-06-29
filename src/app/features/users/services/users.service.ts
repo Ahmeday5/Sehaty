@@ -25,8 +25,18 @@ export class UsersService {
     );
   }
 
+  getById(id: string): Observable<Employee> {
+    return this.api.get<Employee>(`api/Dashboard/getEmployee/${id}`);
+  }
+
   addUser(formData: FormData): Observable<string> {
     return this.api.postText('api/Dashboard/addEmployee', formData).pipe(
+      map((res) => { this.invalidate(); return res; }),
+    );
+  }
+
+  updateUser(id: string, formData: FormData): Observable<string> {
+    return this.api.putText(`api/Dashboard/updateEmployee/${id}`, formData).pipe(
       map((res) => { this.invalidate(); return res; }),
     );
   }

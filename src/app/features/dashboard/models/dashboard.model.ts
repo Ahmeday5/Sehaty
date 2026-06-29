@@ -49,7 +49,8 @@ export interface SpecialtyDistributionResponse {
 // ── GET /api/Dashboard/getLatestAppointments?count=10 ────────────────────────
 
 export type AppointmentStatus =
-  | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Rejected';
+  | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Rejected'
+  | 'Accepted' | 'Examined' | 'NoShow' | 'Rescheduled';
 
 export interface LatestAppointmentItem {
   id:            string;

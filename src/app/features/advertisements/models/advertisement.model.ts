@@ -4,9 +4,9 @@ export interface Advertisement {
   imageUrl: string | null;
 }
 
-export interface AdvertisementsResponse {
-  total: number;
-  page: number;
+export interface AdvertisementsPage {
+  total:    number;
+  page:     number;
   pageSize: number;
-  data: Advertisement[];
+  data:     Advertisement[];
 }

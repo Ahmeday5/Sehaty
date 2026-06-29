@@ -55,19 +55,25 @@ export class AllUsersComponent implements OnInit {
   private readonly confirm = inject(ConfirmService);
   private readonly fb      = inject(FormBuilder);
 
-  protected readonly loading      = signal(false);
-  protected readonly submitting   = signal(false);
-  protected readonly showAddModal = signal(false);
-  protected readonly showPassword = signal(false);
-  protected readonly imagePreview = signal<string | null>(null);
-  protected readonly selectedRole = signal<string | null>(null);
-  protected readonly currentPage  = signal(1);
-  protected readonly totalPages   = signal(0);
-  protected readonly displayed    = signal<Employee[]>([]);
+  protected readonly loading       = signal(false);
+  protected readonly submitting    = signal(false);
+  protected readonly showAddModal  = signal(false);
+  protected readonly showEditModal = signal(false);
+  protected readonly showPassword  = signal(false);
+  protected readonly showEditPassword = signal(false);
+  protected readonly imagePreview  = signal<string | null>(null);
+  protected readonly editImagePreview = signal<string | null>(null);
+  protected readonly selectedRole  = signal<string | null>(null);
+  protected readonly currentPage   = signal(1);
+  protected readonly totalPages    = signal(0);
+  protected readonly displayed     = signal<Employee[]>([]);
+  protected readonly editingEmp    = signal<Employee | null>(null);
 
   protected addForm!: FormGroup;
+  protected editForm!: FormGroup;
 
-  private imageFile: File | null = null;
+  private imageFile: File | null     = null;
+  private editImageFile: File | null = null;
   private all:      Employee[] = [];
   private filtered: Employee[] = [];
   private currentQuery = '';
@@ -128,7 +134,7 @@ export class AllUsersComponent implements OnInit {
   ]);
 
   ngOnInit(): void {
-    this.buildForm();
+    this.buildAddForm();
     this.load();
   }
 
@@ -156,8 +162,9 @@ export class AllUsersComponent implements OnInit {
     this.onRoleFilter(role);
   }
 
+  /* ── Add modal ── */
   protected openAdd(): void {
-    this.buildForm();
+    this.buildAddForm();
     this.imageFile = null;
     this.imagePreview.set(null);
     this.showPassword.set(false);
@@ -165,7 +172,19 @@ export class AllUsersComponent implements OnInit {
   }
   protected closeAdd(): void { this.showAddModal.set(false); }
 
+  /* ── Edit modal ── */
+  protected openEdit(emp: Employee): void {
+    this.editingEmp.set(emp);
+    this.editImageFile = null;
+    this.editImagePreview.set(this.avatarUrl(emp));
+    this.showEditPassword.set(false);
+    this.buildEditForm(emp);
+    this.showEditModal.set(true);
+  }
+  protected closeEdit(): void { this.showEditModal.set(false); this.editingEmp.set(null); }
+
   protected togglePassword(): void { this.showPassword.update((v) => !v); }
+  protected toggleEditPassword(): void { this.showEditPassword.update((v) => !v); }
 
   protected onImageChange(e: Event): void {
     const f = (e.target as HTMLInputElement).files?.[0];
@@ -176,6 +195,16 @@ export class AllUsersComponent implements OnInit {
     reader.readAsDataURL(f);
   }
 
+  protected onEditImageChange(e: Event): void {
+    const f = (e.target as HTMLInputElement).files?.[0];
+    if (!f) return;
+    this.editImageFile = f;
+    const reader = new FileReader();
+    reader.onload = (ev) => this.editImagePreview.set(ev.target?.result as string);
+    reader.readAsDataURL(f);
+  }
+
+  /* ── Submit add ── */
   protected async onSubmit(): Promise<void> {
     if (this.addForm.invalid) { this.addForm.markAllAsTouched(); return; }
     this.submitting.set(true);
@@ -186,9 +215,9 @@ export class AllUsersComponent implements OnInit {
       fd.append('LastName',   v.lastName);
       fd.append('Email',      v.email);
       fd.append('Password',   v.password);
-      fd.append('Phone',      v.phone);
       fd.append('NationalID', v.nationalID);
       fd.append('Roles',      v.role);
+      if (v.phone)        fd.append('Phone', v.phone);
       if (this.imageFile) fd.append('ProfileImage', this.imageFile);
 
       const res = await firstValueFrom(this.svc.addUser(fd));
@@ -202,6 +231,44 @@ export class AllUsersComponent implements OnInit {
         this.refresh();
       } else {
         this.toast.error(res || 'فشل الإضافة');
+      }
+    } catch (err: any) {
+      this.toast.error(err?.message ?? 'حدث خطأ، يرجى المحاولة مرة أخرى');
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  /* ── Submit edit ── */
+  protected async onEditSubmit(): Promise<void> {
+    const emp = this.editingEmp();
+    if (!emp) return;
+    if (this.editForm.invalid) { this.editForm.markAllAsTouched(); return; }
+    this.submitting.set(true);
+    try {
+      const v = this.editForm.value;
+      const fd = new FormData();
+      fd.append('FirstName',  v.firstName);
+      fd.append('LastName',   v.lastName);
+      fd.append('Email',      v.email);
+      fd.append('NationalID', v.nationalID);
+      fd.append('Roles',      v.role);
+      if (v.phone)             fd.append('Phone',    v.phone);
+      if (v.password?.trim())  fd.append('Password', v.password.trim());
+      if (this.editImageFile)  fd.append('ProfileImage', this.editImageFile);
+
+      const res = await firstValueFrom(this.svc.updateUser(emp.id, fd));
+      if (
+        res.toLowerCase().includes('updated') ||
+        res.toLowerCase().includes('success') ||
+        res.includes('تم')
+      ) {
+        this.toast.success('تم تعديل المستخدم بنجاح');
+        this.showEditModal.set(false);
+        this.editingEmp.set(null);
+        this.refresh();
+      } else {
+        this.toast.error(res || 'فشل التعديل');
       }
     } catch (err: any) {
       this.toast.error(err?.message ?? 'حدث خطأ، يرجى المحاولة مرة أخرى');
@@ -264,6 +331,7 @@ export class AllUsersComponent implements OnInit {
   protected avatarUrl(emp: Employee): string {
     const p = emp.picture;
     if (!p || p === 'N/A' || p === '' || p === 'null') return '/assets/img/user/profile.png';
+    if (p.includes('/N/A')) return '/assets/img/user/profile.png';
     return p.startsWith('http') ? p : `https://sehatytheone.runasp.net${p}`;
   }
 
@@ -310,15 +378,27 @@ export class AllUsersComponent implements OnInit {
     this.displayed.set(this.filtered.slice(start, start + PER_PAGE));
   }
 
-  private buildForm(): void {
+  private buildAddForm(): void {
     this.addForm = this.fb.group({
       firstName:  ['', [Validators.required, Validators.minLength(2)]],
       lastName:   ['', [Validators.required, Validators.minLength(2)]],
       email:      ['', [Validators.required, Validators.email]],
-      phone:      ['', [Validators.required, Validators.pattern(/^[0-9+\s]{7,15}$/)]],
+      phone:      ['', [Validators.pattern(/^[0-9+\s]{7,15}$/)]],
       nationalID: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(20), Validators.pattern(/^[0-9]+$/)]],
       password:   ['', [Validators.required, Validators.minLength(6)]],
       role:       ['', [Validators.required]],
+    });
+  }
+
+  private buildEditForm(emp: Employee): void {
+    this.editForm = this.fb.group({
+      firstName:  [emp.firstName, [Validators.required, Validators.minLength(2)]],
+      lastName:   [emp.lastName,  [Validators.required, Validators.minLength(2)]],
+      email:      [emp.email,     [Validators.required, Validators.email]],
+      phone:      [emp.phone ?? '', [Validators.pattern(/^[0-9+\s]{7,15}$/)]],
+      nationalID: [emp.nationalID, [Validators.required, Validators.minLength(10), Validators.maxLength(20), Validators.pattern(/^[0-9]+$/)]],
+      password:   ['', [Validators.minLength(6)]],
+      role:       [emp.roles?.[0] ?? '', [Validators.required]],
     });
   }
 }

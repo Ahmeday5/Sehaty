@@ -9,6 +9,7 @@ export interface Employee {
   picture: string | null;
   nationalID: string;
   roles: UserRole[];
+  token?: string | null;
 }
 
 export interface CreateEmployeePayload {
@@ -19,5 +20,16 @@ export interface CreateEmployeePayload {
   password: string;
   nationalID: string;
   role: UserRole;
+  picture?: File;
+}
+
+export interface UpdateEmployeePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  nationalID?: string;
+  password?: string;
+  role?: UserRole;
   picture?: File;
 }

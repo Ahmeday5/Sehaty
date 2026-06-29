@@ -1,35 +1,49 @@
-export type AppointmentStatus = 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
+export type AppointmentStatus =
+  | 'Pending'
+  | 'Accepted'
+  | 'Rejected'
+  | 'Rescheduled'
+  | 'Examined'
+  | 'NoShow';
 
-export interface Appointment {
-  id: number;
-  bookingNumber: string;
+export interface AppointmentItem {
+  id: string | number;
   patientName: string;
   doctorName: string;
-  specialization: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  fees: number;
+  specialization?: string;
+  date: string;
+  slotStartTime?: string;
   status: AppointmentStatus;
+  fees?: number;
   notes?: string;
 }
 
-export interface AppointmentFilters {
-  status?: AppointmentStatus | null;
-  search?: string;
-  dateFrom?: string;
-  dateTo?: string;
+export interface AppointmentStatusOption {
+  value: string;
+  label: string;
 }
 
-export const APPOINTMENT_STATUS_LABEL: Record<AppointmentStatus, string> = {
-  Pending:   'قيد الانتظار',
-  Confirmed: 'مؤكّد',
-  Completed: 'مكتمل',
-  Cancelled: 'ملغي',
-};
+export interface AppointmentsPage {
+  data: AppointmentItem[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
 
-export const APPOINTMENT_STATUS_VARIANT: Record<AppointmentStatus, string> = {
-  Pending:   'amber',
-  Confirmed: 'blue',
-  Completed: 'teal',
-  Cancelled: 'red',
+export interface AppointmentFilters {
+  doctorName?: string;
+  patientName?: string;
+  status?: string | null;
+  date?: string | null;
+  page: number;
+  pageSize: number;
+}
+
+export const APPOINTMENT_STATUS_VARIANT: Record<string, string> = {
+  Pending:      'amber',
+  Accepted:     'blue',
+  Rejected:     'red',
+  Rescheduled:  'purple',
+  Examined:     'teal',
+  NoShow:       'default',
 };

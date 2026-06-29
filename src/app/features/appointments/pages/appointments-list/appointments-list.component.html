@@ -4,8 +4,8 @@
   <div class="page-header">
     <div class="d-flex align-items-center gap-2">
       <h1 class="page-title mb-0">الحجوزات</h1>
-      @if (!loading() && filteredAppointments.length > 0) {
-        <span class="al-count">{{ filteredAppointments.length }} حجز</span>
+      @if (!loading() && totalCount() > 0) {
+        <span class="al-count">{{ totalCount() }} حجز</span>
       }
     </div>
     <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
@@ -13,29 +13,44 @@
     </button>
   </div>
 
-  <!-- KPIs -->
-  @if (!loading() && allAppointments.length > 0) {
-    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
-  }
-
   <!-- toolbar -->
   <div class="al-toolbar">
-    <!-- search -->
+
+    <!-- Doctor search -->
+    <div class="al-search">
+      <i class="fa-solid fa-user-doctor al-search__icon"></i>
+      <input class="al-search__input"
+             type="search"
+             placeholder="بحث باسم الطبيب..."
+             [ngModel]="doctorSearch"
+             (ngModelChange)="onDoctorSearch($event)">
+    </div>
+
+    <!-- Patient search -->
     <div class="al-search">
       <i class="fa-solid fa-magnifying-glass al-search__icon"></i>
       <input class="al-search__input"
              type="search"
-             placeholder="بحث بالمريض أو الطبيب أو رقم الحجز..."
-             [(ngModel)]="searchValue"
-             (ngModelChange)="onSearch($event)">
+             placeholder="بحث باسم المريض..."
+             [ngModel]="patientSearch"
+             (ngModelChange)="onPatientSearch($event)">
     </div>
 
-    <!-- status filter -->
-    <select class="al-select" [ngModel]="statusFilter()" (ngModelChange)="onStatusChange($event)">
-      @for (opt of STATUS_OPTIONS; track opt.value) {
-        <option [value]="opt.value ?? ''">{{ opt.label }}</option>
+    <!-- Status filter -->
+    <select class="al-select" [ngModel]="statusFilter" (ngModelChange)="onStatusChange($event)">
+      <option value="">جميع الحالات</option>
+      @for (opt of statusOptions(); track opt.value) {
+        <option [value]="opt.value">{{ opt.label }}</option>
       }
     </select>
+
+    <!-- Date filter -->
+    <input class="al-date-input"
+           type="date"
+           [ngModel]="dateFilter"
+           (ngModelChange)="onDateChange($event)"
+           title="فلترة بالتاريخ">
+
   </div>
 
   <!-- content -->
@@ -48,56 +63,42 @@
     <app-empty-state
       icon="fa-calendar-xmark"
       title="لا توجد حجوزات"
-      [message]="searchValue || statusFilter() ? 'جرّب تعديل معايير البحث أو الفلتر' : 'لا توجد حجوزات حتى الآن'">
+      [message]="doctorSearch || patientSearch || statusFilter || dateFilter ? 'جرّب تعديل معايير البحث أو الفلتر' : 'لا توجد حجوزات حتى الآن'">
     </app-empty-state>
   } @else {
     <div class="al-table-wrap">
       <table class="al-table">
         <thead>
           <tr>
-            <th>رقم الحجز</th>
             <th>المريض</th>
             <th>الطبيب</th>
-            <th>التخصص</th>
-            <th>الموعد</th>
-            <th>الرسوم</th>
+            <th>التاريخ</th>
             <th>الحالة</th>
-            <th>الإجراءات</th>
           </tr>
         </thead>
         <tbody>
           @for (appt of displayed(); track appt.id) {
             <tr>
-              <td class="al-td-num" dir="ltr">{{ appt.bookingNumber }}</td>
               <td class="al-td-bold">{{ appt.patientName }}</td>
               <td class="al-td-sub">{{ appt.doctorName }}</td>
-              <td>
-                <app-stat-badge [label]="appt.specialization" variant="blue"></app-stat-badge>
+              <td class="al-td-sub">
+                <div class="al-td-date">
+                  <i class="fa-regular fa-calendar"></i>
+                  {{ appt.date }}
+                  @if (appt.slotStartTime) {
+                    <span class="al-td-time">
+                      <i class="fa-regular fa-clock"></i>
+                      {{ appt.slotStartTime }}
+                    </span>
+                  }
+                </div>
               </td>
-              <td class="al-td-sub al-td-date">
-                <i class="fa-regular fa-clock"></i>
-                {{ appt.appointmentDate }} — {{ appt.appointmentTime }}
-              </td>
-              <td class="al-td-fees">{{ appt.fees | number }} ج.م</td>
               <td>
                 <app-stat-badge
                   [label]="statusLabelOf(appt.status)"
                   [variant]="statusVariantOf(appt.status)"
                   [dot]="true">
                 </app-stat-badge>
-              </td>
-              <td>
-                <div class="al-actions">
-                  <button class="al-btn al-btn--view" title="عرض التفاصيل">
-                    <i class="fa-solid fa-eye"></i>
-                  </button>
-                  @if (appt.status !== 'Cancelled' && appt.status !== 'Completed') {
-                    <button class="al-btn al-btn--cancel" title="إلغاء الحجز"
-                            (click)="onCancel(appt)">
-                      <i class="fa-solid fa-ban"></i>
-                    </button>
-                  }
-                </div>
               </td>
             </tr>
           }

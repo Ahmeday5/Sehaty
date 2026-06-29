@@ -982,6 +982,16 @@
     color: #f87171;
     border: 1px solid rgba(239, 68, 68, 0.2);
   }
+  &.db-status--purple {
+    background: rgba(167, 139, 250, 0.12);
+    color: #c4b5fd;
+    border: 1px solid rgba(167, 139, 250, 0.2);
+  }
+  &.db-status--gray {
+    background: rgba(100, 116, 139, 0.12);
+    color: #94a3b8;
+    border: 1px solid rgba(100, 116, 139, 0.2);
+  }
 }
 
 /* ══════════════════════════════════

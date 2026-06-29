@@ -75,11 +75,15 @@ interface Specialty {
 const SPECIALTY_COLORS = ['#0EA5E9', '#14B8A6', '#22C55E', '#A78BFA', '#F59E0B', '#EF4444', '#EC4899'];
 
 const STATUS_MAP: Record<AppointmentStatus, { label: string; cls: string }> = {
-  Pending:   { label: 'قيد الانتظار', cls: 'db-status--amber' },
-  Confirmed: { label: 'مؤكّد',        cls: 'db-status--blue'  },
-  Completed: { label: 'مكتمل',        cls: 'db-status--teal'  },
-  Cancelled: { label: 'ملغى',          cls: 'db-status--red'   },
-  Rejected:  { label: 'مرفوض',        cls: 'db-status--red'   },
+  Pending:      { label: 'قيد الانتظار', cls: 'db-status--amber'  },
+  Accepted:     { label: 'مؤكّد',        cls: 'db-status--blue'   },
+  Confirmed:    { label: 'مؤكّد',        cls: 'db-status--blue'   },
+  Examined:     { label: 'مكتمل',        cls: 'db-status--teal'   },
+  Completed:    { label: 'مكتمل',        cls: 'db-status--teal'   },
+  Rescheduled:  { label: 'معاد جدولته', cls: 'db-status--purple' },
+  Cancelled:    { label: 'ملغى',         cls: 'db-status--red'    },
+  Rejected:     { label: 'مرفوض',       cls: 'db-status--red'    },
+  NoShow:       { label: 'لم يحضر',     cls: 'db-status--gray'   },
 };
 
 const RECIPIENT_MAP: Record<ActivityRecipientType, { icon: string; nodeColor: string; bgColor: string; typeLabel: string; typeClass: string }> = {
@@ -121,7 +125,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
   protected readonly revCount        = signal(8);
   protected readonly apptCount       = signal(10);
   protected readonly actHours        = signal(24);
-  protected readonly actCount        = signal(20);
+  protected readonly actCount        = signal(10);
   protected readonly revLoading      = signal(false);
   protected readonly apptLoading     = signal(false);
   protected readonly actLoading      = signal(false);
@@ -187,7 +191,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
 
   onActParamsChange(hours: number, count: number): void {
     this.actHours.set(Math.max(1, Math.min(720, hours || 24)));
-    this.actCount.set(Math.max(1, Math.min(200, count || 20)));
+    this.actCount.set(Math.max(1, Math.min(200, count || 10)));
     this.fetchActivity();
   }
 
@@ -250,7 +254,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
       revenueChart: this.svc.getRevenueChart('monthly', 8).pipe(catchError(() => of(null))),
       specialties:  this.svc.getSpecialtyDistribution().pipe(catchError(() => of(null))),
       appointments: this.svc.getLatestAppointments(10).pipe(catchError(() => of(null))),
-      activity:     this.svc.getActivityLog(24, 20).pipe(catchError(() => of(null))),
+      activity:     this.svc.getActivityLog(24, 10).pipe(catchError(() => of(null))),
     }).subscribe({
       next: ({ stats, revenueChart, specialties, appointments, activity }) => {
         if (stats) {

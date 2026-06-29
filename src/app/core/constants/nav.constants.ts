@@ -105,6 +105,13 @@ export const NAV_SECTIONS: NavSection[] = [
         requiredAnyRole: ['Admin', 'Editor'],
       },
       {
+        id: 'advertisements',
+        label: 'الإعلانات',
+        route: '/advertisements',
+        icon: 'ads',
+        requiredAnyRole: ['Admin', 'Marketing'],
+      },
+      {
         id: 'notifications',
         label: 'الإشعارات',
         route: '/notifications',

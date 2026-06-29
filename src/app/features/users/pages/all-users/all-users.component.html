@@ -84,8 +84,6 @@
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
           <div class="au-card">
 
-            <!-- Stripe accent (via ::before in SCSS) -->
-
             <!-- Card Header: avatar + role badge -->
             <div class="au-card-head d-flex align-items-start justify-content-between">
               <div class="au-avatar-wrap">
@@ -133,11 +131,15 @@
               </div>
             </div>
 
-            <!-- Delete Action -->
-            <div class="au-card-footer">
-              <button type="button" class="au-delete-btn w-100" (click)="onDelete(emp)">
+            <!-- Actions -->
+            <div class="au-card-footer d-flex gap-2">
+              <button type="button" class="au-edit-btn flex-fill" (click)="openEdit(emp)">
+                <i class="fa-solid fa-pen-to-square"></i>
+                تعديل
+              </button>
+              <button type="button" class="au-delete-btn flex-fill" (click)="onDelete(emp)">
                 <i class="fa-solid fa-trash-can"></i>
-                حذف المستخدم
+                حذف
               </button>
             </div>
 
@@ -212,7 +214,7 @@
 
         <!-- Phone -->
         <div class="col-md-6">
-          <label class="au-form-lbl">رقم الهاتف <span class="text-danger">*</span></label>
+          <label class="au-form-lbl">رقم الهاتف</label>
           <input class="form-control au-input" type="tel" formControlName="phone"
                  placeholder="+201xxxxxxxxx" dir="ltr"
                  [class.is-invalid]="addForm.get('phone')!.invalid && addForm.get('phone')!.touched">
@@ -276,6 +278,131 @@
             <i class="fa-solid fa-user-plus"></i>
           }
           {{ submitting() ? 'جاري الإضافة...' : 'إضافة المستخدم' }}
+        </button>
+      </div>
+
+    </form>
+  </app-modal>
+}
+
+
+<!-- ══════════════════════════════════
+     Edit User Modal
+     ══════════════════════════════════ -->
+@if (showEditModal() && editingEmp()) {
+  <app-modal title="تعديل بيانات المستخدم" size="lg" (closed)="closeEdit()">
+    <form [formGroup]="editForm" (ngSubmit)="onEditSubmit()" novalidate>
+
+      <!-- Avatar Picker -->
+      <div class="d-flex justify-content-center mb-4">
+        <div class="au-img-picker" (click)="editImgInput.click()" role="button" tabindex="0">
+          @if (editImagePreview()) {
+            <img [src]="editImagePreview()!" class="au-img-preview" alt="صورة المستخدم">
+            <div class="au-img-overlay"><i class="fa-solid fa-camera"></i></div>
+          } @else {
+            <i class="fa-solid fa-user-circle au-img-placeholder-icon"></i>
+            <span class="au-img-hint">رفع صورة</span>
+          }
+        </div>
+        <input #editImgInput type="file" accept="image/*" class="d-none" (change)="onEditImageChange($event)">
+      </div>
+
+      <!-- Fields -->
+      <div class="row g-3">
+
+        <!-- First Name -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">الاسم الأول <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="text" formControlName="firstName"
+                 placeholder="أدخل الاسم الأول"
+                 [class.is-invalid]="editForm.get('firstName')!.invalid && editForm.get('firstName')!.touched">
+          <app-form-error [control]="editForm.get('firstName')"></app-form-error>
+        </div>
+
+        <!-- Last Name -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">الاسم الأخير <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="text" formControlName="lastName"
+                 placeholder="أدخل الاسم الأخير"
+                 [class.is-invalid]="editForm.get('lastName')!.invalid && editForm.get('lastName')!.touched">
+          <app-form-error [control]="editForm.get('lastName')"></app-form-error>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">البريد الإلكتروني <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="email" formControlName="email"
+                 placeholder="example@mail.com" dir="ltr"
+                 [class.is-invalid]="editForm.get('email')!.invalid && editForm.get('email')!.touched">
+          <app-form-error [control]="editForm.get('email')"></app-form-error>
+        </div>
+
+        <!-- Phone -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">رقم الهاتف</label>
+          <input class="form-control au-input" type="tel" formControlName="phone"
+                 placeholder="+201xxxxxxxxx" dir="ltr"
+                 [class.is-invalid]="editForm.get('phone')!.invalid && editForm.get('phone')!.touched">
+          <app-form-error [control]="editForm.get('phone')" patternMsg="أدخل رقم هاتف صحيح (7-15 رقماً)"></app-form-error>
+        </div>
+
+        <!-- National ID -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">رقم الهوية <span class="text-danger">*</span></label>
+          <input class="form-control au-input" type="text" formControlName="nationalID"
+                 placeholder="أدخل رقم الهوية الوطنية" dir="ltr" maxlength="20"
+                 [class.is-invalid]="editForm.get('nationalID')!.invalid && editForm.get('nationalID')!.touched">
+          <app-form-error [control]="editForm.get('nationalID')" patternMsg="أرقام فقط (10-20 خانة)"></app-form-error>
+        </div>
+
+        <!-- Password (optional) -->
+        <div class="col-md-6">
+          <label class="au-form-lbl">كلمة المرور الجديدة <span class="au-optional">(اختياري)</span></label>
+          <div class="position-relative">
+            <input class="form-control au-input au-input--has-eye"
+                   [type]="showEditPassword() ? 'text' : 'password'"
+                   formControlName="password"
+                   placeholder="اتركه فارغاً للإبقاء على القديم" dir="ltr"
+                   [class.is-invalid]="editForm.get('password')!.invalid && editForm.get('password')!.touched">
+            <button type="button" class="au-eye-btn" (click)="toggleEditPassword()">
+              <i class="fa-regular" [class.fa-eye]="!showEditPassword()" [class.fa-eye-slash]="showEditPassword()"></i>
+            </button>
+          </div>
+          <app-form-error [control]="editForm.get('password')"></app-form-error>
+        </div>
+
+        <!-- Role selector -->
+        <div class="col-12">
+          <label class="au-form-lbl">الدور الوظيفي <span class="text-danger">*</span></label>
+          <div class="d-flex flex-wrap gap-2 mt-1">
+            @for (key of ROLE_KEYS; track key) {
+              <label class="au-role-opt" [class.au-role-opt--on]="editForm.get('role')!.value === key">
+                <input type="radio" formControlName="role" [value]="key" class="d-none">
+                <i class="fa-solid" [ngClass]="roleIconClass(key)"></i>
+                {{ ROLES_AR[key] }}
+              </label>
+            }
+          </div>
+          @if (editForm.get('role')!.invalid && editForm.get('role')!.touched) {
+            <p class="au-err mt-1">يرجى اختيار الدور الوظيفي</p>
+          }
+        </div>
+
+      </div>
+
+      <!-- Modal footer -->
+      <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+        <button type="button" class="au-form-btn au-form-btn--cancel" (click)="closeEdit()">
+          <i class="fa-solid fa-xmark"></i>
+          إلغاء
+        </button>
+        <button type="submit" class="au-form-btn au-form-btn--save" [disabled]="submitting()">
+          @if (submitting()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="fa-solid fa-floppy-disk"></i>
+          }
+          {{ submitting() ? 'جاري الحفظ...' : 'حفظ التعديلات' }}
         </button>
       </div>
 

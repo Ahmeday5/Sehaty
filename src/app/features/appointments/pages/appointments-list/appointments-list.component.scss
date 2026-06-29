@@ -72,6 +72,37 @@
   option { background: var(--surface2, #1A2235); }
 }
 
+.al-date-input {
+  height: 38px;
+  padding: 0 12px;
+  background: var(--surface2, #1A2235);
+  border: 1px solid var(--border, #1E2D42);
+  border-radius: 10px;
+  color: var(--txt, #E8F0FE);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  color-scheme: dark;
+
+  &:focus { outline: none; border-color: var(--main-color, #13A0A0); }
+}
+
+.al-td-date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  i { font-size: 11px; }
+}
+
+.al-td-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--textmuted, #3D5068);
+  font-size: 12px;
+}
+
 /* ── Spinner ── */
 .al-spinner {
   display: flex;
