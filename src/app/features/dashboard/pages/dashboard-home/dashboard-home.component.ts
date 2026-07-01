@@ -28,70 +28,117 @@ import {
 // ── View-layer interfaces ─────────────────────────────────────────────────────
 
 interface CardStat {
-  label:      string;
-  value:      number;
-  valueSub:   string;
-  icon:       string;
-  gradient:   string;
+  label: string;
+  value: number;
+  valueSub: string;
+  icon: string;
+  gradient: string;
   isCurrency: boolean;
 }
 
 interface RevBar {
   label: string;
-  raw:   number;
-  pct:   number;
+  raw: number;
+  pct: number;
 }
 
 interface Booking {
-  id:          string;
-  patient:     string;
-  doctor:      string;
-  time:        string;
-  status:      string;
+  id: string;
+  patient: string;
+  doctor: string;
+  time: string;
+  status: string;
   statusClass: string;
 }
 
 interface ActivityItem {
-  id:          number;
-  icon:        string;
-  nodeColor:   string;
-  bgColor:     string;
-  title:       string;
+  id: number;
+  icon: string;
+  nodeColor: string;
+  bgColor: string;
+  title: string;
   description: string;
-  time:        string;
-  typeLabel:   string;
-  typeClass:   string;
+  time: string;
+  typeLabel: string;
+  typeClass: string;
 }
 
 interface Specialty {
   label: string;
-  pct:   number;
+  pct: number;
   color: string;
   count: number;
 }
 
 // ── Static color / label maps ─────────────────────────────────────────────────
 
-const SPECIALTY_COLORS = ['#0EA5E9', '#14B8A6', '#22C55E', '#A78BFA', '#F59E0B', '#EF4444', '#EC4899'];
+const SPECIALTY_COLORS = [
+  '#0EA5E9',
+  '#14B8A6',
+  '#22C55E',
+  '#A78BFA',
+  '#F59E0B',
+  '#EF4444',
+  '#EC4899',
+];
 
 const STATUS_MAP: Record<AppointmentStatus, { label: string; cls: string }> = {
-  Pending:      { label: 'قيد الانتظار', cls: 'db-status--amber'  },
-  Accepted:     { label: 'مؤكّد',        cls: 'db-status--blue'   },
-  Confirmed:    { label: 'مؤكّد',        cls: 'db-status--blue'   },
-  Examined:     { label: 'مكتمل',        cls: 'db-status--teal'   },
-  Completed:    { label: 'مكتمل',        cls: 'db-status--teal'   },
-  Rescheduled:  { label: 'معاد جدولته', cls: 'db-status--purple' },
-  Cancelled:    { label: 'ملغى',         cls: 'db-status--red'    },
-  Rejected:     { label: 'مرفوض',       cls: 'db-status--red'    },
-  NoShow:       { label: 'لم يحضر',     cls: 'db-status--gray'   },
+  Pending: { label: 'قيد الانتظار', cls: 'db-status--amber' },
+  Accepted: { label: 'مؤكّد', cls: 'db-status--blue' },
+  Confirmed: { label: 'مؤكّد', cls: 'db-status--blue' },
+  Examined: { label: 'مكتمل', cls: 'db-status--teal' },
+  Completed: { label: 'مكتمل', cls: 'db-status--teal' },
+  Rescheduled: { label: 'معاد جدولته', cls: 'db-status--purple' },
+  Cancelled: { label: 'ملغى', cls: 'db-status--red' },
+  Rejected: { label: 'مرفوض', cls: 'db-status--red' },
+  NoShow: { label: 'لم يحضر', cls: 'db-status--gray' },
 };
 
-const RECIPIENT_MAP: Record<ActivityRecipientType, { icon: string; nodeColor: string; bgColor: string; typeLabel: string; typeClass: string }> = {
-  Doctor:   { icon: 'fa-user-doctor',   nodeColor: '#a78bfa', bgColor: 'rgba(167,139,250,.1)', typeLabel: 'طبيب',   typeClass: 'db-atype--purple' },
-  Patient:  { icon: 'fa-user',          nodeColor: '#0ea5e9', bgColor: 'rgba(14,165,233,.1)',  typeLabel: 'مريض',   typeClass: 'db-atype--blue'   },
-  Admin:    { icon: 'fa-shield-halved', nodeColor: '#22c55e', bgColor: 'rgba(34,197,94,.1)',   typeLabel: 'مشرف',   typeClass: 'db-atype--green'  },
-  System:   { icon: 'fa-gear',          nodeColor: '#f59e0b', bgColor: 'rgba(245,158,11,.1)',  typeLabel: 'نظام',   typeClass: 'db-atype--amber'  },
-  Pharmacy: { icon: 'fa-pills',         nodeColor: '#14b8a6', bgColor: 'rgba(20,184,166,.1)',  typeLabel: 'صيدلية', typeClass: 'db-atype--teal'   },
+const RECIPIENT_MAP: Record<
+  ActivityRecipientType,
+  {
+    icon: string;
+    nodeColor: string;
+    bgColor: string;
+    typeLabel: string;
+    typeClass: string;
+  }
+> = {
+  Doctor: {
+    icon: 'fa-user-doctor',
+    nodeColor: '#a78bfa',
+    bgColor: 'rgba(167,139,250,.1)',
+    typeLabel: 'طبيب',
+    typeClass: 'db-atype--purple',
+  },
+  Patient: {
+    icon: 'fa-user',
+    nodeColor: '#0ea5e9',
+    bgColor: 'rgba(14,165,233,.1)',
+    typeLabel: 'مريض',
+    typeClass: 'db-atype--blue',
+  },
+  Admin: {
+    icon: 'fa-shield-halved',
+    nodeColor: '#22c55e',
+    bgColor: 'rgba(34,197,94,.1)',
+    typeLabel: 'مشرف',
+    typeClass: 'db-atype--green',
+  },
+  System: {
+    icon: 'fa-gear',
+    nodeColor: '#f59e0b',
+    bgColor: 'rgba(245,158,11,.1)',
+    typeLabel: 'نظام',
+    typeClass: 'db-atype--amber',
+  },
+  Pharmacy: {
+    icon: 'fa-pills',
+    nodeColor: '#14b8a6',
+    bgColor: 'rgba(20,184,166,.1)',
+    typeLabel: 'صيدلية',
+    typeClass: 'db-atype--teal',
+  },
 };
 
 @Component({
@@ -102,41 +149,48 @@ const RECIPIENT_MAP: Record<ActivityRecipientType, { icon: string; nodeColor: st
   templateUrl: './dashboard-home.component.html',
   styleUrl: './dashboard-home.component.scss',
 })
-export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardHomeComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   @ViewChild('donutCanvas') private donutRef!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('barCanvas')   private barRef!:   ElementRef<HTMLCanvasElement>;
+  @ViewChild('barCanvas') private barRef!: ElementRef<HTMLCanvasElement>;
 
-  private readonly svc   = inject(DashboardService);
+  private readonly svc = inject(DashboardService);
   private readonly toast = inject(ToastService);
-  readonly cache         = inject(CacheService);
-  private readonly zone  = inject(NgZone);
+  readonly cache = inject(CacheService);
+  private readonly zone = inject(NgZone);
 
-  protected readonly loading        = signal(false);
-  protected readonly cardStats      = signal<CardStat[]>([]);
-  protected readonly lastUpdate     = signal<Date | null>(null);
-  protected readonly revBars        = signal<RevBar[]>([]);
-  protected readonly specialties    = signal<Specialty[]>([]);
-  protected readonly donutTotal     = signal(0);
+  protected readonly loading = signal(false);
+  protected readonly cardStats = signal<CardStat[]>([]);
+  protected readonly lastUpdate = signal<Date | null>(null);
+  protected readonly revBars = signal<RevBar[]>([]);
+  protected readonly specialties = signal<Specialty[]>([]);
+  protected readonly donutTotal = signal(0);
   protected readonly recentBookings = signal<Booking[]>([]);
-  protected readonly activityLog    = signal<ActivityItem[]>([]);
+  protected readonly activityLog = signal<ActivityItem[]>([]);
 
   // ── User-controlled parameters ────────────────────────────────────────────
-  protected readonly revMode         = signal<'month' | 'week'>('month');
-  protected readonly revCount        = signal(8);
-  protected readonly apptCount       = signal(10);
-  protected readonly actHours        = signal(24);
-  protected readonly actCount        = signal(10);
-  protected readonly revLoading      = signal(false);
-  protected readonly apptLoading     = signal(false);
-  protected readonly actLoading      = signal(false);
+  protected readonly revMode = signal<'month' | 'week'>('month');
+  protected readonly revCount = signal(8);
+  protected readonly apptCount = signal(10);
+  protected readonly actHours = signal(24);
+  protected readonly actCount = signal(10);
+  protected readonly revLoading = signal(false);
+  protected readonly apptLoading = signal(false);
+  protected readonly actLoading = signal(false);
 
   // ── Donut tooltip ─────────────────────────────────────────────────────────
-  protected readonly donutTooltip    = signal<{ label: string; pct: number; count: number; color: string } | null>(null);
+  protected readonly donutTooltip = signal<{
+    label: string;
+    pct: number;
+    count: number;
+    color: string;
+  } | null>(null);
 
-  private rafId              = 0;
-  private barRafId           = 0;
-  private donutHover         = -1;
-  private barHover           = -1;
+  private rafId = 0;
+  private barRafId = 0;
+  private donutHover = -1;
+  private barHover = -1;
   private currentBarData: { label: string; raw: number }[] = [];
   private donutRawData: SpecialtyDistributionItem[] = [];
 
@@ -157,7 +211,9 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
     this.loadAll();
   }
 
-  ngAfterViewInit(): void { /* charts triggered via effect() */ }
+  ngAfterViewInit(): void {
+    /* charts triggered via effect() */
+  }
 
   ngOnDestroy(): void {
     cancelAnimationFrame(this.rafId);
@@ -170,8 +226,10 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   setRevView(mode: 'month' | 'week', e: Event): void {
-    const btns = (e.target as HTMLElement).closest('.db-pill-toggle')?.querySelectorAll('.db-ptoggle-btn');
-    btns?.forEach(b => b.classList.remove('active'));
+    const btns = (e.target as HTMLElement)
+      .closest('.db-pill-toggle')
+      ?.querySelectorAll('.db-ptoggle-btn');
+    btns?.forEach((b) => b.classList.remove('active'));
     (e.target as HTMLElement).classList.add('active');
     this.revMode.set(mode);
     this.fetchRevChart();
@@ -201,7 +259,10 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
     this.svc.getRevenueChart(type, this.revCount()).subscribe({
       next: (res) => {
         const raw = Array.isArray(res) ? res : (res?.data ?? []);
-        const data = (raw as any[]).map((p: any) => ({ label: p.label, raw: p.revenue ?? 0 }));
+        const data = (raw as any[]).map((p: any) => ({
+          label: p.label,
+          raw: p.revenue ?? 0,
+        }));
         this.currentBarData = data;
         this.buildRevBars(data);
         this.revLoading.set(false);
@@ -250,34 +311,61 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
   private loadAll(): void {
     this.loading.set(true);
     forkJoin({
-      stats:        this.svc.getMainPageStats().pipe(catchError(() => of(null))),
-      revenueChart: this.svc.getRevenueChart('monthly', 8).pipe(catchError(() => of(null))),
-      specialties:  this.svc.getSpecialtyDistribution().pipe(catchError(() => of(null))),
-      appointments: this.svc.getLatestAppointments(10).pipe(catchError(() => of(null))),
-      activity:     this.svc.getActivityLog(24, 10).pipe(catchError(() => of(null))),
+      stats: this.svc.getMainPageStats().pipe(catchError(() => of(null))),
+      revenueChart: this.svc
+        .getRevenueChart('monthly', 8)
+        .pipe(catchError(() => of(null))),
+      specialties: this.svc
+        .getSpecialtyDistribution()
+        .pipe(catchError(() => of(null))),
+      appointments: this.svc
+        .getLatestAppointments(10)
+        .pipe(catchError(() => of(null))),
+      activity: this.svc
+        .getActivityLog(24, 10)
+        .pipe(catchError(() => of(null))),
     }).subscribe({
       next: ({ stats, revenueChart, specialties, appointments, activity }) => {
         if (stats) {
-          this.buildCards(stats.revenue, stats.todayAppointments, stats.activeDoctors, stats.patients);
+          this.buildCards(
+            stats.revenue,
+            stats.todayAppointments,
+            stats.activeDoctors,
+            stats.patients,
+          );
         }
         if (revenueChart) {
           const chartData = Array.isArray(revenueChart)
-            ? (revenueChart as any[]).map((p: any) => ({ label: p.label, raw: p.revenue }))
-            : (revenueChart.data ?? []).map((p: any) => ({ label: p.label, raw: p.revenue }));
+            ? (revenueChart as any[]).map((p: any) => ({
+                label: p.label,
+                raw: p.revenue,
+              }))
+            : (revenueChart.data ?? []).map((p: any) => ({
+                label: p.label,
+                raw: p.revenue,
+              }));
           this.currentBarData = chartData;
           this.buildRevBars(chartData);
         }
         if (specialties) {
-          const specData  = Array.isArray(specialties) ? specialties : (specialties.data ?? []);
-          const specTotal = Array.isArray(specialties) ? 0 : (specialties.total ?? 0);
+          const specData = Array.isArray(specialties)
+            ? specialties
+            : (specialties.data ?? []);
+          const specTotal = Array.isArray(specialties)
+            ? 0
+            : (specialties.total ?? 0);
           this.buildSpecialties(specData, specTotal);
         }
         if (appointments) {
-          const apptData = Array.isArray(appointments) ? appointments : (appointments.data ?? []);
+          const apptData = Array.isArray(appointments)
+            ? appointments
+            : (appointments.data ?? []);
           this.buildBookings(apptData);
         }
         if (activity) {
-          const actData = Array.isArray(activity) ? activity : (activity.data ?? []);
+          const actData = Array.isArray(activity)
+            ? activity
+            : (activity.data ?? []);
           this.buildActivityLog(actData);
         }
         this.lastUpdate.set(new Date());
@@ -293,43 +381,47 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
   // ── Builders ──────────────────────────────────────────────────────────────
 
   private buildCards(
-    revenue:    { total: number; changePercent: number },
+    revenue: { total: number; changePercent: number },
     todayAppts: { count: number; attendanceRate: number },
     activeDocs: { count: number },
-    patients:   { total: number; newThisMonthCount: number; newThisMonthPercent: number },
+    patients: {
+      total: number;
+      newThisMonthCount: number;
+      newThisMonthPercent: number;
+    },
   ): void {
     const sign = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
     this.cardStats.set([
       {
-        label:      'الإيرادات الإجمالية',
-        value:      revenue.total,
-        valueSub:   `${sign(revenue.changePercent)} هذا الشهر`,
-        icon:       'fa-circle-dollar-to-slot',
-        gradient:   'linear-gradient(135deg,#f6d365 0%,#fda085 100%)',
+        label: 'الإيرادات الإجمالية',
+        value: revenue.total,
+        valueSub: `${sign(revenue.changePercent)} هذا الشهر`,
+        icon: 'fa-circle-dollar-to-slot',
+        gradient: 'linear-gradient(135deg,#f6d365 0%,#fda085 100%)',
         isCurrency: true,
       },
       {
-        label:      'مواعيد اليوم',
-        value:      todayAppts.count,
-        valueSub:   `${todayAppts.attendanceRate.toFixed(0)}% معدل الحضور`,
-        icon:       'fa-calendar-check',
-        gradient:   'linear-gradient(135deg,#10b981 0%,#059669 100%)',
+        label: 'مواعيد اليوم',
+        value: todayAppts.count,
+        valueSub: `${todayAppts.attendanceRate.toFixed(0)}% معدل الحضور`,
+        icon: 'fa-calendar-check',
+        gradient: 'linear-gradient(135deg,#10b981 0%,#059669 100%)',
         isCurrency: false,
       },
       {
-        label:      'الأطباء النشطون',
-        value:      activeDocs.count,
-        valueSub:   'في الخدمة الآن',
-        icon:       'fa-user-doctor',
-        gradient:   'linear-gradient(135deg,#667eea 0%,#764ba2 100%)',
+        label: 'الأطباء النشطون',
+        value: activeDocs.count,
+        valueSub: 'في الخدمة الآن',
+        icon: 'fa-user-doctor',
+        gradient: 'linear-gradient(135deg,#667eea 0%,#764ba2 100%)',
         isCurrency: false,
       },
       {
-        label:      'إجمالي المرضى',
-        value:      patients.total,
-        valueSub:   `+${patients.newThisMonthCount} جديد هذا الشهر`,
-        icon:       'fa-users',
-        gradient:   'linear-gradient(135deg,#14c8c7 0%,#0891b2 100%)',
+        label: 'إجمالي المرضى',
+        value: patients.total,
+        valueSub: `+${patients.newThisMonthCount} جديد هذا الشهر`,
+        icon: 'fa-users',
+        gradient: 'linear-gradient(135deg,#14c8c7 0%,#0891b2 100%)',
         isCurrency: false,
       },
     ]);
@@ -337,77 +429,94 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private buildRevenueChart(data: { label: string; revenue: number }[]): void {
     if (!data?.length) return;
-    const mapped = data.map(p => ({ label: p.label, raw: p.revenue ?? 0 }));
+    const mapped = data.map((p) => ({ label: p.label, raw: p.revenue ?? 0 }));
     this.currentBarData = mapped;
     this.buildRevBars(mapped);
   }
 
   private buildRevBars(data: { label: string; raw: number }[]): void {
     if (!data?.length) return;
-    const max = Math.max(...data.map(d => d.raw), 1);
-    this.revBars.set(data.map(d => ({
-      label: d.label,
-      raw:   d.raw,
-      pct:   Math.round((d.raw / max) * 100),
-    })));
+    const max = Math.max(...data.map((d) => d.raw), 1);
+    this.revBars.set(
+      data.map((d) => ({
+        label: d.label,
+        raw: d.raw,
+        pct: Math.round((d.raw / max) * 100),
+      })),
+    );
   }
 
-  private buildSpecialties(data: SpecialtyDistributionItem[], total: number): void {
+  private buildSpecialties(
+    data: SpecialtyDistributionItem[],
+    total: number,
+  ): void {
     if (!data?.length) return;
     this.donutRawData = data;
     this.donutTotal.set(total);
-    this.specialties.set(data.map((item, i) => ({
-      label: item.specialization,
-      pct:   item.percentage,
-      color: SPECIALTY_COLORS[i % SPECIALTY_COLORS.length],
-      count: item.count,
-    })));
+    this.specialties.set(
+      data.map((item, i) => ({
+        label: item.specialization,
+        pct: item.percentage,
+        color: SPECIALTY_COLORS[i % SPECIALTY_COLORS.length],
+        count: item.count,
+      })),
+    );
   }
 
   private buildBookings(data: LatestAppointmentItem[]): void {
     if (!data?.length) return;
-    this.recentBookings.set(data.map(a => {
-      const map = STATUS_MAP[a.status] ?? { label: a.status, cls: 'db-status--amber' };
-      return {
-        id:          a.id,
-        patient:     a.patientName,
-        doctor:      a.doctorName,
-        time:        this.formatApptDate(a.date, a.slotStartTime),
-        status:      map.label,
-        statusClass: map.cls,
-      };
-    }));
+    this.recentBookings.set(
+      data.map((a) => {
+        const map = STATUS_MAP[a.status] ?? {
+          label: a.status,
+          cls: 'db-status--amber',
+        };
+        return {
+          id: a.id,
+          patient: a.patientName,
+          doctor: a.doctorName,
+          time: this.formatApptDate(a.date, a.slotStartTime),
+          status: map.label,
+          statusClass: map.cls,
+        };
+      }),
+    );
   }
 
   private buildActivityLog(data: ActivityLogItem[]): void {
     if (!data?.length) return;
-    this.activityLog.set(data.map(item => {
-      const map = RECIPIENT_MAP[item.recipientType] ?? RECIPIENT_MAP['System'];
-      return {
-        id:          item.id,
-        icon:        map.icon,
-        nodeColor:   map.nodeColor,
-        bgColor:     map.bgColor,
-        title:       item.title,
-        description: item.description,
-        time:        this.formatRelativeTime(item.createdAt),
-        typeLabel:   map.typeLabel,
-        typeClass:   map.typeClass,
-      };
-    }));
+    this.activityLog.set(
+      data.map((item) => {
+        const map =
+          RECIPIENT_MAP[item.recipientType] ?? RECIPIENT_MAP['System'];
+        return {
+          id: item.id,
+          icon: map.icon,
+          nodeColor: map.nodeColor,
+          bgColor: map.bgColor,
+          title: item.title,
+          description: item.description,
+          time: this.formatRelativeTime(item.createdAt),
+          typeLabel: map.typeLabel,
+          typeClass: map.typeClass,
+        };
+      }),
+    );
   }
 
   // ── Date helpers ──────────────────────────────────────────────────────────
 
   private formatApptDate(dateStr: string, timeStr: string): string {
     try {
-      const d   = new Date(dateStr);
+      const d = new Date(dateStr);
       const now = new Date();
       const isToday =
         d.getFullYear() === now.getFullYear() &&
-        d.getMonth()    === now.getMonth()    &&
-        d.getDate()     === now.getDate();
-      const dayLabel = isToday ? 'اليوم' : d.toLocaleDateString('ar-EG', { weekday: 'long' });
+        d.getMonth() === now.getMonth() &&
+        d.getDate() === now.getDate();
+      const dayLabel = isToday
+        ? 'اليوم'
+        : d.toLocaleDateString('ar-EG', { weekday: 'long' });
       return `${dayLabel} — ${timeStr}`;
     } catch {
       return `${dateStr} ${timeStr}`;
@@ -416,12 +525,12 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private formatRelativeTime(isoString: string): string {
     try {
-      const diffMs  = Date.now() - new Date(isoString).getTime();
+      const diffMs = Date.now() - new Date(isoString).getTime();
       const diffMin = Math.floor(diffMs / 60_000);
-      if (diffMin < 1)  return 'الآن';
+      if (diffMin < 1) return 'الآن';
       if (diffMin < 60) return `منذ ${diffMin} دق`;
       const diffH = Math.floor(diffMin / 60);
-      if (diffH < 24)   return diffH === 1 ? 'منذ ساعة' : `منذ ${diffH} ساعات`;
+      if (diffH < 24) return diffH === 1 ? 'منذ ساعة' : `منذ ${diffH} ساعات`;
       const diffD = Math.floor(diffH / 24);
       return diffD === 1 ? 'منذ يوم' : `منذ ${diffD} أيام`;
     } catch {
@@ -441,17 +550,20 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
     const specs = this.specialties();
     if (!specs.length) return;
 
-    const DPR   = Math.min(window.devicePixelRatio || 1, 2);
-    const SIZE  = 200;
-    canvas.width  = SIZE * DPR;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const SIZE = 200;
+    canvas.width = SIZE * DPR;
     canvas.height = SIZE * DPR;
-    canvas.style.width  = SIZE + 'px';
+    canvas.style.width = SIZE + 'px';
     canvas.style.height = SIZE + 'px';
     ctx.scale(DPR, DPR);
 
-    const cx = 100, cy = 100, outerR = 86, innerR = 54;
-    const GAP      = 0.025;
-    const total    = specs.reduce((s, sp) => s + sp.pct, 0);
+    const cx = 100,
+      cy = 100,
+      outerR = 86,
+      innerR = 54;
+    const GAP = 0.025;
+    const total = specs.reduce((s, sp) => s + sp.pct, 0);
     const DURATION = 900;
     let startTime: number | null = null;
 
@@ -464,15 +576,21 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
       specs.forEach((sp, i) => {
         const fullSweep = (sp.pct / total) * 2 * Math.PI;
         const animSweep = fullSweep * progress;
-        const sweep     = Math.max(0, animSweep - GAP);
-        if (sweep <= 0) { angle += animSweep; return; }
+        const sweep = Math.max(0, animSweep - GAP);
+        if (sweep <= 0) {
+          angle += animSweep;
+          return;
+        }
 
         const isHovered = i === this.donutHover;
         const or = isHovered ? outerR + 6 : outerR;
         const ir = isHovered ? innerR - 2 : innerR;
 
         ctx.beginPath();
-        ctx.moveTo(cx + ir * Math.cos(angle + GAP / 2), cy + ir * Math.sin(angle + GAP / 2));
+        ctx.moveTo(
+          cx + ir * Math.cos(angle + GAP / 2),
+          cy + ir * Math.sin(angle + GAP / 2),
+        );
         ctx.arc(cx, cy, or, angle + GAP / 2, angle + sweep);
         ctx.arc(cx, cy, ir, angle + sweep, angle + GAP / 2, true);
         ctx.closePath();
@@ -482,7 +600,10 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
         grad.addColorStop(1, sp.color);
         ctx.fillStyle = grad;
 
-        if (isHovered) { ctx.shadowColor = sp.color; ctx.shadowBlur = 18; }
+        if (isHovered) {
+          ctx.shadowColor = sp.color;
+          ctx.shadowBlur = 18;
+        }
         ctx.fill();
         ctx.shadowBlur = 0;
         angle += animSweep;
@@ -504,25 +625,40 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
       if (t < 1) {
         this.rafId = requestAnimationFrame(tick);
       } else {
-        this.setupDonutHover(canvas, cx, cy, outerR, innerR, GAP, total, draw, specs);
+        this.setupDonutHover(
+          canvas,
+          cx,
+          cy,
+          outerR,
+          innerR,
+          GAP,
+          total,
+          draw,
+          specs,
+        );
       }
     };
 
-    this.zone.runOutsideAngular(() => { this.rafId = requestAnimationFrame(tick); });
+    this.zone.runOutsideAngular(() => {
+      this.rafId = requestAnimationFrame(tick);
+    });
   }
 
   private setupDonutHover(
     canvas: HTMLCanvasElement,
-    cx: number, cy: number,
-    outerR: number, innerR: number,
-    GAP: number, total: number,
+    cx: number,
+    cy: number,
+    outerR: number,
+    innerR: number,
+    GAP: number,
+    total: number,
     draw: (p: number) => void,
     specs: Specialty[],
   ): void {
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const dx   = e.clientX - rect.left - cx;
-      const dy   = e.clientY - rect.top  - cy;
+      const dx = e.clientX - rect.left - cx;
+      const dy = e.clientY - rect.top - cy;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < innerR || dist > outerR + 8) {
@@ -535,10 +671,14 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
       }
       let angle = Math.atan2(dy, dx);
       if (angle < -Math.PI / 2) angle += Math.PI * 2;
-      let a = -Math.PI / 2, found = -1;
+      let a = -Math.PI / 2,
+        found = -1;
       for (let i = 0; i < specs.length; i++) {
         const sweep = (specs[i].pct / total) * 2 * Math.PI;
-        if (angle >= a && angle < a + sweep) { found = i; break; }
+        if (angle >= a && angle < a + sweep) {
+          found = i;
+          break;
+        }
         a += sweep;
       }
       if (found !== this.donutHover) {
@@ -546,7 +686,12 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
         this.zone.run(() => {
           if (found >= 0) {
             const sp = specs[found];
-            this.donutTooltip.set({ label: sp.label, pct: sp.pct, count: sp.count, color: sp.color });
+            this.donutTooltip.set({
+              label: sp.label,
+              pct: sp.pct,
+              count: sp.count,
+              color: sp.color,
+            });
           } else {
             this.donutTooltip.set(null);
           }
@@ -572,28 +717,32 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
 
     cancelAnimationFrame(this.barRafId);
 
-    const DPR     = Math.min(window.devicePixelRatio || 1, 2);
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
     /* Use parentElement width so canvas stretches correctly inside flex/grid */
-    const W       = (canvas.parentElement?.clientWidth || canvas.offsetWidth || 560);
-    const H       = 220;
-    canvas.width  = W * DPR;
+    const W = canvas.parentElement?.clientWidth || canvas.offsetWidth || 560;
+    const H = 220;
+    canvas.width = W * DPR;
     canvas.height = H * DPR;
-    canvas.style.width  = W + 'px';
+    canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     ctx.scale(DPR, DPR);
 
-    const PAD_T = 28, PAD_B = 36, PAD_L = 10, PAD_R = 10;
+    const PAD_T = 28,
+      PAD_B = 36,
+      PAD_L = 10,
+      PAD_R = 10;
     const chartH = H - PAD_T - PAD_B;
     const chartW = W - PAD_L - PAD_R;
-    const n      = data.length;
-    const max    = Math.max(...data.map(d => d.raw));
-    const barW   = Math.min(36, (chartW / n) * 0.55);
-    const slot   = chartW / n;
+    const n = data.length;
+    const max = Math.max(...data.map((d) => d.raw));
+    const barW = Math.min(36, (chartW / n) * 0.55);
+    const slot = chartW / n;
 
     const DURATION = 750;
     let startTime: number | null = null;
     const easeOutBack = (t: number) => {
-      const c1 = 1.70158, c3 = c1 + 1;
+      const c1 = 1.70158,
+        c3 = c1 + 1;
       return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
     };
 
@@ -623,21 +772,26 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
       ctx.setLineDash([]);
 
       data.forEach((d, i) => {
-        const targetH  = (d.raw / max) * chartH;
-        const animH    = targetH * Math.min(progress, 1);
-        const x        = PAD_L + slot * i + slot / 2;
-        const barLeft  = x - barW / 2;
-        const barTop   = PAD_T + chartH - animH;
-        const isHov    = i === this.barHover;
+        const targetH = (d.raw / max) * chartH;
+        const animH = targetH * Math.min(progress, 1);
+        const x = PAD_L + slot * i + slot / 2;
+        const barLeft = x - barW / 2;
+        const barTop = PAD_T + chartH - animH;
+        const isHov = i === this.barHover;
 
         /* bar glow shadow */
         if (progress >= 1 && isHov) {
           ctx.shadowColor = '#14c8c7';
-          ctx.shadowBlur  = 16;
+          ctx.shadowBlur = 16;
         }
 
         /* gradient fill */
-        const grad = ctx.createLinearGradient(barLeft, barTop, barLeft, PAD_T + chartH);
+        const grad = ctx.createLinearGradient(
+          barLeft,
+          barTop,
+          barLeft,
+          PAD_T + chartH,
+        );
         if (isHov) {
           grad.addColorStop(0, '#5eead4');
           grad.addColorStop(1, '#0891b2');
@@ -650,7 +804,12 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
         ctx.beginPath();
         ctx.moveTo(barLeft + radius, barTop);
         ctx.lineTo(barLeft + barW - radius, barTop);
-        ctx.quadraticCurveTo(barLeft + barW, barTop, barLeft + barW, barTop + radius);
+        ctx.quadraticCurveTo(
+          barLeft + barW,
+          barTop,
+          barLeft + barW,
+          barTop + radius,
+        );
         ctx.lineTo(barLeft + barW, PAD_T + chartH);
         ctx.lineTo(barLeft, PAD_T + chartH);
         ctx.lineTo(barLeft, barTop + radius);
@@ -680,7 +839,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
 
       /* baseline */
       ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-      ctx.lineWidth   = 1;
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(PAD_L, PAD_T + chartH);
       ctx.lineTo(W - PAD_R, PAD_T + chartH);
@@ -695,7 +854,18 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
         this.barRafId = requestAnimationFrame(tick);
       } else {
         draw(1);
-        this.setupBarHover(canvas, data, max, slot, barW, PAD_L, PAD_T, PAD_B, chartH, draw);
+        this.setupBarHover(
+          canvas,
+          data,
+          max,
+          slot,
+          barW,
+          PAD_L,
+          PAD_T,
+          PAD_B,
+          chartH,
+          draw,
+        );
       }
     };
 
@@ -707,32 +877,48 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit, OnDestroy 
   private setupBarHover(
     canvas: HTMLCanvasElement,
     data: { label: string; raw: number }[],
-    max: number, slot: number, barW: number,
-    PAD_L: number, PAD_T: number, PAD_B: number, chartH: number,
-    draw: (p: number) => void
+    max: number,
+    slot: number,
+    barW: number,
+    PAD_L: number,
+    PAD_T: number,
+    PAD_B: number,
+    chartH: number,
+    draw: (p: number) => void,
   ): void {
     canvas.addEventListener('mousemove', (e) => {
       const rect = canvas.getBoundingClientRect();
-      const mx   = e.clientX - rect.left;
-      const my   = e.clientY - rect.top;
-      let found  = -1;
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      let found = -1;
       data.forEach((d, i) => {
-        const x       = PAD_L + slot * i + slot / 2;
+        const x = PAD_L + slot * i + slot / 2;
         const barLeft = x - barW / 2;
         const targetH = (d.raw / max) * chartH;
-        const barTop  = PAD_T + chartH - targetH;
-        if (mx >= barLeft - 4 && mx <= barLeft + barW + 4 && my >= barTop - 4 && my <= PAD_T + chartH) {
+        const barTop = PAD_T + chartH - targetH;
+        if (
+          mx >= barLeft - 4 &&
+          mx <= barLeft + barW + 4 &&
+          my >= barTop - 4 &&
+          my <= PAD_T + chartH
+        ) {
           found = i;
         }
       });
-      if (found !== this.barHover) { this.barHover = found; draw(1); }
+      if (found !== this.barHover) {
+        this.barHover = found;
+        draw(1);
+      }
     });
-    canvas.addEventListener('mouseleave', () => { this.barHover = -1; draw(1); });
+    canvas.addEventListener('mouseleave', () => {
+      this.barHover = -1;
+      draw(1);
+    });
   }
 
   private formatChartVal(n: number): string {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-    if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'K';
+    if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
     return String(n);
   }
 }

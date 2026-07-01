@@ -15,36 +15,113 @@
       <!-- Logo ring -->
       <div class="lg-logo-ring">
         <div class="lg-logo-ring-inner">
-          <img src="/assets/img/logo.jpeg" class="lg-logo"
-               alt="شفاء" onerror="this.style.display='none'">
+          <img src="/assets/img/logo.jpeg" class="lg-logo" alt="شفاء" onerror="this.style.display='none'">
           <i class="fa-solid fa-heart-pulse lg-logo-fallback"></i>
         </div>
       </div>
 
       <h1 class="lg-brand-name">شفاء</h1>
-      <p class="lg-brand-tagline">منصة إدارة الرعاية الصحية المتكاملة</p>
 
-      <!-- Feature pills -->
-      <div class="lg-pills d-flex flex-column gap-2 mt-4">
-        <div class="lg-pill">
-          <i class="fa-solid fa-shield-halved"></i>
-          <span>بيانات آمنة ومشفرة بالكامل</span>
+      <!-- System Overview -->
+      <div class="lg-system-overview">
+
+        <div class="lg-overview-card">
+          <h3>منصة صحية متكاملة</h3>
+
+          <p>
+            نظام مركزي لإدارة المرضى والأطباء والصيدليات من خلال
+            تطبيقات مترابطة تتيح تقديم الخدمات الطبية ومتابعة
+            الحجوزات والاستشارات وإدارة المنتجات الصحية بسهولة.
+          </p>
         </div>
-        <div class="lg-pill">
-          <i class="fa-solid fa-chart-line"></i>
-          <span>إحصائيات ولوحات تحكم تفاعلية</span>
+
+        <!-- Apps -->
+        <div class="lg-feature-list">
+
+          <div class="lg-feature-item">
+            <i class="fa-solid fa-user"></i>
+            <div>
+              <strong>تطبيق المرضى</strong>
+              <span>حجز المواعيد، متابعة الوصفات الطبية، استلام الإشعارات والتواصل مع الأطباء.</span>
+            </div>
+          </div>
+
+          <div class="lg-feature-item">
+            <i class="fa-solid fa-user-doctor"></i>
+            <div>
+              <strong>تطبيق الأطباء</strong>
+              <span>إدارة المواعيد، الاستشارات المرئية Video Call، الخصومات ومتابعة الحجوزات.</span>
+            </div>
+          </div>
+
+          <div class="lg-feature-item">
+            <i class="fa-solid fa-pills"></i>
+            <div>
+              <strong>تطبيق الصيدليات</strong>
+              <span>إدارة المنتجات والأدوية واستقبال الطلبات وبيع المنتجات للمرضى.</span>
+            </div>
+          </div>
+
         </div>
-        <div class="lg-pill">
-          <i class="fa-solid fa-users-gear"></i>
-          <span>إدارة شاملة للأطباء والمرضى</span>
+
+        <!-- Dashboard Features -->
+        <div class="lg-dashboard-box">
+
+          <div class="lg-mini-title">
+            مميزات لوحة التحكم
+          </div>
+
+          <div class="lg-dashboard-grid">
+
+            <span>
+              <i class="fa-solid fa-user-doctor"></i>
+              إدارة الأطباء
+            </span>
+
+            <span>
+              <i class="fa-solid fa-store"></i>
+              إدارة الصيدليات
+            </span>
+
+            <span>
+              <i class="fa-solid fa-users"></i>
+              إدارة المرضى
+            </span>
+
+            <span>
+              <i class="fa-solid fa-calendar-check"></i>
+              إدارة الحجوزات
+            </span>
+
+            <span>
+              <i class="fa-solid fa-percent"></i>
+              العروض والخصومات
+            </span>
+
+            <span>
+              <i class="fa-solid fa-bell"></i>
+              الإشعارات
+            </span>
+
+            <span>
+              <i class="fa-solid fa-chart-column"></i>
+              التقارير والإحصائيات
+            </span>
+
+            <span>
+              <i class="fa-solid fa-video"></i>
+              الاستشارات المرئية
+            </span>
+
+          </div>
+
         </div>
+
+        <div class="lg-company">
+          Developed by <strong>TheOneSystem</strong>
+        </div>
+
       </div>
-
-    </div>
-
-    <!-- Bottom wave -->
-    <div class="lg-brand-footer">
-      <span>صحتك تبدأ هنا</span>
     </div>
 
   </div>
@@ -64,8 +141,7 @@
         <!-- Logo visible on mobile only -->
         <div class="lg-mobile-logo d-flex d-lg-none align-items-center gap-2 mb-4">
           <div class="lg-mobile-logo-ring">
-            <img src="/assets/img/logo.jpeg" alt="شفاء"
-                 onerror="this.style.display='none'">
+            <img src="/assets/img/logo.jpeg" alt="شفاء" onerror="this.style.display='none'">
             <i class="fa-solid fa-heart-pulse"></i>
           </div>
           <span class="lg-mobile-app-name">شفاء</span>
@@ -85,30 +161,19 @@
             البريد الإلكتروني
           </label>
           <div class="lg-input-wrap">
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="lg-input"
-              placeholder="example@email.com"
-              dir="ltr"
-              [ngModel]="email()"
-              (ngModelChange)="email.set($event)"
-              required
-              email
-              #emailRef="ngModel"
+            <input type="email" id="email" name="email" class="lg-input" placeholder="example@email.com" dir="ltr"
+              [ngModel]="email()" (ngModelChange)="email.set($event)" required email #emailRef="ngModel"
               [class.lg-input--invalid]="emailRef.invalid && emailRef.touched"
-              [class.lg-input--valid]="emailRef.valid && emailRef.touched"
-            >
+              [class.lg-input--valid]="emailRef.valid && emailRef.touched">
             @if (emailRef.valid && emailRef.touched) {
-              <i class="fa-solid fa-circle-check lg-input-check"></i>
+            <i class="fa-solid fa-circle-check lg-input-check"></i>
             }
           </div>
           @if (emailRef.invalid && emailRef.touched) {
-            <span class="lg-error">
-              <i class="fa-solid fa-circle-exclamation"></i>
-              أدخل بريد إلكتروني صحيح
-            </span>
+          <span class="lg-error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            أدخل بريد إلكتروني صحيح
+          </span>
           }
         </div>
 
@@ -119,39 +184,28 @@
             كلمة المرور
           </label>
           <div class="lg-input-wrap">
-            <input
-              [type]="showPassword() ? 'text' : 'password'"
-              id="password"
-              name="password"
-              class="lg-input lg-input--pad-left"
-              placeholder="••••••••"
-              [ngModel]="password()"
-              (ngModelChange)="password.set($event)"
-              required
-              minlength="6"
-              #passwordRef="ngModel"
+            <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password"
+              class="lg-input lg-input--pad-left" placeholder="••••••••" [ngModel]="password()"
+              (ngModelChange)="password.set($event)" required minlength="6" #passwordRef="ngModel"
               [class.lg-input--invalid]="passwordRef.invalid && passwordRef.touched"
-              [class.lg-input--valid]="passwordRef.valid && passwordRef.touched"
-            >
+              [class.lg-input--valid]="passwordRef.valid && passwordRef.touched">
             <button type="button" class="lg-eye-btn" (click)="togglePassword()">
-              <i class="fa-regular"
-                 [class.fa-eye]="!showPassword()"
-                 [class.fa-eye-slash]="showPassword()"></i>
+              <i class="fa-regular" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
             </button>
           </div>
           @if (passwordRef.invalid && passwordRef.touched) {
-            <span class="lg-error">
-              <i class="fa-solid fa-circle-exclamation"></i>
-              كلمة المرور 6 أحرف على الأقل
-            </span>
+          <span class="lg-error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            كلمة المرور 6 أحرف على الأقل
+          </span>
           }
         </div>
 
         <!-- Remember me -->
         <div class="d-flex align-items-center gap-2 mb-2">
           <label class="lg-check-wrap">
-            <input type="checkbox" id="rememberMe" name="rememberMe"
-                   [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)">
+            <input type="checkbox" id="rememberMe" name="rememberMe" [ngModel]="rememberMe()"
+              (ngModelChange)="rememberMe.set($event)">
             <span class="lg-check-box">
               <i class="fa-solid fa-check lg-check-tick"></i>
             </span>
@@ -160,15 +214,14 @@
         </div>
 
         <!-- Submit -->
-        <button type="submit" class="lg-submit-btn"
-                [disabled]="isLoading() || loginForm.invalid"
-                [class.lg-submit-btn--loading]="isLoading()">
+        <button type="submit" class="lg-submit-btn" [disabled]="isLoading() || loginForm.invalid"
+          [class.lg-submit-btn--loading]="isLoading()">
           @if (isLoading()) {
-            <span class="lg-submit-spinner"></span>
-            <span>جاري التحقق...</span>
+          <span class="lg-submit-spinner"></span>
+          <span>جاري التحقق...</span>
           } @else {
-            <i class="fa-solid fa-right-to-bracket"></i>
-            <span>تسجيل الدخول</span>
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>تسجيل الدخول</span>
           }
         </button>
 
