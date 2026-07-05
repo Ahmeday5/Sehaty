@@ -65,13 +65,21 @@
     <!-- Speciality -->
     <div class="df-field">
       <label class="df-label" for="df-spec">التخصص <span class="df-req">*</span></label>
-      <select id="df-spec" class="form-select" formControlName="specialityId">
-        <option [value]="null" disabled>اختر التخصص</option>
+      <select id="df-spec" class="form-select" formControlName="specialization">
+        <option value="" disabled>اختر التخصص</option>
         @for (s of specialities(); track s.id) {
-          <option [value]="s.id">{{ s.name }}</option>
+          <option [value]="s.name">{{ s.name }}</option>
         }
       </select>
-      <app-form-error [control]="form.get('specialityId')"></app-form-error>
+      <app-form-error [control]="form.get('specialization')"></app-form-error>
+    </div>
+
+    <!-- Qualification -->
+    <div class="df-field">
+      <label class="df-label" for="df-qual">المؤهل الدراسي</label>
+      <input id="df-qual" class="form-control" formControlName="qualification"
+             placeholder="بكالوريوس طب وجراحة">
+      <app-form-error [control]="form.get('qualification')"></app-form-error>
     </div>
 
     <!-- Gender -->
@@ -111,6 +119,30 @@
       <input id="df-pct" type="number" class="form-control" formControlName="doctorPersentage"
              min="0" max="100" placeholder="85">
       <app-form-error [control]="form.get('doctorPersentage')"></app-form-error>
+    </div>
+
+    <!-- Clinic name -->
+    <div class="df-field">
+      <label class="df-label" for="df-clinic-name">اسم العيادة</label>
+      <input id="df-clinic-name" class="form-control" formControlName="clinicName"
+             placeholder="عيادة د. محمد أحمد">
+      <app-form-error [control]="form.get('clinicName')"></app-form-error>
+    </div>
+
+    <!-- Clinic phone 1 -->
+    <div class="df-field">
+      <label class="df-label" for="df-clinic-phone1">هاتف العيادة الأول</label>
+      <input id="df-clinic-phone1" class="form-control" formControlName="clinicPhone1"
+             placeholder="01xxxxxxxxx" dir="ltr">
+      <app-form-error [control]="form.get('clinicPhone1')"></app-form-error>
+    </div>
+
+    <!-- Clinic phone 2 -->
+    <div class="df-field">
+      <label class="df-label" for="df-clinic-phone2">هاتف العيادة الثاني</label>
+      <input id="df-clinic-phone2" class="form-control" formControlName="clinicPhone2"
+             placeholder="01xxxxxxxxx" dir="ltr">
+      <app-form-error [control]="form.get('clinicPhone2')"></app-form-error>
     </div>
 
   </div>

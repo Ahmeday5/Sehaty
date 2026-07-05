@@ -57,12 +57,16 @@ export interface CreateDoctorPayload {
   phone: string;
   password: string;
   nationalID: string;
-  specialityId: number;
+  specialization: string;
   examenPrice: number;
   doctorPersentage: number;
   gender: 'Male' | 'Female';
   yearsOfExperience: number;
   profileInfo: string;
+  qualification?: string;
+  clinicName?: string;
+  clinicPhone1?: string;
+  clinicPhone2?: string;
   doctorImage?: File;
   doctorCertificate?: File;
 }
@@ -71,12 +75,16 @@ export interface UpdateDoctorPayload {
   name?: string;
   phone?: string;
   nationalID?: string;
-  specialityId?: number;
+  specialization?: string;
   examenPrice?: number;
   doctorPersentage?: number;
   gender?: 'Male' | 'Female';
   yearsOfExperience?: number;
   profileInfo?: string;
+  qualification?: string;
+  clinicName?: string;
+  clinicPhone1?: string;
+  clinicPhone2?: string;
   doctorImage?: File;
   doctorCertificate?: File;
 }

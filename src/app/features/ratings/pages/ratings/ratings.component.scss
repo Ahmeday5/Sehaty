@@ -33,7 +33,7 @@
 
 .rtg-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 340px;
   gap: 16px;
   align-items: start;
 
@@ -76,32 +76,51 @@
 
 @keyframes rtg-spin { to { transform: rotate(360deg); } }
 
-.rtg-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 48px 0;
-  color: var(--textsub);
-  font-size: 13px;
-
-  i { font-size: 28px; color: var(--border); }
-}
-
-// ── List header ───────────────────────────────────────────────────────────────
+// ── List header + filters ──────────────────────────────────────────────────────
 
 .rtg-list-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
   margin-bottom: 16px;
 
   .rtg-sec-title { margin-bottom: 0; }
 }
 
+.rtg-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rtg-search-wrap {
+  position: relative;
+  width: 210px;
+}
+
+.rtg-search-icon {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--textsub);
+  pointer-events: none;
+}
+
+.rtg-search-inp {
+  width: 100%;
+  height: 34px;
+  font-size: 12.5px;
+  padding-inline-start: 32px;
+}
+
 .rtg-filter-sel {
   width: 150px;
-  height: 32px;
+  height: 34px;
   font-size: 12px;
 }
 
@@ -119,8 +138,6 @@
   background: var(--surface2);
   border: 1.5px solid var(--border);
   transition: border-color .15s;
-
-  &--flagged { border-color: color-mix(in srgb, var(--red) 30%, transparent); }
 }
 
 // ── Review top row ────────────────────────────────────────────────────────────
@@ -129,7 +146,6 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 10px;
 }
 
 .rtg-avatar {
@@ -161,24 +177,36 @@
   color: var(--text);
 }
 
-.rtg-flag-chip {
-  font-size: 10px;
-  font-weight: 800;
-  padding: 2px 7px;
-  border-radius: 7px;
-  background: var(--redsoft);
-  color: var(--red);
-}
-
 .rtg-doctor-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   color: var(--textsub);
+
+  i { font-size: 11px; }
+}
+
+.rtg-spec-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 7px;
+  background: var(--surface3, var(--surface));
+  color: var(--textsub);
+}
+
+.rtg-review-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .rtg-stars {
   display: flex;
   gap: 1px;
-  flex-shrink: 0;
 }
 
 .rtg-star {
@@ -186,6 +214,12 @@
   color: var(--border);
 
   &--filled { color: var(--amber); }
+}
+
+.rtg-date {
+  font-size: 11px;
+  color: var(--textsub);
+  white-space: nowrap;
 }
 
 // ── Review text ───────────────────────────────────────────────────────────────
@@ -197,48 +231,26 @@
   padding: 10px 12px;
   background: var(--surface3, var(--surface));
   border-radius: 10px;
-  margin-bottom: 12px;
+  margin-top: 12px;
 }
 
-// ── Action buttons ────────────────────────────────────────────────────────────
+// ── Pagination footer ─────────────────────────────────────────────────────────
 
-.rtg-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.rtg-btn {
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 12.5px;
-  cursor: pointer;
+.rtg-pagination-wrap {
   display: flex;
   align-items: center;
-  gap: 5px;
-  border: 1px solid transparent;
-  font-family: inherit;
-  transition: all .2s;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
 
-  &:disabled { opacity: .55; cursor: not-allowed; }
-
-  &--publish {
-    background: var(--greensoft);
-    color: var(--green);
-    border-color: color-mix(in srgb, var(--green) 30%, transparent);
-
-    &:hover:not(:disabled) { background: var(--green); color: #fff; }
-  }
-
-  &--delete {
-    background: var(--redsoft);
-    color: var(--red);
-    border-color: color-mix(in srgb, var(--red) 30%, transparent);
-
-    &:hover:not(:disabled) { background: var(--red); color: #fff; }
-  }
+.rtg-total-label {
+  font-size: 12px;
+  color: var(--textsub);
+  font-weight: 600;
 }
 
 // ── Distribution ──────────────────────────────────────────────────────────────
@@ -258,7 +270,7 @@
 .rtg-dist-num {
   font-size: 13px;
   font-weight: 700;
-  width: 16px;
+  width: 10px;
   flex-shrink: 0;
   color: var(--text);
 }
@@ -291,8 +303,45 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--textsub);
+  width: 28px;
+  flex-shrink: 0;
+  text-align: end;
+}
+
+.rtg-dist-pct {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--textsub);
   width: 36px;
   flex-shrink: 0;
+  text-align: end;
+}
+
+// ── Ranking controls ───────────────────────────────────────────────────────────
+
+.rtg-rank-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.rtg-rank-count-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--textsub);
+  }
+}
+
+.rtg-count-inp {
+  height: 32px;
+  font-size: 12.5px;
+  text-align: center;
 }
 
 // ── Doctor ranking ────────────────────────────────────────────────────────────
@@ -314,7 +363,7 @@
 .rtg-rank-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 7px 0;
   border-bottom: 1px solid var(--border);
 
@@ -334,6 +383,16 @@
   font-weight: 700;
   color: var(--text);
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rtg-rank-count {
+  font-size: 11px;
+  color: var(--textsub);
+  flex-shrink: 0;
 }
 
 .rtg-rank-score {
@@ -343,4 +402,11 @@
 
   &--top    { color: var(--amber); }
   &--bottom { color: var(--textsub); }
+}
+
+.rtg-rank-empty {
+  font-size: 12px;
+  color: var(--textsub);
+  padding: 12px 0;
+  text-align: center;
 }

@@ -119,12 +119,16 @@ export class DoctorFormComponent implements OnInit {
       nationalID:        ['', this.isEdit
                               ? [Validators.minLength(10), Validators.maxLength(20), Validators.pattern(/^[0-9]+$/)]
                               : [Validators.required, Validators.minLength(10), Validators.maxLength(20), Validators.pattern(/^[0-9]+$/)]],
-      specialityId:      [null, [Validators.required]],
+      specialization:    ['', [Validators.required]],
       gender:            ['Male', [Validators.required]],
       yearsOfExperience: [0, [Validators.required, Validators.min(0), Validators.max(60)]],
       examenPrice:       [0, [Validators.required, Validators.min(0)]],
       doctorPersentage:  [0, [Validators.required, Validators.min(0), Validators.max(100)]],
       profileInfo:       ['', [Validators.required, Validators.minLength(10)]],
+      qualification:     [''],
+      clinicName:        [''],
+      clinicPhone1:      [''],
+      clinicPhone2:      [''],
     });
   }
 
@@ -133,12 +137,16 @@ export class DoctorFormComponent implements OnInit {
       name:              doctor.name,
       phone:             doctor.phone,
       nationalID:        doctor.nationalID ?? '',
-      specialityId:      doctor.specialityId,
+      specialization:    doctor.specialization,
       gender:            doctor.gender,
       yearsOfExperience: doctor.yearsOfExperience,
       examenPrice:       doctor.examenPrice,
       doctorPersentage:  doctor.doctorPersentage,
       profileInfo:       doctor.profileInfo,
+      qualification:     doctor.qualification ?? '',
+      clinicName:        doctor.clinicName ?? '',
+      clinicPhone1:      doctor.clinicPhone1 ?? '',
+      clinicPhone2:      doctor.clinicPhone2 ?? '',
     });
     if (doctor.doctorImage) {
       this.imagePreview.set(this.resolveUrl(doctor.doctorImage));
@@ -157,35 +165,31 @@ export class DoctorFormComponent implements OnInit {
   private buildFormData(): FormData {
     const fd  = new FormData();
     const val = this.form.value;
-    fd.append('name',              val.name);
-    fd.append('phone',             val.phone);
-    if (val.nationalID) fd.append('nationalID', val.nationalID);
-    if (val.specialityId) fd.append('specialityId', String(val.specialityId));
-    fd.append('gender',            val.gender);
-    fd.append('yearsOfExperience', String(val.yearsOfExperience));
-    fd.append('examenPrice',       String(val.examenPrice));
-    fd.append('doctorPersentage',  String(val.doctorPersentage));
-    fd.append('profileInfo',       val.profileInfo);
+    fd.append('Name',              val.name);
+    fd.append('Phone',             val.phone);
+    if (val.nationalID) fd.append('NationalID', val.nationalID);
+    fd.append('Specialization',    val.specialization);
+    fd.append('Gender',            val.gender);
+    fd.append('YearsOfExperience', String(val.yearsOfExperience));
+    fd.append('ExamenPrice',       String(val.examenPrice));
+    fd.append('DoctorPersentage',  String(val.doctorPersentage));
+    fd.append('ProfileInfo',       val.profileInfo);
+    if (val.qualification) fd.append('Qualification', val.qualification);
+    if (val.clinicName)    fd.append('ClinicName',    val.clinicName);
+    if (val.clinicPhone1)  fd.append('ClinicPhone1',  val.clinicPhone1);
+    if (val.clinicPhone2)  fd.append('ClinicPhone2',  val.clinicPhone2);
     if (!this.isEdit) {
-      fd.append('email',    val.email);
-      fd.append('password', val.password);
+      fd.append('Email',    val.email);
+      fd.append('Password', val.password);
     }
-    if (this.imageFile) fd.append('doctorImage',      this.imageFile);
+    if (this.imageFile) fd.append('DoctorImage',       this.imageFile);
     if (this.certFile)  fd.append('DoctorCertificate', this.certFile);
     return fd;
   }
 
   private loadSpecialities(): void {
     this.svc.getAllSpecialities().subscribe({
-      next: (list) => {
-        this.specialities.set(list);
-        // When editing, if specialityId came back as 0/null from the API,
-        // resolve it by matching the specialization name in the loaded list.
-        if (this.isEdit && !this.form.get('specialityId')?.value && this.doctor?.specialization) {
-          const match = list.find((s) => s.name === this.doctor!.specialization);
-          if (match) this.form.patchValue({ specialityId: match.id });
-        }
-      },
+      next: (list) => this.specialities.set(list),
     });
   }
 

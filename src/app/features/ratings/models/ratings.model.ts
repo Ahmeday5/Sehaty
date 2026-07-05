@@ -1,36 +1,48 @@
-export type ReviewStatus  = 'pending' | 'published' | 'deleted';
-export type ReviewFilter  = 'pending' | 'all' | 'flagged' | 'low';
-
-export interface RatingsKpiSummary {
-  averageRating:   number;
-  totalCount:      number;
-  publishedCount:  number;
-  pendingCount:    number;
-  deletedThisMonth: number;
+export interface DoctorRatingsListParams {
+  stars?:      number;
+  doctorName?: string;
+  page:        number;
+  pageSize:    number;
 }
 
-export interface Review {
-  id:         number;
-  initial:    string;
-  patientName: string;
-  doctorName:  string;
-  dateLabel:   string;
-  stars:       number;
-  text:        string;
-  flagged:     boolean;
-  status:      ReviewStatus;
+export interface DoctorRatingItem {
+  id:             number;
+  doctorId:       number;
+  doctorName:     string;
+  specialization: string;
+  patientId:      number;
+  patientName:    string;
+  stars:          number;
+  comment:        string;
+  ratedAt:        string;
 }
 
-export interface RatingDistribution {
-  star:    number;
-  count:   number;
-  percent: number;
-  color:   'green' | 'amber' | 'red';
+export interface DoctorRatingsListResponse {
+  total:    number;
+  page:     number;
+  pageSize: number;
+  data:     DoctorRatingItem[];
 }
 
-export interface DoctorRating {
-  rank?:   number;
-  name:    string;
-  rating:  number;
-  isTop:   boolean;
+export interface RatingDistributionItem {
+  stars:      number;
+  count:      number;
+  percentage: number;
+}
+
+export interface RatingsDistributionResponse {
+  total: number;
+  data:  RatingDistributionItem[];
+}
+
+export interface RankedDoctor {
+  doctorId:      number;
+  doctorName:    string;
+  averageRating: number;
+  ratingsCount:  number;
+}
+
+export interface TopAndWorstRatedDoctorsResponse {
+  topRated:    RankedDoctor[];
+  worstRated:  RankedDoctor[];
 }

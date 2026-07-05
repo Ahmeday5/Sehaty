@@ -10,7 +10,7 @@
   <!-- ══════════════════════════════════════════════════════════════
        KPI Strip
   ══════════════════════════════════════════════════════════════════ -->
-  @if (!loadingKpi()) {
+  @if (!loadingDist() && !loadingRank()) {
     <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
   } @else {
     <div class="rtg-kpi-skeleton">
@@ -27,80 +27,82 @@
     <div class="card rtg-card">
 
       <div class="rtg-list-header">
-        <div class="rtg-sec-title">التقييمات</div>
-        <select
-          class="inp rtg-filter-sel"
-          (change)="onFilterChange($any($event.target).value)">
-          <option value="pending">بانتظار المراجعة</option>
-          <option value="all">جميع التقييمات</option>
-          <option value="flagged">مُبلَّغ عنها</option>
-          <option value="low">تقييم منخفض ≤2</option>
-        </select>
+        <div class="rtg-sec-title">تقييمات الأطباء</div>
+        <div class="rtg-filters">
+          <div class="rtg-search-wrap">
+            <i class="fa-solid fa-magnifying-glass rtg-search-icon"></i>
+            <input
+              type="text"
+              class="inp rtg-search-inp"
+              placeholder="بحث باسم الطبيب..."
+              [(ngModel)]="doctorNameValue"
+              (ngModelChange)="onSearchChange($event)">
+          </div>
+          <select
+            class="inp rtg-filter-sel"
+            (change)="onStarsFilterChange($any($event.target).value)">
+            <option value="">كل التقييمات</option>
+            <option value="5">★★★★★ (5)</option>
+            <option value="4">★★★★ (4)</option>
+            <option value="3">★★★ (3)</option>
+            <option value="2">★★ (2)</option>
+            <option value="1">★ (1)</option>
+          </select>
+        </div>
       </div>
 
       @if (loadingList()) {
         <div class="rtg-spinner-wrap"><div class="rtg-spinner"></div></div>
-      } @else if (displayed().length === 0) {
-        <div class="rtg-empty">
-          <i class="fa-solid fa-star-half-stroke"></i>
-          <span>لا توجد تقييمات في هذه الفئة</span>
-        </div>
+      } @else if (reviews().length === 0) {
+        <app-empty-state
+          icon="fa-star-half-stroke"
+          title="لا توجد تقييمات"
+          message="لا توجد تقييمات مطابقة لمعايير البحث الحالية">
+        </app-empty-state>
       } @else {
         <div class="rtg-list">
-          @for (review of displayed(); track review.id) {
-            <div class="rtg-review-card" [class.rtg-review-card--flagged]="review.flagged">
+          @for (review of reviews(); track review.id) {
+            <div class="rtg-review-card">
 
               <!-- Header row -->
               <div class="rtg-review-top">
-                <div class="rtg-avatar">{{ review.initial }}</div>
+                <div class="rtg-avatar">{{ review.patientName.charAt(0) }}</div>
                 <div class="rtg-meta">
                   <div class="rtg-name-row">
                     <span class="rtg-patient-name">{{ review.patientName }}</span>
-                    @if (review.flagged) {
-                      <span class="rtg-flag-chip">⚑ مُبلَّغ عنه</span>
+                  </div>
+                  <div class="rtg-doctor-date">
+                    <i class="fa-solid fa-user-doctor"></i>
+                    {{ review.doctorName }}
+                    <span class="rtg-spec-chip">{{ review.specialization }}</span>
+                  </div>
+                </div>
+                <div class="rtg-review-side">
+                  <div class="rtg-stars">
+                    @for (filled of starsArray(review.stars); track $index) {
+                      <span class="rtg-star" [class.rtg-star--filled]="filled">★</span>
                     }
                   </div>
-                  <div class="rtg-doctor-date">{{ review.doctorName }} · {{ review.dateLabel }}</div>
-                </div>
-                <div class="rtg-stars">
-                  @for (filled of starsArray(review.stars); track $index) {
-                    <span class="rtg-star" [class.rtg-star--filled]="filled">★</span>
-                  }
+                  <div class="rtg-date">{{ review.ratedAt }}</div>
                 </div>
               </div>
 
               <!-- Review text -->
-              <div class="rtg-review-text">"{{ review.text }}"</div>
-
-              <!-- Actions -->
-              <div class="rtg-actions">
-                <button
-                  class="rtg-btn rtg-btn--publish"
-                  [disabled]="isPublishing(review.id) || review.status === 'published'"
-                  (click)="publishReview(review)">
-                  @if (isPublishing(review.id)) {
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                  } @else {
-                    ✅
-                  }
-                  {{ review.status === 'published' ? 'منشور' : 'نشر' }}
-                </button>
-
-                <button
-                  class="rtg-btn rtg-btn--delete"
-                  [disabled]="isDeleting(review.id)"
-                  (click)="deleteReview(review)">
-                  @if (isDeleting(review.id)) {
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                  } @else {
-                    🗑️
-                  }
-                  حذف
-                </button>
-              </div>
+              @if (review.comment) {
+                <div class="rtg-review-text">"{{ review.comment }}"</div>
+              }
 
             </div>
           }
+        </div>
+
+        <div class="rtg-pagination-wrap">
+          <div class="rtg-total-label">إجمالي النتائج: {{ total() }}</div>
+          <app-pagination
+            [currentPage]="currentPage()"
+            [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)">
+          </app-pagination>
         </div>
       }
 
@@ -112,58 +114,98 @@
       <!-- Rating distribution -->
       <div class="card rtg-card">
         <div class="rtg-sec-title">توزيع التقييمات</div>
-        @if (loadingStats()) {
+        @if (loadingDist()) {
           <div class="rtg-spinner-wrap"><div class="rtg-spinner"></div></div>
+        } @else if (distribution().length === 0) {
+          <app-empty-state icon="fa-chart-simple" title="لا توجد بيانات" message=""></app-empty-state>
         } @else {
           <div class="rtg-dist-list">
-            @for (row of distribution(); track row.star) {
+            @for (row of distribution(); track row.stars) {
               <div class="rtg-dist-row">
-                <span class="rtg-dist-num">{{ row.star }}</span>
+                <span class="rtg-dist-num">{{ row.stars }}</span>
                 <span class="rtg-dist-star">★</span>
                 <div class="rtg-dist-bar-wrap">
                   <div
                     class="rtg-dist-bar"
-                    [class.rtg-dist-bar--green]="row.color === 'green'"
-                    [class.rtg-dist-bar--amber]="row.color === 'amber'"
-                    [class.rtg-dist-bar--red]="row.color === 'red'"
-                    [style.width.%]="row.percent">
+                    [class.rtg-dist-bar--green]="row.stars >= 4"
+                    [class.rtg-dist-bar--amber]="row.stars === 3"
+                    [class.rtg-dist-bar--red]="row.stars <= 2"
+                    [style.width.%]="row.percentage">
                   </div>
                 </div>
                 <span class="rtg-dist-count">{{ row.count }}</span>
+                <span class="rtg-dist-pct">{{ row.percentage }}%</span>
               </div>
             }
           </div>
         }
       </div>
 
-      <!-- Top / bottom doctors -->
+      <!-- Top / worst doctors -->
       <div class="card rtg-card">
         <div class="rtg-sec-title">أفضل وأسوأ الأطباء تقييماً</div>
-        @if (loadingStats()) {
+
+        <div class="rtg-rank-controls">
+          <div class="rtg-rank-count-field">
+            <label for="rtg-top-count">عدد الأعلى</label>
+            <input
+              id="rtg-top-count"
+              type="number"
+              min="1"
+              max="200"
+              class="inp rtg-count-inp"
+              [(ngModel)]="topCount"
+              (ngModelChange)="onRankCountChange()">
+          </div>
+          <div class="rtg-rank-count-field">
+            <label for="rtg-bottom-count">عدد الأدنى</label>
+            <input
+              id="rtg-bottom-count"
+              type="number"
+              min="1"
+              max="200"
+              class="inp rtg-count-inp"
+              [(ngModel)]="bottomCount"
+              (ngModelChange)="onRankCountChange()">
+          </div>
+        </div>
+
+        @if (loadingRank()) {
           <div class="rtg-spinner-wrap"><div class="rtg-spinner"></div></div>
         } @else {
           <!-- Top -->
           <div class="rtg-rank-label rtg-rank-label--top">🏆 الأعلى تقييماً</div>
-          <div class="rtg-rank-list">
-            @for (d of topDoctors(); track d.name) {
-              <div class="rtg-rank-item">
-                <span class="rtg-rank-num">{{ d.rank }}</span>
-                <span class="rtg-rank-name">{{ d.name }}</span>
-                <span class="rtg-rank-score rtg-rank-score--top">⭐ {{ d.rating }}</span>
-              </div>
-            }
-          </div>
+          @if (topDoctors().length === 0) {
+            <div class="rtg-rank-empty">لا توجد بيانات</div>
+          } @else {
+            <div class="rtg-rank-list">
+              @for (d of topDoctors(); track d.doctorId; let i = $index) {
+                <div class="rtg-rank-item">
+                  <span class="rtg-rank-num">{{ i + 1 }}</span>
+                  <span class="rtg-rank-name">{{ d.doctorName }}</span>
+                  <span class="rtg-rank-count">{{ d.ratingsCount }} تقييم</span>
+                  <span class="rtg-rank-score rtg-rank-score--top">⭐ {{ d.averageRating }}</span>
+                </div>
+              }
+            </div>
+          }
 
           <!-- Bottom -->
           <div class="rtg-rank-label rtg-rank-label--bottom">📉 الأدنى تقييماً</div>
-          <div class="rtg-rank-list">
-            @for (d of bottomDoctors(); track d.name) {
-              <div class="rtg-rank-item">
-                <span class="rtg-rank-name">{{ d.name }}</span>
-                <span class="rtg-rank-score rtg-rank-score--bottom">⭐ {{ d.rating }}</span>
-              </div>
-            }
-          </div>
+          @if (worstDoctors().length === 0) {
+            <div class="rtg-rank-empty">لا توجد بيانات</div>
+          } @else {
+            <div class="rtg-rank-list">
+              @for (d of worstDoctors(); track d.doctorId; let i = $index) {
+                <div class="rtg-rank-item">
+                  <span class="rtg-rank-num">{{ i + 1 }}</span>
+                  <span class="rtg-rank-name">{{ d.doctorName }}</span>
+                  <span class="rtg-rank-count">{{ d.ratingsCount }} تقييم</span>
+                  <span class="rtg-rank-score rtg-rank-score--bottom">⭐ {{ d.averageRating }}</span>
+                </div>
+              }
+            </div>
+          }
         }
       </div>
 
