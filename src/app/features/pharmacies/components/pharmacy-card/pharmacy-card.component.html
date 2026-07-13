@@ -1,25 +1,23 @@
 <article class="pc" [class.pc--inactive]="!pharmacy().isActive" dir="rtl">
 
-  <!-- accent stripe via ::before in SCSS -->
-
-  <!-- top bar: status + rating -->
+  <!-- top bar: status -->
   <div class="pc-top">
     <span class="pc-status" [class.pc-status--on]="pharmacy().isActive">
       <span class="pc-status-dot"></span>
       {{ pharmacy().isActive ? 'نشط' : 'معطّل' }}
     </span>
-    @if (pharmacy().rating) {
-      <span class="pc-rating">
-        <i class="fa-solid fa-star"></i>
-        {{ pharmacy().rating | number:'1.1-1' }}
-      </span>
+    @if (hasCoordinates) {
+      <a class="pc-map-btn" [href]="googleMapsUrl" target="_blank" rel="noopener" title="عرض على خرائط جوجل">
+        <i class="fa-solid fa-location-dot"></i>
+        <span>الموقع</span>
+      </a>
     }
   </div>
 
   <!-- avatar -->
   <div class="pc-avatar-wrap">
-    @if (pharmacy().pharmacyImage) {
-      <img class="pc-avatar" [src]="pharmacy().pharmacyImage!" [alt]="pharmacy().name">
+    @if (pharmacy().imageUrl && !imageFailed) {
+      <img class="pc-avatar" [src]="pharmacy().imageUrl!" [alt]="pharmacy().name" (error)="onImageError()">
     } @else {
       <div class="pc-avatar pc-avatar--placeholder">
         <i class="fa-solid fa-prescription-bottle-medical"></i>
@@ -30,33 +28,10 @@
   <!-- identity -->
   <div class="pc-identity">
     <h3 class="pc-name">{{ pharmacy().name }}</h3>
-    <p class="pc-owner">
-      <i class="fa-solid fa-user-tie"></i>
-      {{ pharmacy().ownerName }}
+    <p class="pc-phone">
+      <i class="fa-solid fa-phone"></i>
+      {{ pharmacy().phone }}
     </p>
-  </div>
-
-  <!-- stats -->
-  <div class="pc-stats">
-    <div class="pc-stat">
-      <div class="pc-stat-icon pc-stat-icon--teal">
-        <i class="fa-solid fa-file-prescription"></i>
-      </div>
-      <div class="pc-stat-body">
-        <strong>{{ pharmacy().prescriptionsCount }}</strong>
-        <span>وصفة</span>
-      </div>
-    </div>
-    <div class="pc-stat-div"></div>
-    <div class="pc-stat">
-      <div class="pc-stat-icon pc-stat-icon--blue">
-        <i class="fa-solid fa-phone"></i>
-      </div>
-      <div class="pc-stat-body">
-        <strong>{{ pharmacy().phone }}</strong>
-        <span>التواصل</span>
-      </div>
-    </div>
   </div>
 
   <!-- address -->
@@ -67,10 +42,6 @@
 
   <!-- actions -->
   <div class="pc-actions">
-    <button class="pc-action pc-action--edit" (click)="edit.emit(pharmacy())" title="تعديل">
-      <i class="fa-solid fa-pen-to-square"></i>
-      <span>تعديل</span>
-    </button>
     <button
       class="pc-action"
       [class.pc-action--activate]="!pharmacy().isActive"

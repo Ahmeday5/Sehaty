@@ -1,42 +1,27 @@
 export interface Pharmacy {
   id: number;
   name: string;
-  ownerName: string;
-  email: string;
   phone: string;
   address: string;
-  licenseNumber: string;
+  lat: string;
+  lng: string;
+  imageUrl: string | null;
   isActive: boolean;
-  pharmacyImage: string | null;
-  createdAt: string;
-  prescriptionsCount: number;
-  rating: number;
+  deviceToken: string | null;
+  token: string;
 }
 
-export interface PharmacySummary {
-  id: number;
-  name: string;
-  ownerName: string;
-  isActive: boolean;
-  pharmacyImage: string | null;
+export interface PharmaciesListParams {
+  name?:     string;
+  phone?:    string;
+  isActive?: boolean;
+  page:      number;
+  pageSize:  number;
 }
 
-export interface CreatePharmacyPayload {
-  name: string;
-  ownerName: string;
-  email: string;
-  phone: string;
-  address: string;
-  licenseNumber: string;
-  password: string;
-  pharmacyImage?: File;
-}
-
-export interface UpdatePharmacyPayload {
-  name?: string;
-  ownerName?: string;
-  phone?: string;
-  address?: string;
-  licenseNumber?: string;
-  pharmacyImage?: File;
+export interface PharmaciesListResponse {
+  total:    number;
+  page:     number;
+  pageSize: number;
+  data:     Pharmacy[];
 }

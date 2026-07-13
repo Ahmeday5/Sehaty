@@ -4,31 +4,61 @@
   <div class="page-header">
     <div class="ap-title-group">
       <h1 class="page-title">الصيدليات</h1>
-      @if (!loading() && filteredPharmacies.length > 0) {
-        <span class="ap-count">{{ filteredPharmacies.length }} صيدلية</span>
+      @if (!loading() && total() > 0) {
+        <span class="ap-count">{{ total() }} صيدلية</span>
       }
     </div>
     <div class="ap-header-actions">
       <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
         <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
-      </button>
-      <button class="btn-primary-action" (click)="openAdd()">
-        <i class="fa-solid fa-plus"></i>
-        إضافة صيدلية
+        @if (lastUpdate()) { {{ lastUpdate() | date:'HH:mm' }} }
       </button>
     </div>
   </div>
 
   <!-- KPI strip -->
-  @if (!loading() && totalCount > 0) {
-    <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
-  }
+  <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
 
-  <!-- Search bar -->
-  <app-search-filter-bar
-    placeholder="بحث عن صيدلية..."
-    (searchChange)="onSearch($event)">
-  </app-search-filter-bar>
+  <!-- Search + phone + status filter -->
+  <div class="ap-filters">
+    <app-search-filter-bar
+      class="ap-search"
+      placeholder="بحث باسم الصيدلية..."
+      (searchChange)="onSearch($event)">
+    </app-search-filter-bar>
+
+    <div class="ap-phone-input">
+      <i class="fa-solid fa-phone"></i>
+      <input
+        type="text"
+        placeholder="بحث برقم الهاتف..."
+        [(ngModel)]="phoneValue"
+        (ngModelChange)="onPhoneChange()">
+    </div>
+  </div>
+
+  <div class="ap-status-tabs">
+    <button
+      class="ap-status-tab"
+      [class.active]="activeStatus() === undefined"
+      (click)="onStatusFilter(undefined)">
+      الكل
+    </button>
+    <button
+      class="ap-status-tab ap-status-tab--active"
+      [class.active]="activeStatus() === true"
+      (click)="onStatusFilter(true)">
+      <span class="ap-status-dot ap-status-dot--on"></span>
+      نشط
+    </button>
+    <button
+      class="ap-status-tab ap-status-tab--inactive"
+      [class.active]="activeStatus() === false"
+      (click)="onStatusFilter(false)">
+      <span class="ap-status-dot ap-status-dot--off"></span>
+      معطّل
+    </button>
+  </div>
 
   <!-- Content -->
   @if (loading()) {
@@ -37,47 +67,37 @@
       <p class="ap-spinner-txt">جاري تحميل الصيدليات...</p>
     </div>
   } @else if (displayed().length === 0) {
-    <app-empty-state
-      icon="fa-prescription-bottle-medical"
-      title="لا توجد صيدليات"
-      message="ابدأ بإضافة أول صيدلية إلى المنصة"
-      actionLabel="إضافة صيدلية"
-      (actionClick)="openAdd()">
-    </app-empty-state>
+    @if (searchValue || phoneValue || activeStatus() !== undefined) {
+      <app-empty-state
+        icon="fa-magnifying-glass"
+        title="لا توجد نتائج"
+        message="جرّب تعديل معايير البحث أو الفلتر المحدد">
+      </app-empty-state>
+    } @else {
+      <app-empty-state
+        icon="fa-prescription-bottle-medical"
+        title="لا توجد صيدليات"
+        message="لم يتم تسجيل أي صيدلية بعد">
+      </app-empty-state>
+    }
   } @else {
     <div class="ap-grid mt-3">
       @for (pharmacy of displayed(); track pharmacy.id) {
         <app-pharmacy-card
           [pharmacy]="pharmacy"
-          (edit)="openEdit($event)"
           (toggleActive)="onToggleActive($event)"
           (delete)="onDelete($event)">
         </app-pharmacy-card>
       }
     </div>
 
-    @if (totalPages() > 1) {
+    @if (totalPages > 1) {
       <app-pagination
         [currentPage]="currentPage()"
-        [totalPages]="totalPages()"
+        [totalPages]="totalPages"
         (pageChange)="onPageChange($event)">
       </app-pagination>
     }
   }
 
 </div>
-
-<!-- Add modal -->
-@if (showAddModal()) {
-  <app-modal title="إضافة صيدلية جديدة" size="lg" (closed)="closeAdd()">
-    <app-pharmacy-form (saved)="onSaved()" (cancelled)="closeAdd()"></app-pharmacy-form>
-  </app-modal>
-}
-
-<!-- Edit modal -->
-@if (editingPharmacy()) {
-  <app-modal title="تعديل بيانات الصيدلية" size="lg" (closed)="closeEdit()">
-    <app-pharmacy-form [pharmacy]="editingPharmacy()!" (saved)="onSaved()" (cancelled)="closeEdit()">
-    </app-pharmacy-form>
-  </app-modal>
-}

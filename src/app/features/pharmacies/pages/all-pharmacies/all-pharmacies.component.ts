@@ -7,30 +7,29 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { firstValueFrom, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { PharmaciesService } from '../../services/pharmacies.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
-import { Pharmacy } from '../../models/pharmacy.model';
+import { Pharmacy, PharmaciesListParams } from '../../models/pharmacy.model';
 import { PharmacyCardComponent } from '../../components/pharmacy-card/pharmacy-card.component';
-import { PharmacyFormComponent } from '../../components/pharmacy-form/pharmacy-form.component';
-import { ModalComponent } from '../../../../shared/components/modal/modal.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { KpiStripComponent } from '../../../../shared/components/kpi-strip/kpi-strip.component';
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 
-const ITEMS_PER_PAGE = 12;
+const PAGE_SIZE = 12;
 
 @Component({
   selector: 'app-all-pharmacies',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     PharmacyCardComponent,
-    PharmacyFormComponent,
-    ModalComponent,
     PaginationComponent,
     KpiStripComponent,
     EmptyStateComponent,
@@ -45,69 +44,51 @@ export class AllPharmaciesComponent implements OnInit {
   private readonly toast   = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
 
-  protected readonly loading         = signal(false);
-  protected readonly currentPage     = signal(1);
-  protected readonly showAddModal    = signal(false);
-  protected readonly editingPharmacy = signal<Pharmacy | null>(null);
+  protected readonly loading      = signal(false);
+  protected readonly displayed    = signal<Pharmacy[]>([]);
+  protected readonly total        = signal(0);
+  protected readonly currentPage  = signal(1);
+  protected readonly lastUpdate   = signal<Date | null>(null);
+  protected readonly activeStatus = signal<boolean | undefined>(undefined);
 
-  private allPharmacies: Pharmacy[] = [];
-  protected filteredPharmacies: Pharmacy[] = [];
+  protected searchValue = '';
+  protected phoneValue  = '';
+  private readonly search$ = new Subject<void>();
 
-  protected readonly totalPages = signal(0);
-  protected readonly displayed  = signal<Pharmacy[]>([]);
+  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
+  protected readonly pageSize = PAGE_SIZE;
 
-  protected get totalCount():  number { return this.allPharmacies.length; }
-  protected get activeCount(): number { return this.allPharmacies.filter((p) => p.isActive).length; }
-  protected get inactiveCount(): number { return this.allPharmacies.filter((p) => !p.isActive).length; }
-  protected get totalPrescriptions(): number {
-    return this.allPharmacies.reduce((acc, p) => acc + (p.prescriptionsCount ?? 0), 0);
-  }
+  protected readonly kpiItems = computed<KpiItem[]>(() => [
+    { icon: 'fa-prescription-bottle-medical', value: String(this.total()), label: 'إجمالي الصيدليات', variant: 'primary' },
+  ]);
 
-  protected readonly kpiItems = computed<KpiItem[]>(() => {
-    const _ = this.displayed(); // track signal
-    return [
-      { icon: 'fa-prescription-bottle-medical', value: String(this.totalCount),        label: 'إجمالي الصيدليات', variant: 'primary' },
-      { icon: 'fa-circle-check',                value: String(this.activeCount),        label: 'صيدليات نشطة',     variant: 'green'   },
-      { icon: 'fa-circle-xmark',                value: String(this.inactiveCount),      label: 'صيدليات معطّلة',    variant: 'red'     },
-      { icon: 'fa-file-prescription',           value: String(this.totalPrescriptions), label: 'إجمالي الوصفات',   variant: 'blue'    },
-    ];
-  });
+  ngOnInit(): void {
+    this.load();
 
-  ngOnInit(): void { this.loadAll(); }
-
-  protected onSearch(query: string): void {
-    if (!query.trim()) {
-      this.setDisplayed(this.allPharmacies);
-      return;
-    }
-    this.loading.set(true);
-    this.svc.searchByName(query).subscribe({
-      next: (data) => { this.setDisplayed(data); this.loading.set(false); },
-      error: () => { this.setDisplayed([]); this.loading.set(false); },
+    this.search$.pipe(debounceTime(350)).subscribe(() => {
+      this.currentPage.set(1);
+      this.load();
     });
   }
 
-  protected onPageChange(page: number): void {
-    this.currentPage.set(page);
-    this.updatePage();
+  protected onSearch(query: string): void {
+    this.searchValue = query;
+    this.search$.next();
   }
 
-  protected openAdd(): void  { this.showAddModal.set(true);  }
-  protected closeAdd(): void { this.showAddModal.set(false); }
-
-  protected openEdit(p: Pharmacy): void  { this.editingPharmacy.set(p);    }
-  protected closeEdit(): void            { this.editingPharmacy.set(null);  }
-
-  protected onSaved(): void {
-    this.showAddModal.set(false);
-    this.editingPharmacy.set(null);
-    this.refresh();
+  protected onPhoneChange(): void {
+    this.search$.next();
   }
 
-  protected refresh(): void {
-    this.svc.invalidate();
-    this.loadAll();
+  protected onStatusFilter(val: boolean | undefined): void {
+    this.activeStatus.set(val);
+    this.currentPage.set(1);
+    this.load();
   }
+
+  protected onPageChange(page: number): void { this.currentPage.set(page); this.load(); }
+
+  protected refresh(): void { this.load(); }
 
   protected async onToggleActive(p: Pharmacy): Promise<void> {
     const action = p.isActive ? 'تعطيل' : 'تفعيل';
@@ -120,7 +101,7 @@ export class AllPharmaciesComponent implements OnInit {
     if (!ok) return;
     const call$ = p.isActive ? this.svc.deactivatePharmacy(p.id) : this.svc.activatePharmacy(p.id);
     call$.subscribe({
-      next: () => { this.toast.success(`تم ${action} الصيدلية`); this.refresh(); },
+      next: () => { this.toast.success(`تم ${action} الصيدلية`); this.load(); },
       error: (e) => this.toast.error(e?.message ?? `فشل ${action} الصيدلية`),
     });
   }
@@ -136,29 +117,36 @@ export class AllPharmaciesComponent implements OnInit {
     try {
       await firstValueFrom(this.svc.deletePharmacy(p.id));
       this.toast.success('تم حذف الصيدلية بنجاح');
-      this.refresh();
+      this.load();
     } catch {
       this.toast.error('فشل حذف الصيدلية');
     }
   }
 
-  private loadAll(): void {
+  private load(): void {
     this.loading.set(true);
-    this.svc.getAllPharmacies().subscribe({
-      next: (data) => { this.allPharmacies = data; this.setDisplayed(data); this.loading.set(false); },
-      error: () => this.loading.set(false),
+
+    const params: PharmaciesListParams = {
+      page:     this.currentPage(),
+      pageSize: PAGE_SIZE,
+    };
+    if (this.searchValue.trim())           params.name     = this.searchValue.trim();
+    if (this.phoneValue.trim())            params.phone    = this.phoneValue.trim();
+    if (this.activeStatus() !== undefined) params.isActive = this.activeStatus();
+
+    this.svc.getPharmacies(params).subscribe({
+      next: (res) => {
+        this.displayed.set(res.data ?? []);
+        this.total.set(res.total ?? 0);
+        this.lastUpdate.set(new Date());
+        this.loading.set(false);
+      },
+      error: () => {
+        this.displayed.set([]);
+        this.total.set(0);
+        this.loading.set(false);
+        this.toast.error('فشل تحميل بيانات الصيدليات');
+      },
     });
-  }
-
-  private setDisplayed(data: Pharmacy[]): void {
-    this.filteredPharmacies = data;
-    this.totalPages.set(Math.ceil(data.length / ITEMS_PER_PAGE));
-    this.currentPage.set(1);
-    this.updatePage();
-  }
-
-  private updatePage(): void {
-    const start = (this.currentPage() - 1) * ITEMS_PER_PAGE;
-    this.displayed.set(this.filteredPharmacies.slice(start, start + ITEMS_PER_PAGE));
   }
 }
