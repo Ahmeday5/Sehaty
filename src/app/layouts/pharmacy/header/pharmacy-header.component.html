@@ -1,0 +1,52 @@
+<header class="app-header">
+  <!-- Right: hamburger + title -->
+  <div class="hdr-right">
+    <button class="hdr-hamburger" (click)="layout.toggleMobile()" aria-label="القائمة الجانبية">
+      <span></span><span></span><span></span>
+    </button>
+    <h1 class="hdr-title">{{ pageTitle() }}</h1>
+  </div>
+
+  <!-- Left: logo + user -->
+  <div class="hdr-left">
+    <!-- Logo -->
+    <a routerLink="/pharmacy/profile" class="hdr-logo">
+      <img src="/assets/img/header/logo.png" alt="شفاء" class="hdr-logo-img" onerror="this.src='/assets/img/logo.png'">
+    </a>
+
+    <!-- User dropdown -->
+    <div class="hdr-user">
+      <button class="hdr-user-btn" (click)="toggleDropdown()" [attr.aria-expanded]="dropdownOpen()">
+        <img
+          [src]="pharmacyImage()"
+          [alt]="pharmacy()?.name ?? 'الصيدلية'"
+          class="hdr-avatar"
+          onerror="this.src='/assets/img/logo.jpeg'"
+        >
+        <span class="hdr-username">{{ pharmacy()?.name ?? 'الصيدلية' }}</span>
+        <i class="fa-solid fa-chevron-down hdr-caret" [class.hdr-caret--open]="dropdownOpen()"></i>
+      </button>
+
+      @if (dropdownOpen()) {
+        <div class="hdr-dropdown">
+          <div class="hdr-dropdown-header">
+            <img [src]="pharmacyImage()" [alt]="pharmacy()?.name ?? 'الصيدلية'" class="hdr-dd-avatar" onerror="this.src='/assets/img/logo.jpeg'">
+            <div>
+              <p class="hdr-dd-name">{{ pharmacy()?.name ?? 'الصيدلية' }}</p>
+              <p class="hdr-dd-role">{{ pharmacy()?.phone ?? '' }}</p>
+            </div>
+          </div>
+          <div class="hdr-dropdown-divider"></div>
+          <a class="hdr-dd-item" routerLink="/pharmacy/profile" (click)="closeDropdown()">
+            <i class="fa-solid fa-store"></i>
+            الملف الشخصي
+          </a>
+          <button class="hdr-dd-item hdr-dd-item--logout" (click)="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            تسجيل الخروج
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

@@ -1,0 +1,60 @@
+<article class="mic" [class.mic--added]="item().alreadyAdded" dir="rtl">
+
+  <!-- top bar: code -->
+  <div class="mic-top">
+    <span class="mic-code">{{ item().code }}</span>
+    @if (item().alreadyAdded) {
+      <span class="mic-added-badge">
+        <i class="fa-solid fa-circle-check"></i>
+        مُضاف
+      </span>
+    }
+  </div>
+
+  <!-- image -->
+  <div class="mic-image-wrap">
+    @if (item().imageUrl && !imageFailed) {
+      <img class="mic-image" [src]="item().imageUrl!" [alt]="item().nameAr" (error)="onImageError()">
+    } @else {
+      <div class="mic-image mic-image--placeholder">
+        <i class="fa-solid fa-pills"></i>
+      </div>
+    }
+  </div>
+
+  <!-- identity -->
+  <div class="mic-identity">
+    <h3 class="mic-name" [title]="item().nameAr">{{ item().nameAr }}</h3>
+    <p class="mic-name-en" [title]="item().nameEn">{{ item().nameEn }}</p>
+  </div>
+
+  <!-- price + unit -->
+  <div class="mic-meta">
+    <span class="mic-price">
+      <i class="fa-solid fa-tag"></i>
+      {{ item().defaultConsumerPrice | number:'1.0-2' }} ج.م
+    </span>
+    <span class="mic-unit">{{ item().unitDefault }}</span>
+  </div>
+
+  <!-- action -->
+  <div class="mic-actions">
+    <button
+      class="mic-add-btn"
+      [class.mic-add-btn--added]="item().alreadyAdded"
+      [disabled]="item().alreadyAdded || adding()"
+      (click)="add.emit(item())">
+      @if (adding()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>جاري الإضافة...</span>
+      } @else if (item().alreadyAdded) {
+        <i class="fa-solid fa-circle-check"></i>
+        <span>مضاف بالفعل</span>
+      } @else {
+        <i class="fa-solid fa-plus"></i>
+        <span>إضافة لصيدليتي</span>
+      }
+    </button>
+  </div>
+
+</article>

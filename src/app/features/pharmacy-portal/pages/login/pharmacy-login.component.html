@@ -1,0 +1,184 @@
+<div class="lg-wrap">
+
+  <!-- ══════════════════════════════════
+       Left panel — branding
+       ══════════════════════════════════ -->
+  <div class="lg-brand d-none d-lg-flex">
+
+    <!-- Ambient orbs -->
+    <div class="lg-orb lg-orb--1"></div>
+    <div class="lg-orb lg-orb--2"></div>
+
+    <!-- Brand content -->
+    <div class="lg-brand-content">
+
+      <!-- Logo ring -->
+      <div class="lg-logo-ring">
+        <div class="lg-logo-ring-inner">
+          <i class="fa-solid fa-pills lg-logo-fallback"></i>
+        </div>
+      </div>
+
+      <h1 class="lg-brand-name">شفاء</h1>
+
+      <!-- System Overview -->
+      <div class="lg-system-overview">
+
+        <div class="lg-overview-card">
+          <h3>بوابة صاحب الصيدلية</h3>
+
+          <p>
+            لوحة تحكم مخصصة لأصحاب الصيدليات لإدارة بيانات الصيدلية،
+            متابعة الطلبات، والتواصل مع منصة شفاء الصحية بكل سهولة
+            وأمان.
+          </p>
+        </div>
+
+        <!-- Features -->
+        <div class="lg-feature-list">
+
+          <div class="lg-feature-item">
+            <i class="fa-solid fa-store"></i>
+            <div>
+              <strong>بيانات الصيدلية</strong>
+              <span>عرض ومتابعة بيانات صيدليتك، الموقع، وحالة التفعيل في أي وقت.</span>
+            </div>
+          </div>
+
+          <div class="lg-feature-item">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+              <strong>حماية وأمان</strong>
+              <span>جلسة دخول مستقلة ومحمية بالكامل خاصة بحساب صيدليتك فقط.</span>
+            </div>
+          </div>
+
+          <div class="lg-feature-item">
+            <i class="fa-solid fa-location-dot"></i>
+            <div>
+              <strong>الموقع الجغرافي</strong>
+              <span>متابعة موقع الصيدلية على الخريطة لتسهيل وصول المرضى إليها.</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="lg-company">
+          Developed by <strong>TheOneSystem</strong>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       Right panel — form
+       ══════════════════════════════════ -->
+  <div class="lg-form-panel d-flex align-items-center justify-content-center">
+
+    <div class="lg-card">
+
+      <!-- Card top accent -->
+      <div class="lg-card-accent"></div>
+
+      <!-- Header -->
+      <div class="lg-card-header">
+        <!-- Logo visible on mobile only -->
+        <div class="lg-mobile-logo d-flex d-lg-none align-items-center gap-2 mb-4">
+          <div class="lg-mobile-logo-ring">
+            <i class="fa-solid fa-pills"></i>
+          </div>
+          <span class="lg-mobile-app-name">شفاء</span>
+        </div>
+
+        <h2 class="lg-title">تسجيل دخول الصيدلية</h2>
+        <p class="lg-subtitle">أدخل بيانات صيدليتك للوصول إلى الملف الشخصي</p>
+      </div>
+
+      <!-- Form -->
+      <form class="lg-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
+
+        <!-- Phone -->
+        <div class="lg-field">
+          <label class="lg-label" for="phone">
+            <i class="fa-solid fa-phone"></i>
+            رقم الهاتف
+          </label>
+          <div class="lg-input-wrap">
+            <input type="tel" id="phone" name="phone" class="lg-input" placeholder="01xxxxxxxxx" dir="ltr"
+              [ngModel]="phone()" (ngModelChange)="phone.set($event)" required pattern="^01[0-9]{9}$" #phoneRef="ngModel"
+              [class.lg-input--invalid]="phoneRef.invalid && phoneRef.touched"
+              [class.lg-input--valid]="phoneRef.valid && phoneRef.touched">
+            @if (phoneRef.valid && phoneRef.touched) {
+            <i class="fa-solid fa-circle-check lg-input-check"></i>
+            }
+          </div>
+          @if (phoneRef.invalid && phoneRef.touched) {
+          <span class="lg-error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            أدخل رقم هاتف مصري صحيح
+          </span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="lg-field">
+          <label class="lg-label" for="password">
+            <i class="fa-solid fa-lock"></i>
+            كلمة المرور
+          </label>
+          <div class="lg-input-wrap">
+            <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password"
+              class="lg-input lg-input--pad-left" placeholder="••••••••" [ngModel]="password()"
+              (ngModelChange)="password.set($event)" required minlength="6" #passwordRef="ngModel"
+              [class.lg-input--invalid]="passwordRef.invalid && passwordRef.touched"
+              [class.lg-input--valid]="passwordRef.valid && passwordRef.touched">
+            <button type="button" class="lg-eye-btn" (click)="togglePassword()">
+              <i class="fa-regular" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+          @if (passwordRef.invalid && passwordRef.touched) {
+          <span class="lg-error">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            كلمة المرور 6 أحرف على الأقل
+          </span>
+          }
+        </div>
+
+        <!-- Remember me -->
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <label class="lg-check-wrap">
+            <input type="checkbox" id="rememberMe" name="rememberMe" [ngModel]="rememberMe()"
+              (ngModelChange)="rememberMe.set($event)">
+            <span class="lg-check-box">
+              <i class="fa-solid fa-check lg-check-tick"></i>
+            </span>
+            <span class="lg-check-label">تذكرني</span>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="lg-submit-btn" [disabled]="isLoading() || loginForm.invalid"
+          [class.lg-submit-btn--loading]="isLoading()">
+          @if (isLoading()) {
+          <span class="lg-submit-spinner"></span>
+          <span>جاري التحقق...</span>
+          } @else {
+          <i class="fa-solid fa-right-to-bracket"></i>
+          <span>تسجيل الدخول</span>
+          }
+        </button>
+
+      </form>
+
+      <!-- Footer -->
+      <p class="lg-card-footer-text">
+        <i class="fa-solid fa-shield-halved"></i>
+        اتصالك محمي بتشفير SSL
+      </p>
+
+    </div>
+  </div>
+
+</div>

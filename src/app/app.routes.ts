@@ -40,6 +40,15 @@ export const routes: Routes = [
     ],
   },
 
+  // ── Pharmacy owner portal (isolated auth/session) ───────────────────────────
+  {
+    path: 'pharmacy',
+    loadChildren: () =>
+      import('./features/pharmacy-portal/pharmacy-portal.routes').then(
+        (m) => m.pharmacyPortalRoutes,
+      ),
+  },
+
   // ── Admin layout (authenticated) ────────────────────────────────────────────
   {
     path: '',

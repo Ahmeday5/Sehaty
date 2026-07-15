@@ -1,0 +1,312 @@
+<app-modal [title]="'تفاصيل الطلب #' + order().id" size="lg" (closed)="close()">
+
+  <div class="odm-body" dir="rtl">
+
+    <!-- Status + payment row -->
+    <div class="odm-top-row">
+      <app-stat-badge [label]="statusLabel()" [variant]="statusVariant()" [dot]="true"></app-stat-badge>
+
+      <span class="odm-paid-badge" [class.odm-paid-badge--paid]="order().isPaid">
+        <i class="fa-solid" [class.fa-circle-check]="order().isPaid" [class.fa-circle-exclamation]="!order().isPaid"></i>
+        {{ order().isPaid ? 'تم الدفع' : 'لم يتم الدفع بعد' }}
+      </span>
+
+      <span class="odm-created">
+        <i class="fa-regular fa-clock"></i>
+        {{ order().createdAt | dateAr }}
+      </span>
+    </div>
+
+    <div class="odm-section odm-summary-grid">
+      <h4 class="odm-section-title">
+        <i class="fa-solid fa-list-check"></i>
+        البيانات الكاملة للطلب
+      </h4>
+      <div class="odm-info-grid odm-info-grid--dense">
+        <div class="odm-info-item">
+          <span class="odm-info-label">رقم الطلب</span>
+          <span class="odm-info-value">#{{ order().id }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">معرف المريض</span>
+          <span class="odm-info-value">{{ displayValue(order().patientId) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">معرف الصيدلية</span>
+          <span class="odm-info-value">{{ displayValue(order().pharmacyId) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">اسم الصيدلية</span>
+          <span class="odm-info-value">{{ displayValue(order().pharmacyName) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">معرف الروشتة</span>
+          <span class="odm-info-value">{{ displayValue(order().prescriptionId) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">الحالة</span>
+          <span class="odm-info-value">{{ statusLabel() }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">طريقة الدفع</span>
+          <span class="odm-info-value">{{ paymentLabel() }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">تم الدفع</span>
+          <span class="odm-info-value">{{ displayBoolean(order().isPaid) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">تاريخ الإنشاء</span>
+          <span class="odm-info-value">{{ order().createdAt | dateAr }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">آخر تعديل</span>
+          <span class="odm-info-value">{{ displayValue(order().updatedAt ? (order().updatedAt | dateAr) : null) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">الإجمالي الفرعي</span>
+          <span class="odm-info-value">{{ order().subTotal | currencyAr }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">رسوم التوصيل</span>
+          <span class="odm-info-value">{{ order().deliveryFee != null ? (order().deliveryFee | currencyAr) : '—' }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">الإجمالي الكلي</span>
+          <span class="odm-info-value">{{ order().totalAmount | currencyAr }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rejection / cancellation reason banner -->
+    @if (order().status === OrderStatus.Rejected && order().rejectionReason) {
+      <div class="odm-reason-banner odm-reason-banner--danger">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <div>
+          <strong>سبب الرفض</strong>
+          <p>{{ order().rejectionReason }}</p>
+        </div>
+      </div>
+    }
+    @if (order().status === OrderStatus.Cancelled && order().cancellationReason) {
+      <div class="odm-reason-banner odm-reason-banner--muted">
+        <i class="fa-solid fa-ban"></i>
+        <div>
+          <strong>سبب الإلغاء</strong>
+          <p>{{ order().cancellationReason }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Delivery info -->
+    <div class="odm-section">
+      <h4 class="odm-section-title">
+        <i class="fa-solid fa-truck-fast"></i>
+        بيانات التوصيل
+      </h4>
+      <div class="odm-info-grid">
+        <div class="odm-info-item">
+          <span class="odm-info-label">هاتف التواصل</span>
+          <span class="odm-info-value" dir="ltr">{{ displayValue(order().deliveryPhone) }}</span>
+        </div>
+        <div class="odm-info-item odm-info-item--wide">
+          <span class="odm-info-label">العنوان</span>
+          <span class="odm-info-value">{{ displayValue(order().deliveryAddress) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">خط العرض</span>
+          <span class="odm-info-value" dir="ltr">{{ displayValue(order().deliveryLat) }}</span>
+        </div>
+        <div class="odm-info-item">
+          <span class="odm-info-label">خط الطول</span>
+          <span class="odm-info-value" dir="ltr">{{ displayValue(order().deliveryLng) }}</span>
+        </div>
+        @if (hasCoordinates()) {
+          <div class="odm-info-item odm-info-item--wide">
+            <span class="odm-info-label">الموقع على الخريطة</span>
+            <a class="odm-map-link" [href]="googleMapsUrl()" target="_blank" rel="noopener">
+              <i class="fa-solid fa-location-dot"></i>
+              عرض على الخريطة
+            </a>
+          </div>
+        }
+        @if (order().notes) {
+          <div class="odm-info-item odm-info-item--wide">
+            <span class="odm-info-label">ملاحظات المريض</span>
+            <span class="odm-info-value">{{ order().notes }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Items table -->
+    <div class="odm-section">
+      <h4 class="odm-section-title">
+        <i class="fa-solid fa-pills"></i>
+        الأصناف ({{ order().items.length }})
+      </h4>
+      <div class="odm-items-table-wrap">
+        <table class="odm-items-table">
+          <thead>
+            <tr>
+              <th>الصنف</th>
+              <th>الكود</th>
+              <th>الوحدة</th>
+              <th>سعر الوحدة</th>
+              <th>الكمية</th>
+              <th>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of order().items; track item.id) {
+              <tr>
+                <td>
+                  <span class="odm-item-name">{{ item.itemNameAr }}</span>
+                  <span class="odm-item-name-en">{{ item.itemNameEn }}</span>
+                </td>
+                <td class="odm-td-sub" dir="ltr">{{ item.itemCode }}</td>
+                <td class="odm-td-sub">{{ item.unit }}</td>
+                <td class="odm-td-sub">{{ item.unitPrice | currencyAr }}</td>
+                <td class="odm-td-sub">{{ item.quantity }}</td>
+                <td class="odm-td-bold">{{ item.lineTotal | currencyAr }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Totals -->
+    <div class="odm-totals">
+      <div class="odm-totals-row">
+        <span>الإجمالي الفرعي</span>
+        <span>{{ order().subTotal | currencyAr }}</span>
+      </div>
+      <div class="odm-totals-row">
+        <span>رسوم التوصيل</span>
+        <span>{{ order().deliveryFee != null ? (order().deliveryFee | currencyAr) : 'لم تُحدد بعد' }}</span>
+      </div>
+      <div class="odm-totals-row odm-totals-row--grand">
+        <span>الإجمالي الكلي</span>
+        <span>{{ order().totalAmount | currencyAr }}</span>
+      </div>
+      <div class="odm-totals-row odm-totals-row--muted">
+        <span>طريقة الدفع</span>
+        <span>{{ paymentLabel() }}</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    @if (allowedTransitions().length > 0 || canMarkPaid()) {
+      <div class="odm-section odm-actions-section">
+        <h4 class="odm-section-title">
+          <i class="fa-solid fa-bolt"></i>
+          الإجراءات المتاحة
+        </h4>
+
+        @if (pendingAction() === null) {
+          <div class="odm-action-buttons">
+            @for (target of allowedTransitions(); track target) {
+              <button
+                class="odm-action-btn"
+                [class.odm-action-btn--accept]="target === OrderStatus.Accepted"
+                [class.odm-action-btn--reject]="target === OrderStatus.Rejected"
+                [class.odm-action-btn--cancel]="target === OrderStatus.Cancelled"
+                [class.odm-action-btn--progress]="target === OrderStatus.Preparing || target === OrderStatus.OutForDelivery"
+                [class.odm-action-btn--deliver]="target === OrderStatus.Delivered"
+                [disabled]="submitting()"
+                (click)="onTransitionClick(target)">
+                {{ labelFor(target) }}
+              </button>
+            }
+
+            @if (canMarkPaid()) {
+              <button class="odm-action-btn odm-action-btn--paid" [disabled]="submitting()" (click)="onMarkPaid()">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                تأكيد استلام الدفع (كاش)
+              </button>
+            }
+          </div>
+        }
+
+        <!-- Accept sub-form: delivery fee required -->
+        @if (pendingAction() === OrderStatus.Accepted) {
+          <div class="odm-subform">
+            <label class="odm-subform-label" for="deliveryFeeInput">رسوم التوصيل (جنيه) *</label>
+            <input
+              id="deliveryFeeInput"
+              type="number"
+              min="0"
+              step="0.5"
+              class="odm-subform-input"
+              placeholder="مثال: 20"
+              [ngModel]="deliveryFee()"
+              (ngModelChange)="deliveryFee.set($event)">
+            <div class="odm-subform-actions">
+              <button class="odm-subform-btn odm-subform-btn--ghost" (click)="cancelPendingAction()">تراجع</button>
+              <button
+                class="odm-subform-btn odm-subform-btn--accept"
+                [disabled]="deliveryFee() == null || deliveryFee()! < 0 || submitting()"
+                (click)="confirmAccept()">
+                @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-check"></i> }
+                تأكيد القبول
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Reject sub-form: reason required -->
+        @if (pendingAction() === OrderStatus.Rejected) {
+          <div class="odm-subform">
+            <label class="odm-subform-label" for="rejectionReasonInput">سبب الرفض *</label>
+            <textarea
+              id="rejectionReasonInput"
+              class="odm-subform-textarea"
+              rows="3"
+              placeholder="اكتب سبب رفض الطلب..."
+              [ngModel]="rejectionReason()"
+              (ngModelChange)="rejectionReason.set($event)">
+            </textarea>
+            <div class="odm-subform-actions">
+              <button class="odm-subform-btn odm-subform-btn--ghost" (click)="cancelPendingAction()">تراجع</button>
+              <button
+                class="odm-subform-btn odm-subform-btn--reject"
+                [disabled]="!rejectionReason().trim() || submitting()"
+                (click)="confirmReject()">
+                @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-xmark"></i> }
+                تأكيد الرفض
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Cancel sub-form: reason required -->
+        @if (pendingAction() === OrderStatus.Cancelled) {
+          <div class="odm-subform">
+            <label class="odm-subform-label" for="cancellationReasonInput">سبب الإلغاء *</label>
+            <textarea
+              id="cancellationReasonInput"
+              class="odm-subform-textarea"
+              rows="3"
+              placeholder="اكتب سبب إلغاء الطلب..."
+              [ngModel]="cancellationReason()"
+              (ngModelChange)="cancellationReason.set($event)">
+            </textarea>
+            <div class="odm-subform-actions">
+              <button class="odm-subform-btn odm-subform-btn--ghost" (click)="cancelPendingAction()">تراجع</button>
+              <button
+                class="odm-subform-btn odm-subform-btn--cancel"
+                [disabled]="!cancellationReason().trim() || submitting()"
+                (click)="confirmCancel()">
+                @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-ban"></i> }
+                تأكيد الإلغاء
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+
+</app-modal>

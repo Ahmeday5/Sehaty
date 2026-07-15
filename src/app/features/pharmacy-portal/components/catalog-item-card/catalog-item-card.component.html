@@ -1,0 +1,64 @@
+<article class="cic" [class.cic--off]="!item().isAvailable" dir="rtl">
+
+  <!-- top bar: status -->
+  <div class="cic-top">
+    <span class="cic-status" [class.cic-status--on]="item().isAvailable">
+      <span class="cic-status-dot"></span>
+      {{ item().isAvailable ? 'متاح' : 'غير متاح' }}
+    </span>
+    <span class="cic-code">{{ item().itemCode }}</span>
+  </div>
+
+  <!-- image -->
+  <div class="cic-image-wrap">
+    @if (item().imageUrl && !imageFailed) {
+      <img class="cic-image" [src]="item().imageUrl!" [alt]="item().itemNameAr" (error)="onImageError()">
+    } @else {
+      <div class="cic-image cic-image--placeholder">
+        <i class="fa-solid fa-pills"></i>
+      </div>
+    }
+  </div>
+
+  <!-- identity -->
+  <div class="cic-identity">
+    <h3 class="cic-name" [title]="item().itemNameAr">{{ item().itemNameAr }}</h3>
+    <p class="cic-name-en" [title]="item().itemNameEn">{{ item().itemNameEn }}</p>
+  </div>
+
+  <!-- price + unit -->
+  <div class="cic-meta">
+    <span class="cic-price">
+      <i class="fa-solid fa-tag"></i>
+      {{ item().defaultConsumerPrice | number:'1.0-2' }} ج.م
+    </span>
+    <span class="cic-unit">{{ item().unitDefault }}</span>
+  </div>
+
+  <!-- actions -->
+  <div class="cic-actions">
+    <button
+      class="cic-action"
+      [class.cic-action--activate]="!item().isAvailable"
+      [class.cic-action--deactivate]="item().isAvailable"
+      [disabled]="toggling()"
+      (click)="toggleAvailability.emit(item())"
+      [title]="item().isAvailable ? 'إخفاء الصنف' : 'إتاحة الصنف'">
+      @if (toggling()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+      } @else {
+        <i class="fa-solid" [class.fa-toggle-on]="item().isAvailable" [class.fa-toggle-off]="!item().isAvailable"></i>
+      }
+      <span>{{ item().isAvailable ? 'إخفاء' : 'إتاحة' }}</span>
+    </button>
+    <button class="cic-action cic-action--delete" [disabled]="deleting()" (click)="delete.emit(item())" title="حذف نهائي">
+      @if (deleting()) {
+        <i class="fa-solid fa-spinner fa-spin"></i>
+      } @else {
+        <i class="fa-solid fa-trash-can"></i>
+      }
+      <span>حذف</span>
+    </button>
+  </div>
+
+</article>

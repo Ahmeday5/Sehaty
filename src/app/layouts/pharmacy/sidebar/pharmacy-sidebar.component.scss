@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════
+   PHARMACY SIDEBAR — dark themed, collapsible
+   (mirrors admin sidebar for visual parity)
+   ═══════════════════════════════════════ */
+
+.sidebar {
+  --sb-w:       240px;
+  --sb-col-w:   64px;
+  --sb-bg:      var(--surface, #111827);
+  --sb-item:    var(--surface2, #1A2235);
+  --sb-act-bg:  var(--surface3, #1F2A3C);
+  --sb-act-bar: var(--main-color, #1db17a);
+  --sb-text:    var(--txt2, #A8BDD4);
+  --sb-text-m:  var(--txt4, #3D5068);
+  --sb-dur:     .24s;
+  --sb-ease:    cubic-bezier(.4,0,.2,1);
+
+  width: var(--sb-w);
+  height: 100%;
+  background: var(--sb-bg);
+  border-inline-start: 1px solid var(--border, #1E2D42);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width var(--sb-dur) var(--sb-ease);
+
+  &.collapsed {
+    width: var(--sb-col-w);
+
+    .sb-brand-name,
+    .sbi-label,
+    .sbb,
+    .sb-sec,
+    .sb-toggle-lbl { display: none; }
+
+    .sb-brand    { justify-content: center; padding: 14px 10px; }
+    .sbi         { justify-content: center; padding: 11px 0; margin: 2px 6px; }
+    .sbi-icon-wrap { margin: 0; }
+    .sb-toggle   { justify-content: center; padding: 12px 0; }
+    .sb-toggle-icon--flipped { transform: rotate(180deg); }
+  }
+
+  @media (max-width: 991px) {
+    position: fixed;
+    top: 60px; right: 0; bottom: 0;
+    width: 260px !important;
+    z-index: 1000;
+    transform: translateX(102%);
+    transition: transform var(--sb-dur) var(--sb-ease);
+    box-shadow: none;
+
+    .sb-brand-name,
+    .sbi-label,
+    .sb-sec { display: block !important; }
+    .sb-toggle { display: none; }
+    .sbi { justify-content: flex-start !important; padding: 10px 14px !important; }
+    .sbi-icon-wrap { margin-inline-end: 4px; }
+
+    &.open {
+      transform: translateX(0);
+      box-shadow: -6px 0 40px rgba(0,0,0,.5);
+    }
+  }
+}
+
+/* ── Brand ── */
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px 16px;
+  border-bottom: 1px solid var(--border, #1E2D42);
+  flex-shrink: 0;
+}
+
+.sb-logo-icon {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--grad, linear-gradient(135deg,#17956a,#1db17a 50%,#14B8A6));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  svg { color: #fff; }
+}
+
+.sb-brand-name {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--txt, #E8F0FE);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sb-brand-sub {
+  font-size: 10px;
+  color: var(--txt3, #7B91B0);
+  font-weight: 600;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+
+/* ── Scrollable area ── */
+.sb-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 10px;
+  }
+}
+
+/* ── Section label ── */
+.sb-sec {
+  padding: 6px 16px 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  color: var(--sb-text-m);
+  white-space: nowrap;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* ── Nav item ── */
+.sbi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  margin: 1px 8px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--sb-text);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--sb-dur), color var(--sb-dur);
+
+  &:hover { background: var(--sb-item); color: var(--text, #E8F0FE); }
+
+  &.on {
+    background: var(--sb-act-bg);
+    color: var(--main-color, #13A0A0);
+    font-weight: 700;
+  }
+}
+
+.sbi-icon-wrap {
+  width: 20px; height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.sbi-label { flex: 1; white-space: nowrap; }
+
+/* ── Collapse toggle ── */
+.sb-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  border-top: 1px solid var(--border, #1E2D42);
+  background: var(--surface2, #1A2235);
+  color: var(--sb-text-m);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-align: start;
+  flex-shrink: 0;
+  transition: background var(--sb-dur), color var(--sb-dur);
+
+  &:hover { background: var(--surface3, #1F2A3C); color: var(--txt2); }
+
+  @media (max-width: 991px) { display: none; }
+}
+
+.sb-toggle-icon {
+  flex-shrink: 0;
+  transition: transform var(--sb-dur) var(--sb-ease);
+  &--flipped { transform: rotate(180deg); }
+}
+
+.sb-toggle-lbl { flex: 1; }

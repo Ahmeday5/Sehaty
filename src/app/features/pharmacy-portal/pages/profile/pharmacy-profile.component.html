@@ -1,0 +1,122 @@
+<div class="pf-page">
+
+  @if (pharmacy(); as p) {
+
+  <!-- ══════════════════════════════════
+       Hero card
+       ══════════════════════════════════ -->
+  <section class="pf-hero">
+    <div class="pf-hero-glow pf-hero-glow--1"></div>
+    <div class="pf-hero-glow pf-hero-glow--2"></div>
+
+    <div class="pf-hero-content">
+      <div class="pf-avatar-wrap">
+        @if (p.imageUrl) {
+        <img [src]="p.imageUrl" [alt]="p.name" class="pf-avatar" onerror="this.style.display='none'">
+        } @else {
+        <div class="pf-avatar pf-avatar--fallback">{{ initials() }}</div>
+        }
+        <span class="pf-status-dot" [class.pf-status-dot--off]="!p.isActive"></span>
+      </div>
+
+      <div class="pf-hero-info">
+        <div class="pf-hero-title-row">
+          <h1 class="pf-name">{{ p.name }}</h1>
+          <span class="pf-badge" [class.pf-badge--off]="!p.isActive">
+            <i class="fa-solid" [class.fa-circle-check]="p.isActive" [class.fa-circle-xmark]="!p.isActive"></i>
+            {{ p.isActive ? 'صيدلية نشطة' : 'غير مفعّلة' }}
+          </span>
+        </div>
+        <p class="pf-sub">
+          <i class="fa-solid fa-hashtag"></i>
+          كود الصيدلية #{{ p.id }}
+        </p>
+      </div>
+
+      <button class="pf-refresh-btn" (click)="refresh()" [class.pf-refresh-btn--loading]="isLoading()" [disabled]="isLoading()">
+        <i class="fa-solid fa-arrows-rotate"></i>
+        <span>تحديث البيانات</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       Info grid
+       ══════════════════════════════════ -->
+  <section class="pf-grid">
+
+    <!-- Phone -->
+    <div class="pf-card">
+      <div class="pf-card-icon pf-card-icon--teal">
+        <i class="fa-solid fa-phone"></i>
+      </div>
+      <div class="pf-card-body">
+        <span class="pf-card-label">رقم الهاتف</span>
+        <span class="pf-card-value" dir="ltr">{{ p.phone }}</span>
+      </div>
+      <button class="pf-copy-btn" (click)="copyToClipboard(p.phone, 'رقم الهاتف')" title="نسخ">
+        <i class="fa-regular fa-copy"></i>
+      </button>
+    </div>
+
+    <!-- Address -->
+    <div class="pf-card">
+      <div class="pf-card-icon pf-card-icon--blue">
+        <i class="fa-solid fa-location-dot"></i>
+      </div>
+      <div class="pf-card-body">
+        <span class="pf-card-label">العنوان</span>
+        <span class="pf-card-value">{{ p.address || '—' }}</span>
+      </div>
+      <button class="pf-copy-btn" (click)="copyToClipboard(p.address, 'العنوان')" title="نسخ">
+        <i class="fa-regular fa-copy"></i>
+      </button>
+    </div>
+
+    <!-- Coordinates -->
+    <div class="pf-card">
+      <div class="pf-card-icon pf-card-icon--purple">
+        <i class="fa-solid fa-map-location-dot"></i>
+      </div>
+      <div class="pf-card-body">
+        <span class="pf-card-label">الإحداثيات</span>
+        <span class="pf-card-value" dir="ltr">{{ p.lat }}, {{ p.lng }}</span>
+      </div>
+      @if (mapUrl(); as url) {
+      <a [href]="url" target="_blank" rel="noopener" class="pf-copy-btn" title="عرض على الخريطة">
+        <i class="fa-solid fa-up-right-from-square"></i>
+      </a>
+      }
+    </div>
+
+    <!-- Status -->
+    <div class="pf-card">
+      <div class="pf-card-icon" [class.pf-card-icon--green]="p.isActive" [class.pf-card-icon--red]="!p.isActive">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <div class="pf-card-body">
+        <span class="pf-card-label">حالة التفعيل</span>
+        <span class="pf-card-value">{{ p.isActive ? 'مفعّلة ويمكنها استقبال الطلبات' : 'قيد المراجعة من الإدارة' }}</span>
+      </div>
+    </div>
+
+  </section>
+
+  } @else if (isLoading()) {
+  <div class="pf-skeleton">
+    <div class="pf-skeleton-hero"></div>
+    <div class="pf-skeleton-grid">
+      <div class="pf-skeleton-card"></div>
+      <div class="pf-skeleton-card"></div>
+      <div class="pf-skeleton-card"></div>
+    </div>
+  </div>
+  } @else {
+  <div class="pf-empty">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <p>تعذر تحميل بيانات الصيدلية</p>
+    <button class="pf-refresh-btn" (click)="refresh()">إعادة المحاولة</button>
+  </div>
+  }
+
+</div>

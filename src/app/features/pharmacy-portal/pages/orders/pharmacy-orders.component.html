@@ -1,0 +1,150 @@
+<div class="ord-page" dir="rtl">
+
+  <!-- header -->
+  <div class="page-header">
+    <div class="d-flex align-items-center gap-2">
+      <h1 class="page-title mb-0">إدارة الطلبات</h1>
+      @if (!loading() && total() > 0) {
+        <span class="ord-count">{{ total() }} طلب</span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+      تحديث
+    </button>
+  </div>
+
+  <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
+
+  <!-- status filter pills -->
+  <div class="ord-status-tabs">
+    @for (opt of statusOptions; track opt.label) {
+      <button
+        class="ord-status-tab"
+        [class.active]="statusFilter() === opt.value"
+        (click)="onStatusFilterChange(opt.value)">
+        {{ opt.label }}
+      </button>
+    }
+  </div>
+
+  <!-- content -->
+  @if (loading()) {
+    <div class="ord-spinner">
+      <div class="ord-spinner-ring"></div>
+      <p class="ord-spinner-txt">جاري تحميل الطلبات...</p>
+    </div>
+  } @else if (orders().length === 0) {
+    <app-empty-state
+      icon="fa-cart-shopping"
+      title="لا توجد طلبات"
+      message="لا توجد طلبات مطابقة للفلتر المحدد">
+    </app-empty-state>
+  } @else {
+    <div class="ord-table-wrap">
+      <table class="ord-table">
+        <thead>
+          <tr>
+            <th>رقم الطلب</th>
+            <th>الأصناف</th>
+            <th>الإجمالي</th>
+            <th>الدفع</th>
+            <th>الحالة</th>
+            <th>التاريخ</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of orders(); track order.id) {
+            <tr class="ord-row" (click)="openOrder(order)">
+              <td class="ord-td-bold">#{{ order.id }}</td>
+              <td class="ord-td-sub">{{ order.items.length }} صنف</td>
+              <td class="ord-td-fees">{{ order.totalAmount | currencyAr }}</td>
+              <td>
+                <span class="ord-paid-chip" [class.ord-paid-chip--paid]="order.isPaid">
+                  <i class="fa-solid" [class.fa-circle-check]="order.isPaid" [class.fa-circle-exclamation]="!order.isPaid"></i>
+                  {{ order.isPaid ? 'مدفوع' : 'غير مدفوع' }}
+                </span>
+              </td>
+              <td>
+                <app-stat-badge
+                  [label]="statusLabels[order.status]"
+                  [variant]="statusVariants[order.status]"
+                  [dot]="true">
+                </app-stat-badge>
+              </td>
+              <td class="ord-td-sub">{{ order.createdAt | dateAr:'date' }}</td>
+              <td>
+                <div class="ord-row-actions">
+                  <button class="ord-action-btn ord-action-btn--ghost" (click)="openOrder(order); $event.stopPropagation()" title="عرض التفاصيل">
+                    <i class="fa-solid fa-eye"></i>
+                  </button>
+
+                  @if (order.status === OrderStatus.Pending) {
+                    <button class="ord-action-btn ord-action-btn--accept" (click)="onQuickTransition(order, OrderStatus.Accepted); $event.stopPropagation()" title="قبول الطلب">
+                      <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="ord-action-btn ord-action-btn--reject" (click)="onQuickTransition(order, OrderStatus.Rejected); $event.stopPropagation()" title="رفض الطلب">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  }
+
+                  @if (order.status === OrderStatus.Accepted) {
+                    <button class="ord-action-btn ord-action-btn--progress" (click)="onQuickTransition(order, OrderStatus.Preparing); $event.stopPropagation()" title="بدأ التجهيز">
+                      <i class="fa-solid fa-box-open"></i>
+                    </button>
+                    <button class="ord-action-btn ord-action-btn--cancel" (click)="onQuickTransition(order, OrderStatus.Cancelled); $event.stopPropagation()" title="إلغاء الطلب">
+                      <i class="fa-solid fa-ban"></i>
+                    </button>
+                  }
+
+                  @if (order.status === OrderStatus.Preparing) {
+                    <button class="ord-action-btn ord-action-btn--progress" (click)="onQuickTransition(order, OrderStatus.OutForDelivery); $event.stopPropagation()" title="خارج للتوصيل">
+                      <i class="fa-solid fa-truck-fast"></i>
+                    </button>
+                    <button class="ord-action-btn ord-action-btn--cancel" (click)="onQuickTransition(order, OrderStatus.Cancelled); $event.stopPropagation()" title="إلغاء الطلب">
+                      <i class="fa-solid fa-ban"></i>
+                    </button>
+                  }
+
+                  @if (order.status === OrderStatus.OutForDelivery) {
+                    <button class="ord-action-btn ord-action-btn--deliver" (click)="onQuickTransition(order, OrderStatus.Delivered); $event.stopPropagation()" title="تم التسليم">
+                      <i class="fa-solid fa-check-double"></i>
+                    </button>
+                  }
+
+                  @if (order.status === OrderStatus.Delivered && !order.isPaid) {
+                    <button class="ord-action-btn ord-action-btn--paid" (click)="onMarkPaid(order); $event.stopPropagation()" title="تأكيد استلام الدفع">
+                      <i class="fa-solid fa-money-bill-wave"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages > 1) {
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+    }
+  }
+
+  <!-- Order details modal -->
+  @if (selectedOrder(); as order) {
+    <app-order-details-modal
+      [order]="order"
+      [submitting]="submitting()"
+      [initialAction]="selectedAction()"
+      (closed)="closeModal()"
+      (transition)="onTransition($event)"
+      (markPaidClick)="onMarkPaid($event)">
+    </app-order-details-modal>
+  }
+
+</div>

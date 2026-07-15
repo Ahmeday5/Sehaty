@@ -1,0 +1,39 @@
+<nav class="sidebar" [class.collapsed]="layout.collapsed()" [class.open]="layout.mobileOpen()">
+
+  <!-- Brand -->
+  <div class="sb-brand">
+    <div class="sb-logo-icon">
+      <i class="fa-solid fa-pills" style="color:#fff; font-size:16px;"></i>
+    </div>
+    <div>
+      <span class="sb-brand-name">شفاء</span>
+      <div class="sb-brand-sub">بوابة الصيدلية</div>
+    </div>
+  </div>
+
+  <!-- Scrollable nav -->
+  <div class="sb-scroll">
+    <p class="sb-sec">القائمة</p>
+
+    @for (item of items; track item.id) {
+    <a class="sbi" [routerLink]="item.route" routerLinkActive="on" [title]="layout.collapsed() ? item.label : ''"
+      (click)="layout.closeMobile()">
+      <span class="sbi-icon-wrap">
+        <i [class]="item.icon" style="font-size:17px;"></i>
+      </span>
+      <span class="sbi-label">{{ item.label }}</span>
+    </a>
+    }
+  </div>
+
+  <!-- Collapse toggle (desktop only) -->
+  <button class="sb-toggle" (click)="layout.toggleCollapsed()"
+    [title]="layout.collapsed() ? 'توسيع القائمة' : 'تصغير القائمة'">
+    <svg class="sb-toggle-icon" [class.sb-toggle-icon--flipped]="layout.collapsed()" width="14" height="14"
+      viewBox="0 0 14 14" fill="none">
+      <path d="M9 2L4 7l5 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <span class="sb-toggle-lbl">تصغير</span>
+  </button>
+
+</nav>

@@ -1,0 +1,171 @@
+<div class="cat-page">
+
+  <!-- page header -->
+  <div class="page-header">
+    <div class="cat-title-group">
+      <h1 class="page-title">كتالوج الأصناف</h1>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <app-tabs-nav
+    [tabs]="tabs"
+    [activeTab]="activeTab()"
+    (tabChange)="onTabChange($event)">
+  </app-tabs-nav>
+
+  @if (activeTab() === 'mine') {
+
+  <!-- ══════════════════════════════════
+       TAB: My catalog
+       ══════════════════════════════════ -->
+  <div class="cat-tab-content">
+
+    <div class="cat-header-row">
+      @if (!mineLoading() && mineTotal() > 0) {
+        <span class="cat-count">{{ mineTotal() }} صنف</span>
+      }
+      <button class="btn-refresh" (click)="refreshMine()" [disabled]="mineLoading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="mineLoading()"></i>
+        تحديث
+      </button>
+    </div>
+
+    <app-kpi-strip [items]="mineKpis()"></app-kpi-strip>
+
+    <div class="cat-filters">
+      <app-search-filter-bar
+        class="cat-search"
+        placeholder="بحث باسم الصنف أو الكود..."
+        (searchChange)="onMineSearch($event)">
+      </app-search-filter-bar>
+    </div>
+
+    <div class="cat-status-tabs">
+      <button class="cat-status-tab" [class.active]="mineAvailable() === undefined" (click)="onAvailabilityFilter(undefined)">
+        الكل
+      </button>
+      <button class="cat-status-tab cat-status-tab--on" [class.active]="mineAvailable() === true" (click)="onAvailabilityFilter(true)">
+        <span class="cat-status-dot cat-status-dot--on"></span>
+        متاح
+      </button>
+      <button class="cat-status-tab cat-status-tab--off" [class.active]="mineAvailable() === false" (click)="onAvailabilityFilter(false)">
+        <span class="cat-status-dot cat-status-dot--off"></span>
+        غير متاح
+      </button>
+    </div>
+
+    @if (mineLoading()) {
+      <div class="cat-spinner">
+        <div class="cat-spinner-ring"></div>
+        <p class="cat-spinner-txt">جاري تحميل أصناف صيدليتك...</p>
+      </div>
+    } @else if (mineItems().length === 0) {
+      @if (mineSearch || mineAvailable() !== undefined) {
+        <app-empty-state
+          icon="fa-magnifying-glass"
+          title="لا توجد نتائج"
+          message="جرّب تعديل كلمة البحث أو الفلتر المحدد">
+        </app-empty-state>
+      } @else {
+        <app-empty-state
+          icon="fa-pills"
+          title="لا توجد أصناف بعد"
+          message="ابدأ بإضافة أصناف من تبويب «تصفح الكتالوج»"
+          actionLabel="تصفح الكتالوج"
+          (actionClick)="onTabChange('browse')">
+        </app-empty-state>
+      }
+    } @else {
+      <div class="cat-grid mt-3">
+        @for (item of mineItems(); track item.id) {
+          <app-catalog-item-card
+            [item]="item"
+            [toggling]="togglingId() === item.id"
+            [deleting]="deletingId() === item.id"
+            (toggleAvailability)="onToggleAvailability($event)"
+            (delete)="onDeleteItem($event)">
+          </app-catalog-item-card>
+        }
+      </div>
+
+      @if (minePages > 1) {
+        <app-pagination
+          [currentPage]="minePage()"
+          [totalPages]="minePages"
+          (pageChange)="onMinePageChange($event)">
+        </app-pagination>
+      }
+    }
+
+  </div>
+
+  } @else {
+
+  <!-- ══════════════════════════════════
+       TAB: Browse master catalog
+       ══════════════════════════════════ -->
+  <div class="cat-tab-content">
+
+    <div class="cat-header-row">
+      @if (!browseLoading() && browseTotal() > 0) {
+        <span class="cat-count">{{ browseTotal() }} صنف بالكتالوج الرئيسي</span>
+      }
+      <button class="btn-refresh" (click)="refreshBrowse()" [disabled]="browseLoading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="browseLoading()"></i>
+        تحديث
+      </button>
+    </div>
+
+    <div class="cat-filters">
+      <app-search-filter-bar
+        class="cat-search"
+        placeholder="بحث في الكتالوج الرئيسي..."
+        (searchChange)="onBrowseSearch($event)">
+      </app-search-filter-bar>
+    </div>
+
+    @if (browseLoading()) {
+      <div class="cat-spinner">
+        <div class="cat-spinner-ring"></div>
+        <p class="cat-spinner-txt">جاري تحميل الكتالوج الرئيسي...</p>
+      </div>
+    } @else if (browseItems().length === 0) {
+      @if (browseSearch) {
+        <app-empty-state
+          icon="fa-magnifying-glass"
+          title="لا توجد نتائج"
+          message="جرّب تعديل كلمة البحث">
+        </app-empty-state>
+      } @else {
+        <app-empty-state
+          icon="fa-box-open"
+          title="لا توجد أصناف بالكتالوج"
+          message="لم يقم الأدمن بإضافة أصناف حتى الآن">
+        </app-empty-state>
+      }
+    } @else {
+      <div class="cat-grid mt-3">
+        @for (item of browseItems(); track item.id) {
+          <app-master-item-card
+            [item]="item"
+            [adding]="addingId() === item.id"
+            (add)="onAddItem($event)">
+          </app-master-item-card>
+        }
+      </div>
+
+      @if (browsePages > 1) {
+        <app-pagination
+          [currentPage]="browsePage()"
+          [totalPages]="browsePages"
+          (pageChange)="onBrowsePageChange($event)">
+        </app-pagination>
+      }
+    }
+
+  </div>
+
+  }
+
+</div>

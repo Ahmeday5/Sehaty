@@ -1,0 +1,196 @@
+/* ═══════════════════════════════════════
+   PHARMACY HEADER — mirrors admin header for visual parity
+   ═══════════════════════════════════════ */
+
+.app-header {
+  height: 60px;
+  background: var(--surface, #111827);
+  border-bottom: 1px solid var(--border, #1E2D42);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+  gap: 16px;
+}
+
+/* ── Right side ── */
+.hdr-right { display: flex; align-items: center; gap: 10px; }
+
+.hdr-hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 8px;
+  width: 36px; height: 36px;
+  align-items: center;
+  justify-content: center;
+
+  span {
+    display: block;
+    width: 16px; height: 2px;
+    background: var(--textsub);
+    border-radius: 2px;
+    transition: background 0.12s;
+  }
+
+  &:hover span { background: var(--txt); }
+  @media (max-width: 991px) { display: flex; }
+}
+
+.hdr-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--txt, #E8F0FE);
+  letter-spacing: -0.2px;
+  flex: 1;
+}
+
+/* ── Left side ── */
+.hdr-left { display: flex; align-items: center; gap: 14px; }
+
+.hdr-logo { display: flex; align-items: center; text-decoration: none; }
+.hdr-logo-img { height: 32px; object-fit: contain; }
+
+/* ── User section ── */
+.hdr-user { position: relative; }
+
+.hdr-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s;
+  &:hover { background: var(--surface2); }
+}
+
+.hdr-avatar {
+  width: 36px; height: 36px;
+  border-radius: 11px;
+  background: var(--grad, linear-gradient(135deg,#17956a,#1db17a 50%,#14B8A6));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  object-fit: cover;
+  border: none;
+}
+
+.hdr-username {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt, #E8F0FE);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 480px) { display: none; }
+}
+
+.hdr-caret {
+  font-size: 11px;
+  color: var(--textsub);
+  transition: transform 0.18s;
+  &--open { transform: rotate(180deg); }
+}
+
+.hdr-dropdown {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  min-width: 200px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg, 0 12px 40px -12px rgba(0,0,0,.7));
+  overflow: hidden;
+  animation: dd-fade 0.15s ease;
+  z-index: 200;
+}
+
+.hdr-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.hdr-dd-avatar {
+  width: 38px; height: 38px;
+  border-radius: 11px;
+  background: var(--grad);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.hdr-dd-name {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--txt, #E8F0FE);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.hdr-dd-role {
+  margin: 0;
+  font-size: 11px;
+  color: var(--textsub);
+  direction: ltr;
+  text-align: right;
+}
+
+.hdr-dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+.hdr-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--textsub);
+  transition: background 0.12s, color 0.12s;
+  font-family: inherit;
+  text-align: right;
+  text-decoration: none;
+
+  &:hover { background: var(--surface2); color: var(--txt); }
+  &--logout { color: var(--red, #F43F5E); &:hover { background: var(--redsoft); color: var(--red); } }
+}
+
+@keyframes dd-fade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

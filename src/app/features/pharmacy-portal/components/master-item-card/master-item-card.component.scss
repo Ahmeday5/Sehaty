@@ -1,0 +1,195 @@
+.mic {
+  height: 100%;
+  background: var(--surface, #111827);
+  border-radius: 16px;
+  border: 1px solid var(--border, #1E2D42);
+  box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  transition: transform .22s ease, box-shadow .22s ease;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; inset-inline-start: 0; bottom: 0;
+    width: 4px;
+    background: var(--grad, linear-gradient(135deg, #0A5D66, #13A0A0));
+    border-radius: 16px 0 0 16px;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(19,160,160,.18), 0 4px 12px rgba(0,0,0,.25);
+  }
+
+  &--added::before {
+    background: linear-gradient(180deg, #22c55e, #15803d);
+  }
+}
+
+/* ── Top bar ── */
+.mic-top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 0;
+}
+
+.mic-code {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--textmuted, #3D5068);
+  direction: ltr;
+}
+
+.mic-added-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--greensoft, rgba(34,197,94,.12));
+  color: var(--green, #22C55E);
+  border: 1px solid rgba(34,197,94,.25);
+
+  i { font-size: 10px; }
+}
+
+/* ── Image ── */
+.mic-image-wrap {
+  width: 100%;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 8px 0;
+}
+
+.mic-image {
+  width: 72px; height: 72px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid var(--surface2, #1A2235);
+  box-shadow: 0 4px 14px rgba(0,0,0,.3);
+  background: var(--surface2, #1A2235);
+
+  &--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    color: var(--main-color, #13A0A0);
+    background: var(--main-light, rgba(19,160,160,.1));
+  }
+}
+
+/* ── Identity ── */
+.mic-identity {
+  width: 100%;
+  padding: 0 16px 8px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.mic-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--txt, #E8F0FE);
+  margin: 0 0 3px;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mic-name-en {
+  font-size: 11px;
+  color: var(--textsub, #7B91B0);
+  margin: 0;
+  direction: ltr;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Price + unit ── */
+.mic-meta {
+  width: 100%;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  border-top: 1px solid var(--border, #1E2D42);
+  border-bottom: 1px solid var(--border, #1E2D42);
+  background: var(--surface2, #1A2235);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.mic-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  color: var(--main-color, #13A0A0);
+
+  i { font-size: 10px; }
+}
+
+.mic-unit {
+  color: var(--textsub, #7B91B0);
+  font-size: 11px;
+}
+
+/* ── Action ── */
+.mic-actions {
+  width: 100%;
+  margin-top: auto;
+  padding: 10px;
+}
+
+.mic-add-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 8px;
+  border-radius: 10px;
+  border: none;
+  background: var(--grad, linear-gradient(135deg, #0A5D66, #13A0A0));
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s, opacity .15s;
+  box-shadow: 0 3px 10px rgba(19,160,160,.25);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(19,160,160,.35);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: .7;
+    transform: none;
+    box-shadow: none;
+  }
+
+  &--added {
+    background: var(--surface2, #1A2235);
+    color: var(--green, #22C55E);
+    border: 1px solid rgba(34,197,94,.25);
+  }
+}

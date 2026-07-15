@@ -1,0 +1,15 @@
+<div class="admin-shell" [class.sidebar-collapsed]="layout.collapsed()">
+  <app-pharmacy-header></app-pharmacy-header>
+  <div class="admin-body">
+    <app-pharmacy-sidebar></app-pharmacy-sidebar>
+
+    <!-- Mobile overlay -->
+    @if (layout.mobileOpen()) {
+    <div class="sidebar-overlay" (click)="layout.closeMobile()"></div>
+    }
+
+    <main class="admin-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
