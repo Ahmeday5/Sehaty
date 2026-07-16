@@ -41,7 +41,7 @@ export class PharmacyHeaderComponent {
     return img && img.trim() ? img : '/assets/img/logo-login.png';
   });
 
-  protected readonly pageTitle = signal('الملف الشخصي');
+  protected readonly pageTitle = signal('لوحة التحكم');
 
   constructor() {
     this.router.events
@@ -78,9 +78,11 @@ export class PharmacyHeaderComponent {
 
   private getTitle(): string {
     const url = this.router.url.split('?')[0];
+    if (url.startsWith('/pharmacy/dashboard')) return 'لوحة التحكم';
     if (url.startsWith('/pharmacy/profile')) return 'الملف الشخصي';
     if (url.startsWith('/pharmacy/catalog')) return 'كتالوج الأصناف';
     if (url.startsWith('/pharmacy/orders')) return 'إدارة الطلبات';
+    if (url.startsWith('/pharmacy/prescriptions')) return 'مراجعة الروشتات';
     return 'بوابة الصيدلية';
   }
 }

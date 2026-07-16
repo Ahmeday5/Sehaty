@@ -1,0 +1,222 @@
+<div class="pd-page" dir="rtl">
+
+  <!-- header -->
+  <div class="page-header">
+    <div class="pd-title-group">
+      <h1 class="page-title mb-0">لوحة التحكم</h1>
+      @if (lastUpdated(); as t) {
+        <span class="pd-updated">
+          <i class="fa-regular fa-clock"></i>
+          آخر تحديث: {{ t | dateAr:'time' }}
+        </span>
+      }
+    </div>
+    <button class="btn-refresh" (click)="refresh()" [disabled]="refreshing()">
+      <i class="fa-solid fa-rotate-right" [class.fa-spin]="refreshing()"></i>
+      تحديث
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="pd-spinner">
+      <div class="pd-spinner-ring"></div>
+      <p class="pd-spinner-txt">جاري تحميل الإحصائيات...</p>
+    </div>
+  } @else {
+    @if (stats(); as s) {
+
+    <!-- Action-needed alert banner -->
+    @if (hasActionItems()) {
+      <div class="pd-alert-banner pd-fade-item" style="--pd-delay: 0">
+        <div class="pd-alert-icon">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+        <div class="pd-alert-body">
+          <strong>لديك مهام تحتاج إلى مراجعتك الآن</strong>
+          <div class="pd-alert-pills">
+            @if (s.orders.pendingActionCount > 0) {
+              <a class="pd-alert-pill" routerLink="/pharmacy/orders" [queryParams]="{status: 0}">
+                <i class="fa-solid fa-cart-shopping"></i>
+                {{ s.orders.pendingActionCount }} طلب بانتظار القبول
+              </a>
+            }
+            @if (s.prescriptions.pendingReviewCount > 0) {
+              <a class="pd-alert-pill" routerLink="/pharmacy/prescriptions" [queryParams]="{status: 0}">
+                <i class="fa-solid fa-file-prescription"></i>
+                {{ s.prescriptions.pendingReviewCount }} روشتة قيد المراجعة
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Hero revenue + quick-action KPI cards -->
+    <div class="pd-hero-grid">
+
+      <div class="pd-hero-card pd-fade-item" style="--pd-delay: 1">
+        <div class="pd-hero-glow"></div>
+
+        <div class="pd-hero-top">
+          <span class="pd-hero-label">
+            <i class="fa-solid fa-sack-dollar"></i>
+            إجمالي الإيرادات
+          </span>
+          <span class="pd-delta" [class.pd-delta--up]="revenueDeltaPositive()" [class.pd-delta--down]="!revenueDeltaPositive()">
+            <i class="fa-solid" [class.fa-arrow-trend-up]="revenueDeltaPositive()" [class.fa-arrow-trend-down]="!revenueDeltaPositive()"></i>
+            {{ revenueDeltaPositive() ? '+' : '' }}{{ s.revenue.changePercent }}%
+          </span>
+        </div>
+
+        <div class="pd-hero-value">{{ heroRevenue() | currencyAr }}</div>
+        <span class="pd-hero-sub">مقارنة بأداء الشهر الماضي</span>
+
+        <div class="pd-rev-bars">
+          <div class="pd-rev-bar-row">
+            <span class="pd-rev-bar-label">هذا الشهر</span>
+            <div class="pd-rev-bar-track">
+              <div class="pd-rev-bar-fill pd-rev-bar-fill--current" [style.width.%]="revBarPctThisMonth()"></div>
+            </div>
+            <span class="pd-rev-bar-value">{{ s.revenue.thisMonth | currencyAr }}</span>
+          </div>
+          <div class="pd-rev-bar-row">
+            <span class="pd-rev-bar-label">الشهر الماضي</span>
+            <div class="pd-rev-bar-track">
+              <div class="pd-rev-bar-fill pd-rev-bar-fill--prev" [style.width.%]="revBarPctLastMonth()"></div>
+            </div>
+            <span class="pd-rev-bar-value">{{ s.revenue.lastMonth | currencyAr }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pd-action-grid pd-fade-item" style="--pd-delay: 2">
+        <a class="pd-action-card" routerLink="/pharmacy/orders">
+          <div class="pd-action-icon pd-action-icon--blue"><i class="fa-solid fa-cart-shopping"></i></div>
+          <div class="pd-action-body">
+            <span class="pd-action-value">{{ s.orders.todayCount }}</span>
+            <span class="pd-action-label">طلبات اليوم</span>
+          </div>
+          <i class="fa-solid fa-chevron-left pd-action-arrow"></i>
+        </a>
+
+        <a
+          class="pd-action-card"
+          [class.pd-action-card--urgent]="s.orders.pendingActionCount > 0"
+          routerLink="/pharmacy/orders"
+          [queryParams]="{status: 0}">
+          <div class="pd-action-icon pd-action-icon--amber"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="pd-action-body">
+            <span class="pd-action-value">{{ s.orders.pendingActionCount }}</span>
+            <span class="pd-action-label">بانتظار اتخاذ إجراء</span>
+          </div>
+          <i class="fa-solid fa-chevron-left pd-action-arrow"></i>
+        </a>
+
+        <a
+          class="pd-action-card"
+          [class.pd-action-card--urgent]="s.prescriptions.pendingReviewCount > 0"
+          routerLink="/pharmacy/prescriptions"
+          [queryParams]="{status: 0}">
+          <div class="pd-action-icon pd-action-icon--purple"><i class="fa-solid fa-file-prescription"></i></div>
+          <div class="pd-action-body">
+            <span class="pd-action-value">{{ s.prescriptions.pendingReviewCount }}</span>
+            <span class="pd-action-label">روشتات قيد المراجعة</span>
+          </div>
+          <i class="fa-solid fa-chevron-left pd-action-arrow"></i>
+        </a>
+
+        <a class="pd-action-card" routerLink="/pharmacy/catalog">
+          <div class="pd-action-icon pd-action-icon--teal"><i class="fa-solid fa-pills"></i></div>
+          <div class="pd-action-body">
+            <span class="pd-action-value">{{ s.catalog.availableItems }}<span class="pd-action-value-of">‏/{{ s.catalog.totalItems }}</span></span>
+            <span class="pd-action-label">صنف متاح</span>
+          </div>
+          <i class="fa-solid fa-chevron-left pd-action-arrow"></i>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Charts row -->
+    <div class="pd-charts-grid">
+
+      <div class="pd-chart-card pd-fade-item" style="--pd-delay: 3">
+        <h4 class="pd-chart-title">
+          <i class="fa-solid fa-chart-pie"></i>
+          توزيع الطلبات حسب الحالة
+        </h4>
+
+        @if (statusSlices().length === 0) {
+          <div class="pd-chart-empty">
+            <i class="fa-solid fa-inbox"></i>
+            <p>لا توجد طلبات مسجلة بعد لعرض إحصائياتها هنا</p>
+          </div>
+        } @else {
+          <div class="pd-donut-row">
+            <div class="pd-donut-wrap">
+              <canvas #donutCanvas class="pd-donut-canvas"></canvas>
+              <div class="pd-donut-center">
+                @if (donutTooltip(); as tip) {
+                  <span class="pd-donut-center-value" [style.color]="tip.color">{{ tip.count }}</span>
+                  <span class="pd-donut-center-label">{{ tip.label }}</span>
+                } @else {
+                  <span class="pd-donut-center-value">{{ totalOrdersInDonut() }}</span>
+                  <span class="pd-donut-center-label">إجمالي الطلبات</span>
+                }
+              </div>
+            </div>
+
+            <div class="pd-donut-legend">
+              @for (slice of statusSlices(); track slice.key) {
+                <div class="pd-legend-row">
+                  <span class="pd-legend-dot" [style.background]="slice.color"></span>
+                  <span class="pd-legend-label">{{ slice.label }}</span>
+                  <span class="pd-legend-count">{{ slice.count }}</span>
+                  <span class="pd-legend-pct">{{ slice.pct }}%</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="pd-chart-card pd-fade-item" style="--pd-delay: 4">
+        <h4 class="pd-chart-title">
+          <i class="fa-solid fa-pills"></i>
+          تغطية الكتالوج
+        </h4>
+
+        @if (s.catalog.totalItems === 0) {
+          <div class="pd-chart-empty">
+            <i class="fa-solid fa-box-open"></i>
+            <p>لم تُضِف أي أصناف إلى كتالوجك بعد</p>
+            <a class="pd-empty-cta" routerLink="/pharmacy/catalog">تصفح الكتالوج</a>
+          </div>
+        } @else {
+          <div class="pd-gauge-wrap">
+            <canvas #gaugeCanvas class="pd-gauge-canvas"></canvas>
+            <div class="pd-gauge-center">
+              <span class="pd-gauge-pct">{{ gaugePctDisplay() }}%</span>
+              <span class="pd-gauge-label">متاح</span>
+            </div>
+          </div>
+
+          <div class="pd-gauge-stats">
+            <div class="pd-gauge-stat">
+              <span class="pd-gauge-stat-dot pd-gauge-stat-dot--available"></span>
+              <span>{{ s.catalog.availableItems }} صنف متاح</span>
+            </div>
+            <div class="pd-gauge-stat">
+              <span class="pd-gauge-stat-dot pd-gauge-stat-dot--unavailable"></span>
+              <span>{{ s.catalog.totalItems - s.catalog.availableItems }} صنف غير متاح</span>
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+
+  }
+  }
+
+</div>

@@ -1,0 +1,90 @@
+<article class="prc" dir="rtl" (click)="open.emit(prescription())">
+
+  <!-- image -->
+  <div class="prc-image-wrap">
+    @if (prescription().imageUrl && !imageFailed) {
+      <img class="prc-image" [src]="prescription().imageUrl" alt="صورة الروشتة" (error)="onImageError()">
+    } @else {
+      <div class="prc-image prc-image--placeholder">
+        <i class="fa-solid fa-file-prescription"></i>
+      </div>
+    }
+
+    <div class="prc-badges">
+      <app-stat-badge [label]="statusLabels[prescription().status]" [variant]="statusVariants[prescription().status]" [dot]="true"></app-stat-badge>
+      @if (hasOrder()) {
+        <span class="prc-order-chip">
+          <i class="fa-solid fa-cart-shopping"></i>
+          طلب #{{ prescription().orderId }}
+        </span>
+      }
+    </div>
+  </div>
+
+  <!-- body -->
+  <div class="prc-body">
+    <div class="prc-meta-row">
+      <span class="prc-id">روشتة #{{ prescription().id }}</span>
+      <span class="prc-date">
+        <i class="fa-regular fa-clock"></i>
+        {{ prescription().createdAt | dateAr:'date' }}
+      </span>
+    </div>
+
+    <p class="prc-address" [title]="prescription().deliveryAddress">
+      <i class="fa-solid fa-location-dot"></i>
+      {{ prescription().deliveryAddress || '—' }}
+    </p>
+
+    @if (prescription().status === PrescriptionStatus.Rejected && prescription().rejectionReason) {
+      <div class="prc-reason">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span>{{ prescription().rejectionReason }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Inline review actions: Pending only -->
+  @if (prescription().status === PrescriptionStatus.Pending && !rejecting()) {
+    <div class="prc-review-actions" (click)="stop($event)">
+      <button class="prc-review-btn prc-review-btn--accept" [disabled]="submitting()" (click)="onAcceptClick($event)">
+        <i class="fa-solid fa-check"></i>
+        قبول
+      </button>
+      <button class="prc-review-btn prc-review-btn--reject" [disabled]="submitting()" (click)="onRejectClick($event)">
+        <i class="fa-solid fa-xmark"></i>
+        رفض
+      </button>
+    </div>
+  }
+
+  @if (rejecting()) {
+    <div class="prc-reject-form" (click)="stop($event)">
+      <textarea
+        class="prc-reject-textarea"
+        rows="2"
+        placeholder="اكتب سبب رفض الروشتة..."
+        [ngModel]="rejectionReason()"
+        (ngModelChange)="rejectionReason.set($event)">
+      </textarea>
+      <div class="prc-reject-actions">
+        <button class="prc-reject-btn prc-reject-btn--ghost" [disabled]="submitting()" (click)="cancelReject($event)">تراجع</button>
+        <button
+          class="prc-reject-btn prc-reject-btn--confirm"
+          [disabled]="!rejectionReason().trim() || submitting()"
+          (click)="confirmReject($event)">
+          @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-xmark"></i> }
+          تأكيد الرفض
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="prc-footer">
+    <span class="prc-view-link">
+      عرض التفاصيل
+      <i class="fa-solid fa-arrow-left"></i>
+    </span>
+  </div>
+
+</article>

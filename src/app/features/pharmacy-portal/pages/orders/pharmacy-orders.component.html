@@ -13,7 +13,7 @@
       تحديث
     </button>
   </div>
-
+  
   <app-kpi-strip [items]="kpiItems()"></app-kpi-strip>
 
   <!-- status filter pills -->
@@ -67,60 +67,144 @@
                 </span>
               </td>
               <td>
-                <app-stat-badge
-                  [label]="statusLabels[order.status]"
-                  [variant]="statusVariants[order.status]"
-                  [dot]="true">
-                </app-stat-badge>
+                <div class="ord-status-cell">
+                  <app-stat-badge
+                    [label]="statusLabels[order.status]"
+                    [variant]="statusVariants[order.status]"
+                    [dot]="true">
+                  </app-stat-badge>
+                  @if (order.status === OrderStatus.Rejected && order.rejectionReason) {
+                    <span class="ord-reason-hint ord-reason-hint--reject" [title]="order.rejectionReason">
+                      <i class="fa-solid fa-circle-info"></i>
+                      {{ order.rejectionReason }}
+                    </span>
+                  }
+                  @if (order.status === OrderStatus.Cancelled && order.cancellationReason) {
+                    <span class="ord-reason-hint ord-reason-hint--cancel" [title]="order.cancellationReason">
+                      <i class="fa-solid fa-circle-info"></i>
+                      {{ order.cancellationReason }}
+                    </span>
+                  }
+                </div>
               </td>
               <td class="ord-td-sub">{{ order.createdAt | dateAr:'date' }}</td>
               <td>
                 <div class="ord-row-actions">
                   <button class="ord-action-btn ord-action-btn--ghost" (click)="openOrder(order); $event.stopPropagation()" title="عرض التفاصيل">
                     <i class="fa-solid fa-eye"></i>
+                    <span>التفاصيل</span>
                   </button>
 
                   @if (order.status === OrderStatus.Pending) {
-                    <button class="ord-action-btn ord-action-btn--accept" (click)="onQuickTransition(order, OrderStatus.Accepted); $event.stopPropagation()" title="قبول الطلب">
+                    <button class="ord-action-btn ord-action-btn--accept" [disabled]="submitting()" (click)="openInlineAction(order, OrderStatus.Accepted); $event.stopPropagation()" title="قبول الطلب">
                       <i class="fa-solid fa-check"></i>
+                      <span>قبول</span>
                     </button>
-                    <button class="ord-action-btn ord-action-btn--reject" (click)="onQuickTransition(order, OrderStatus.Rejected); $event.stopPropagation()" title="رفض الطلب">
+                    <button class="ord-action-btn ord-action-btn--reject" [disabled]="submitting()" (click)="openInlineAction(order, OrderStatus.Rejected); $event.stopPropagation()" title="رفض الطلب">
                       <i class="fa-solid fa-xmark"></i>
+                      <span>رفض</span>
                     </button>
                   }
 
                   @if (order.status === OrderStatus.Accepted) {
-                    <button class="ord-action-btn ord-action-btn--progress" (click)="onQuickTransition(order, OrderStatus.Preparing); $event.stopPropagation()" title="بدأ التجهيز">
+                    <button class="ord-action-btn ord-action-btn--progress" [disabled]="submitting()" (click)="onQuickTransition(order, OrderStatus.Preparing); $event.stopPropagation()" title="بدأ التجهيز">
                       <i class="fa-solid fa-box-open"></i>
+                      <span>بدء التجهيز</span>
                     </button>
-                    <button class="ord-action-btn ord-action-btn--cancel" (click)="onQuickTransition(order, OrderStatus.Cancelled); $event.stopPropagation()" title="إلغاء الطلب">
+                    <button class="ord-action-btn ord-action-btn--cancel" [disabled]="submitting()" (click)="openInlineAction(order, OrderStatus.Cancelled); $event.stopPropagation()" title="إلغاء الطلب">
                       <i class="fa-solid fa-ban"></i>
+                      <span>إلغاء</span>
                     </button>
                   }
 
                   @if (order.status === OrderStatus.Preparing) {
-                    <button class="ord-action-btn ord-action-btn--progress" (click)="onQuickTransition(order, OrderStatus.OutForDelivery); $event.stopPropagation()" title="خارج للتوصيل">
+                    <button class="ord-action-btn ord-action-btn--progress" [disabled]="submitting()" (click)="onQuickTransition(order, OrderStatus.OutForDelivery); $event.stopPropagation()" title="خارج للتوصيل">
                       <i class="fa-solid fa-truck-fast"></i>
+                      <span>خارج للتوصيل</span>
                     </button>
-                    <button class="ord-action-btn ord-action-btn--cancel" (click)="onQuickTransition(order, OrderStatus.Cancelled); $event.stopPropagation()" title="إلغاء الطلب">
+                    <button class="ord-action-btn ord-action-btn--cancel" [disabled]="submitting()" (click)="openInlineAction(order, OrderStatus.Cancelled); $event.stopPropagation()" title="إلغاء الطلب">
                       <i class="fa-solid fa-ban"></i>
+                      <span>إلغاء</span>
                     </button>
                   }
 
                   @if (order.status === OrderStatus.OutForDelivery) {
-                    <button class="ord-action-btn ord-action-btn--deliver" (click)="onQuickTransition(order, OrderStatus.Delivered); $event.stopPropagation()" title="تم التسليم">
+                    <button class="ord-action-btn ord-action-btn--deliver" [disabled]="submitting()" (click)="onQuickTransition(order, OrderStatus.Delivered); $event.stopPropagation()" title="تم التسليم">
                       <i class="fa-solid fa-check-double"></i>
+                      <span>تم التسليم</span>
                     </button>
                   }
 
                   @if (order.status === OrderStatus.Delivered && !order.isPaid) {
-                    <button class="ord-action-btn ord-action-btn--paid" (click)="onMarkPaid(order); $event.stopPropagation()" title="تأكيد استلام الدفع">
+                    <button class="ord-action-btn ord-action-btn--paid" [disabled]="submitting()" (click)="onMarkPaid(order); $event.stopPropagation()" title="تأكيد استلام الدفع">
                       <i class="fa-solid fa-money-bill-wave"></i>
+                      <span>تأكيد الدفع</span>
                     </button>
                   }
                 </div>
               </td>
             </tr>
+
+            @if (inlineActionOrderId() === order.id) {
+              <tr class="ord-inline-row" (click)="$event.stopPropagation()">
+                <td colspan="7">
+                  <div class="ord-inline-form">
+                    @if (inlineActionStatus() === OrderStatus.Accepted) {
+                      <label class="ord-inline-label" [for]="'fee-' + order.id">رسوم التوصيل (جنيه) *</label>
+                      <input
+                        [id]="'fee-' + order.id"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        class="ord-inline-input"
+                        placeholder="مثال: 20"
+                        [ngModel]="inlineDeliveryFee()"
+                        (ngModelChange)="inlineDeliveryFee.set($event)">
+                    } @else if (inlineActionStatus() === OrderStatus.Rejected) {
+                      <label class="ord-inline-label" [for]="'reason-' + order.id">سبب الرفض *</label>
+                      <input
+                        [id]="'reason-' + order.id"
+                        type="text"
+                        class="ord-inline-input ord-inline-input--wide"
+                        placeholder="اكتب سبب رفض الطلب..."
+                        [ngModel]="inlineReason()"
+                        (ngModelChange)="inlineReason.set($event)">
+                    } @else if (inlineActionStatus() === OrderStatus.Cancelled) {
+                      <label class="ord-inline-label" [for]="'reason-' + order.id">سبب الإلغاء *</label>
+                      <input
+                        [id]="'reason-' + order.id"
+                        type="text"
+                        class="ord-inline-input ord-inline-input--wide"
+                        placeholder="اكتب سبب إلغاء الطلب..."
+                        [ngModel]="inlineReason()"
+                        (ngModelChange)="inlineReason.set($event)">
+                    }
+
+                    <div class="ord-inline-actions">
+                      <button class="ord-inline-btn ord-inline-btn--ghost" [disabled]="inlineSubmitting()" (click)="cancelInlineAction()">
+                        تراجع
+                      </button>
+                      <button
+                        class="ord-inline-btn"
+                        [class.ord-inline-btn--accept]="inlineActionStatus() === OrderStatus.Accepted"
+                        [class.ord-inline-btn--reject]="inlineActionStatus() === OrderStatus.Rejected"
+                        [class.ord-inline-btn--cancel]="inlineActionStatus() === OrderStatus.Cancelled"
+                        [disabled]="inlineSubmitting() ||
+                          (inlineActionStatus() === OrderStatus.Accepted && (inlineDeliveryFee() == null || inlineDeliveryFee()! < 0)) ||
+                          (inlineActionStatus() !== OrderStatus.Accepted && !inlineReason().trim())"
+                        (click)="confirmInlineAction(order)">
+                        @if (inlineSubmitting()) {
+                          <i class="fa-solid fa-spinner fa-spin"></i>
+                        } @else {
+                          <i class="fa-solid fa-check"></i>
+                        }
+                        تأكيد
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
           }
         </tbody>
       </table>

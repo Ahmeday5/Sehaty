@@ -13,9 +13,10 @@
 
   <!-- Scrollable nav -->
   <div class="sb-scroll">
-    <p class="sb-sec">القائمة</p>
+    @for (section of sections; track section.label) {
+    <p class="sb-sec">{{ section.label }}</p>
 
-    @for (item of items; track item.id) {
+    @for (item of section.items; track item.id) {
     <a class="sbi" [routerLink]="item.route" routerLinkActive="on" [title]="layout.collapsed() ? item.label : ''"
       (click)="layout.closeMobile()">
       <span class="sbi-icon-wrap">
@@ -23,6 +24,7 @@
       </span>
       <span class="sbi-label">{{ item.label }}</span>
     </a>
+    }
     }
   </div>
 

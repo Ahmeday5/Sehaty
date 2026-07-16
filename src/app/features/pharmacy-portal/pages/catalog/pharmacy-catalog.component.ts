@@ -12,7 +12,7 @@ import { debounceTime } from 'rxjs/operators';
 import { PharmacyCatalogService } from '../../services/pharmacy-catalog.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
-import { MasterItem, PharmacyCatalogItem } from '../../models/catalog.model';
+import { ItemGroup, MasterItem, PharmacyCatalogItem } from '../../models/catalog.model';
 import { CatalogItemCardComponent } from '../../components/catalog-item-card/catalog-item-card.component';
 import { MasterItemCardComponent } from '../../components/master-item-card/master-item-card.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
@@ -22,6 +22,7 @@ import { SearchFilterBarComponent } from '../../../../shared/components/search-f
 import { TabsNavComponent } from '../../../../shared/components/tabs-nav/tabs-nav.component';
 import { TabDef } from '../../../../shared/components/tabs-nav/tabs-nav.model';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
+import { SearchableSelectComponent, SelectOption } from '../../../../shared/components/searchable-select/searchable-select.component';
 
 const PAGE_SIZE = 12;
 
@@ -39,6 +40,7 @@ type CatalogTab = 'mine' | 'browse';
     EmptyStateComponent,
     SearchFilterBarComponent,
     TabsNavComponent,
+    SearchableSelectComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pharmacy-catalog.component.html',
@@ -81,6 +83,12 @@ export class PharmacyCatalogComponent implements OnInit {
   protected readonly addingId      = signal<number | null>(null);
   protected browseLoaded = false;
 
+  protected readonly itemGroups       = signal<ItemGroup[]>([]);
+  protected readonly browseGroupId    = signal<number | null>(null);
+  protected readonly itemGroupOptions = computed<SelectOption[]>(() =>
+    this.itemGroups().map((g) => ({ value: g.id, label: `${g.nameAr} (${g.code})` })),
+  );
+
   protected browseSearch = '';
   private readonly browseSearch$ = new Subject<void>();
 
@@ -103,6 +111,7 @@ export class PharmacyCatalogComponent implements OnInit {
   protected onTabChange(id: string): void {
     this.activeTab.set(id as CatalogTab);
     if (id === 'browse' && !this.browseLoaded) {
+      this.loadItemGroups();
       this.loadBrowse();
     }
   }
@@ -192,6 +201,12 @@ export class PharmacyCatalogComponent implements OnInit {
     this.browseSearch$.next();
   }
 
+  protected onBrowseGroupChange(value: string | number | null): void {
+    this.browseGroupId.set(value == null ? null : Number(value));
+    this.browsePage.set(1);
+    this.loadBrowse();
+  }
+
   protected onBrowsePageChange(page: number): void { this.browsePage.set(page); this.loadBrowse(); }
 
   protected refreshBrowse(): void { this.loadBrowse(); }
@@ -222,6 +237,7 @@ export class PharmacyCatalogComponent implements OnInit {
       page:     this.browsePage(),
       pageSize: PAGE_SIZE,
       search:   this.browseSearch.trim() || undefined,
+      groupId:  this.browseGroupId() ?? undefined,
     }).subscribe({
       next: (res) => {
         this.browseItems.set(res.data ?? []);
@@ -234,6 +250,13 @@ export class PharmacyCatalogComponent implements OnInit {
         this.browseLoading.set(false);
         this.toast.error('فشل تحميل كتالوج الأصناف');
       },
+    });
+  }
+
+  private loadItemGroups(): void {
+    this.svc.getItemGroups().subscribe({
+      next: (res) => this.itemGroups.set(res.data ?? []),
+      error: () => this.toast.error('فشل تحميل تصنيفات الأصناف'),
     });
   }
 }

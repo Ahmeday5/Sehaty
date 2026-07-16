@@ -64,7 +64,7 @@ export class OrderDetailsModalComponent {
         this.rejectionReason.set('');
         this.cancellationReason.set('');
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   protected readonly canMarkPaid = computed(
@@ -120,18 +120,21 @@ export class OrderDetailsModalComponent {
     const fee = this.deliveryFee();
     if (fee == null || fee < 0) return;
     this.transition.emit({ order: this.order(), targetStatus: OrderStatus.Accepted, deliveryFee: fee });
+    this.pendingAction.set(null);
   }
 
   protected confirmReject(): void {
     const reason = this.rejectionReason().trim();
     if (!reason) return;
     this.transition.emit({ order: this.order(), targetStatus: OrderStatus.Rejected, rejectionReason: reason });
+    this.pendingAction.set(null);
   }
 
   protected confirmCancel(): void {
     const reason = this.cancellationReason().trim();
     if (!reason) return;
     this.transition.emit({ order: this.order(), targetStatus: OrderStatus.Cancelled, cancellationReason: reason });
+    this.pendingAction.set(null);
   }
 
   protected onMarkPaid(): void {

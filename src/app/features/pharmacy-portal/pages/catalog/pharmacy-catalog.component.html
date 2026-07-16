@@ -123,6 +123,14 @@
         placeholder="بحث في الكتالوج الرئيسي..."
         (searchChange)="onBrowseSearch($event)">
       </app-search-filter-bar>
+
+      <app-searchable-select
+        class="cat-group-select"
+        [options]="itemGroupOptions()"
+        [value]="browseGroupId()"
+        placeholder="كل التصنيفات"
+        (valueChange)="onBrowseGroupChange($event)">
+      </app-searchable-select>
     </div>
 
     @if (browseLoading()) {

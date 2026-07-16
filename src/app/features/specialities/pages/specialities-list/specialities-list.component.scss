@@ -305,8 +305,7 @@
 .sl-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.65);
-  backdrop-filter: blur(3px);
+  background: transparent;
   z-index: 1040;
   animation: sl-fade-in .18s ease;
 }

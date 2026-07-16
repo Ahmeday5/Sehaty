@@ -1,0 +1,279 @@
+<app-modal [title]="'تفاصيل الروشتة #' + prescription().id" size="lg" (closed)="close()">
+
+  <div class="pdm-body" dir="rtl">
+
+    <!-- Status row -->
+    <div class="pdm-top-row">
+      <app-stat-badge [label]="statusLabel()" [variant]="statusVariant()" [dot]="true"></app-stat-badge>
+
+      @if (hasOrder()) {
+        <span class="pdm-order-badge">
+          <i class="fa-solid fa-cart-shopping"></i>
+          تم إنشاء الطلب #{{ prescription().orderId }}
+        </span>
+      }
+
+      <span class="pdm-created">
+        <i class="fa-regular fa-clock"></i>
+        {{ prescription().createdAt | dateAr }}
+      </span>
+    </div>
+
+    <!-- Rejection reason banner -->
+    @if (prescription().status === PrescriptionStatus.Rejected && prescription().rejectionReason) {
+      <div class="pdm-reason-banner">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <div>
+          <strong>سبب الرفض</strong>
+          <p>{{ prescription().rejectionReason }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Prescription image -->
+    <div class="pdm-section">
+      <h4 class="pdm-section-title">
+        <i class="fa-solid fa-image"></i>
+        صورة الروشتة
+      </h4>
+      <a class="pdm-image-wrap" [href]="prescription().imageUrl" target="_blank" rel="noopener">
+        <img class="pdm-image" [src]="prescription().imageUrl" alt="صورة الروشتة">
+        <span class="pdm-image-zoom"><i class="fa-solid fa-up-right-and-down-left-from-center"></i> تكبير</span>
+      </a>
+    </div>
+
+    <!-- Full details -->
+    <div class="pdm-section">
+      <h4 class="pdm-section-title">
+        <i class="fa-solid fa-list-check"></i>
+        البيانات الكاملة
+      </h4>
+      <div class="pdm-info-grid">
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">رقم الروشتة</span>
+          <span class="pdm-info-value">#{{ prescription().id }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">معرف المريض</span>
+          <span class="pdm-info-value">{{ displayValue(prescription().patientId) }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">معرف الصيدلية</span>
+          <span class="pdm-info-value">{{ displayValue(prescription().pharmacyId) }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">اسم الصيدلية</span>
+          <span class="pdm-info-value">{{ displayValue(prescription().pharmacyName) }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">الحالة</span>
+          <span class="pdm-info-value">{{ statusLabel() }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">رقم الطلب الناتج</span>
+          <span class="pdm-info-value">{{ hasOrder() ? ('#' + prescription().orderId) : 'لم يُنشأ بعد' }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">تاريخ الرفع</span>
+          <span class="pdm-info-value">{{ prescription().createdAt | dateAr }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">تاريخ المراجعة</span>
+          <span class="pdm-info-value">{{ displayValue(prescription().reviewedAt ? (prescription().reviewedAt | dateAr) : null) }}</span>
+        </div>
+        <div class="pdm-info-item pdm-info-item--wide">
+          <span class="pdm-info-label">ملاحظات المريض</span>
+          <span class="pdm-info-value">{{ displayValue(prescription().notes) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delivery info -->
+    <div class="pdm-section">
+      <h4 class="pdm-section-title">
+        <i class="fa-solid fa-truck-fast"></i>
+        بيانات التوصيل
+      </h4>
+      <div class="pdm-info-grid">
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">هاتف التواصل</span>
+          <span class="pdm-info-value" dir="ltr">{{ displayValue(prescription().deliveryPhone) }}</span>
+        </div>
+        <div class="pdm-info-item pdm-info-item--wide">
+          <span class="pdm-info-label">العنوان</span>
+          <span class="pdm-info-value">{{ displayValue(prescription().deliveryAddress) }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">خط العرض</span>
+          <span class="pdm-info-value" dir="ltr">{{ displayValue(prescription().deliveryLat) }}</span>
+        </div>
+        <div class="pdm-info-item">
+          <span class="pdm-info-label">خط الطول</span>
+          <span class="pdm-info-value" dir="ltr">{{ displayValue(prescription().deliveryLng) }}</span>
+        </div>
+        @if (hasCoordinates()) {
+          <div class="pdm-info-item pdm-info-item--wide">
+            <span class="pdm-info-label">الموقع على الخريطة</span>
+            <a class="pdm-map-link" [href]="googleMapsUrl()" target="_blank" rel="noopener">
+              <i class="fa-solid fa-location-dot"></i>
+              عرض على الخريطة
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Review actions: Pending only -->
+    @if (prescription().status === PrescriptionStatus.Pending) {
+      <div class="pdm-section pdm-actions-section">
+        <h4 class="pdm-section-title">
+          <i class="fa-solid fa-bolt"></i>
+          مراجعة الروشتة
+        </h4>
+
+        @if (reviewAction() === null) {
+          <div class="pdm-action-buttons">
+            <button class="pdm-action-btn pdm-action-btn--accept" [disabled]="submitting()" (click)="startAccept()">
+              <i class="fa-solid fa-check"></i>
+              قبول الروشتة
+            </button>
+            <button class="pdm-action-btn pdm-action-btn--reject" [disabled]="submitting()" (click)="startReject()">
+              <i class="fa-solid fa-xmark"></i>
+              رفض الروشتة
+            </button>
+          </div>
+        }
+
+        @if (reviewAction() === 'accept') {
+          <div class="pdm-subform">
+            <p class="pdm-confirm-text">هل أنت متأكد من قبول هذه الروشتة؟ سيمكنك بعدها إنشاء طلب منها.</p>
+            <div class="pdm-subform-actions">
+              <button class="pdm-subform-btn pdm-subform-btn--ghost" (click)="cancelReview()">تراجع</button>
+              <button class="pdm-subform-btn pdm-subform-btn--accept" [disabled]="submitting()" (click)="confirmAccept()">
+                @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-check"></i> }
+                تأكيد القبول
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (reviewAction() === 'reject') {
+          <div class="pdm-subform">
+            <label class="pdm-subform-label" for="rejectionReasonInput">سبب الرفض *</label>
+            <textarea
+              id="rejectionReasonInput"
+              class="pdm-subform-textarea"
+              rows="3"
+              placeholder="اكتب سبب رفض الروشتة... (مثال: الصورة غير واضحة)"
+              [ngModel]="rejectionReason()"
+              (ngModelChange)="rejectionReason.set($event)">
+            </textarea>
+            <div class="pdm-subform-actions">
+              <button class="pdm-subform-btn pdm-subform-btn--ghost" (click)="cancelReview()">تراجع</button>
+              <button
+                class="pdm-subform-btn pdm-subform-btn--reject"
+                [disabled]="!rejectionReason().trim() || submitting()"
+                (click)="confirmReject()">
+                @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-xmark"></i> }
+                تأكيد الرفض
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Build order from prescription: Accepted && no order yet -->
+    @if (prescription().status === PrescriptionStatus.Accepted && !hasOrder()) {
+      <div class="pdm-section pdm-actions-section">
+        <h4 class="pdm-section-title">
+          <i class="fa-solid fa-cart-plus"></i>
+          إنشاء طلب من الروشتة
+        </h4>
+
+        <p class="pdm-hint-text">
+          اختر الأصناف المتاحة في صيدليتك وحدد الكمية لكل صنف بناءً على الروشتة، ثم أنشئ الطلب. العنوان وبيانات التوصيل ستُؤخذ تلقائيًا من الروشتة.
+        </p>
+
+        <!-- Search available items -->
+        <div class="pdm-catalog-search">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            placeholder="بحث باسم الصنف أو الكود..."
+            [(ngModel)]="catalogSearch"
+            (ngModelChange)="onCatalogSearch()">
+        </div>
+
+        @if (catalogLoading()) {
+          <div class="pdm-catalog-loading">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            جاري تحميل الأصناف المتاحة...
+          </div>
+        } @else if (catalogItems().length === 0) {
+          <p class="pdm-hint-text pdm-hint-text--muted">لا توجد أصناف متاحة في كتالوج صيدليتك حاليًا.</p>
+        } @else {
+          <div class="pdm-catalog-list">
+            @for (item of catalogItems(); track item.id) {
+              <div class="pdm-catalog-row" [class.pdm-catalog-row--added]="isInOrder(item)">
+                <span class="pdm-catalog-name">
+                  {{ item.itemNameAr }}
+                  <span class="pdm-catalog-name-en">{{ item.itemNameEn }}</span>
+                </span>
+                <span class="pdm-catalog-price">{{ item.defaultConsumerPrice | currencyAr }}</span>
+                <button
+                  class="pdm-catalog-add-btn"
+                  [disabled]="isInOrder(item)"
+                  (click)="addLine(item)">
+                  @if (isInOrder(item)) {
+                    <i class="fa-solid fa-circle-check"></i> مُضاف
+                  } @else {
+                    <i class="fa-solid fa-plus"></i> إضافة
+                  }
+                </button>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Selected order lines -->
+        @if (orderLines().length > 0) {
+          <div class="pdm-order-lines">
+            <h5 class="pdm-order-lines-title">أصناف الطلب ({{ orderLines().length }})</h5>
+            @for (line of orderLines(); track line.item.id) {
+              <div class="pdm-order-line">
+                <span class="pdm-order-line-name">{{ line.item.itemNameAr }}</span>
+                <input
+                  type="number"
+                  min="1"
+                  class="pdm-order-line-qty"
+                  [ngModel]="line.quantity"
+                  (ngModelChange)="setQuantity(line.item, $event)">
+                <span class="pdm-order-line-total">{{ (line.item.defaultConsumerPrice * line.quantity) | currencyAr }}</span>
+                <button class="pdm-order-line-remove" (click)="removeLine(line.item)" title="إزالة">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            }
+            <div class="pdm-order-lines-total">
+              <span>الإجمالي الفرعي</span>
+              <strong>{{ orderLinesTotal() | currencyAr }}</strong>
+            </div>
+          </div>
+        }
+
+        <div class="pdm-subform-actions pdm-subform-actions--end">
+          <button
+            class="pdm-subform-btn pdm-subform-btn--accept"
+            [disabled]="orderLines().length === 0 || submitting()"
+            (click)="submitOrder()">
+            @if (submitting()) { <i class="fa-solid fa-spinner fa-spin"></i> } @else { <i class="fa-solid fa-cart-plus"></i> }
+            إنشاء الطلب ({{ orderLines().length }} صنف)
+          </button>
+        </div>
+      </div>
+    }
+
+  </div>
+
+</app-modal>

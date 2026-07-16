@@ -1,9 +1,11 @@
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  // !important is required here: a global Bootstrap dark-theme override in
+  // styles.scss (`.modal-backdrop { background-color: #000 !important; }`,
+  // a leftover from Bootstrap JS modals no longer used anywhere in the app)
+  // targets this exact class name and would otherwise always win.
+  background: rgba(0, 0, 0, 0.6) !important;
   display: flex;
   align-items: center;
   justify-content: center;

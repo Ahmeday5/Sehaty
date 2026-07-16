@@ -6,6 +6,7 @@ import {
   AddCatalogItemResponse,
   BrowseMasterItemsParams,
   BrowseMasterItemsResponse,
+  ItemGroupsResponse,
   PharmacyCatalogParams,
   PharmacyCatalogResponse,
 } from '../models/catalog.model';
@@ -25,6 +26,10 @@ export class PharmacyCatalogService {
     return this.http.get<BrowseMasterItemsResponse>(
       `${this.base}/api/PharmacyDashboard/catalog/browseMasterItems`, { params: p },
     );
+  }
+
+  getItemGroups(): Observable<ItemGroupsResponse> {
+    return this.http.get<ItemGroupsResponse>(`${this.base}/api/PharmacyDashboard/itemGroups`);
   }
 
   getCatalog(params: PharmacyCatalogParams): Observable<PharmacyCatalogResponse> {

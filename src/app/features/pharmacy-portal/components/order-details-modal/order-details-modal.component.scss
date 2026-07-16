@@ -47,26 +47,39 @@
   gap: 12px;
   padding: 14px 16px;
   border-radius: 12px;
+  animation: odm-reason-in .3s cubic-bezier(.34,1.56,.64,1) both;
 
-  i { font-size: 18px; margin-top: 2px; flex-shrink: 0; }
-  strong { display: block; font-size: 13px; margin-bottom: 4px; }
-  p { margin: 0; font-size: 13px; line-height: 1.6; }
+  i { font-size: 20px; margin-top: 2px; flex-shrink: 0; }
+  strong { display: block; font-size: 13.5px; margin-bottom: 4px; letter-spacing: .2px; }
+  p { margin: 0; font-size: 13.5px; line-height: 1.6; font-weight: 500; }
 
   &--danger {
-    background: rgba(244,63,94,.08);
-    border: 1px solid rgba(244,63,94,.2);
+    background: rgba(244,63,94,.1);
+    border: 1.5px solid rgba(244,63,94,.35);
+    box-shadow: 0 0 0 4px rgba(244,63,94,.06), 0 4px 16px rgba(244,63,94,.12);
     color: var(--txt, #E8F0FE);
-    i { color: var(--red, #F43F5E); }
+    i { color: var(--red, #F43F5E); animation: odm-reason-pulse 2s ease-in-out infinite; }
     strong { color: var(--red, #F43F5E); }
   }
 
   &--muted {
-    background: var(--surface2, #1A2235);
-    border: 1px solid var(--border, #1E2D42);
+    background: rgba(245,158,11,.08);
+    border: 1.5px solid rgba(245,158,11,.3);
+    box-shadow: 0 0 0 4px rgba(245,158,11,.05), 0 4px 16px rgba(245,158,11,.1);
     color: var(--txt, #E8F0FE);
-    i { color: var(--textsub, #7B91B0); }
-    strong { color: var(--textsub, #7B91B0); }
+    i { color: var(--amber, #F59E0B); }
+    strong { color: var(--amber, #F59E0B); }
   }
+}
+
+@keyframes odm-reason-in {
+  from { opacity: 0; transform: translateY(-8px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes odm-reason-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .55; }
 }
 
 /* ── Section ── */
@@ -163,7 +176,7 @@
     font-size: 11px;
     font-weight: 700;
     color: var(--textsub, #7B91B0);
-    text-align: right;
+    text-align: center;
     white-space: nowrap;
   }
 
@@ -178,11 +191,12 @@
     color: var(--txt, #E8F0FE);
     vertical-align: middle;
     white-space: nowrap;
+    text-align: center;
   }
 }
 
 .odm-item-name { display: block; font-weight: 600; }
-.odm-item-name-en { display: block; font-size: 10.5px; color: var(--textsub, #7B91B0); direction: ltr; text-align: right; }
+.odm-item-name-en { display: block; font-size: 10.5px; color: var(--textsub, #7B91B0); direction: ltr; text-align: center; }
 .odm-td-sub { color: var(--textsub, #7B91B0); }
 .odm-td-bold { font-weight: 700; color: var(--main-color, #13A0A0); }
 

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { PharmacyOrdersService } from '../../services/pharmacy-orders.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -11,6 +12,7 @@ import {
   ORDER_STATUS_VARIANT,
   UpdateOrderStatusPayload,
 } from '../../models/order.model';
+import { FormsModule } from '@angular/forms';
 import {
   OrderDetailsModalComponent,
   OrderTransitionRequest,
@@ -35,6 +37,7 @@ interface StatusFilterOption {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     PaginationComponent,
     EmptyStateComponent,
     StatBadgeComponent,
@@ -51,6 +54,7 @@ export class PharmacyOrdersComponent implements OnInit {
   private readonly svc     = inject(PharmacyOrdersService);
   private readonly toast   = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
+  private readonly route   = inject(ActivatedRoute);
 
   protected readonly statusLabels = ORDER_STATUS_LABELS;
   protected readonly statusVariants = ORDER_STATUS_VARIANT;
@@ -73,11 +77,18 @@ export class PharmacyOrdersComponent implements OnInit {
   protected readonly orders      = signal<Order[]>([]);
   protected readonly total       = signal(0);
   protected readonly currentPage = signal(1);
-  protected readonly statusFilter = signal<OrderStatus | undefined>(OrderStatus.Pending);
+  protected readonly statusFilter = signal<OrderStatus | undefined>(undefined);
 
   protected readonly selectedOrder = signal<Order | null>(null);
   protected readonly detailsLoading = signal(false);
   protected readonly submitting = signal(false);
+
+  /** Which order row has an inline Accept/Reject/Cancel sub-form open, if any. */
+  protected readonly inlineActionOrderId = signal<number | null>(null);
+  protected readonly inlineActionStatus  = signal<OrderStatus | null>(null);
+  protected readonly inlineDeliveryFee   = signal<number | null>(null);
+  protected readonly inlineReason        = signal('');
+  protected readonly inlineSubmitting    = signal(false);
 
   protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
 
@@ -86,6 +97,15 @@ export class PharmacyOrdersComponent implements OnInit {
   ]);
 
   ngOnInit(): void {
+    // Supports deep-linking from the dashboard's "needs action" cards (?status=0 etc.) —
+    // falls back to the default "الكل" view when absent or invalid.
+    const statusParam = this.route.snapshot.queryParamMap.get('status');
+    if (statusParam !== null) {
+      const parsed = Number(statusParam);
+      if (Number.isInteger(parsed) && parsed in OrderStatus) {
+        this.statusFilter.set(parsed);
+      }
+    }
     this.load();
   }
 
@@ -117,6 +137,26 @@ export class PharmacyOrdersComponent implements OnInit {
     this.selectedAction.set(null);
   }
 
+  /**
+   * Merges backend-confirmed fields into both the list row and the open modal, no refetch.
+   * If an active status filter no longer matches the order's new status, the row is dropped
+   * from view instead of lingering with a stale filter match.
+   */
+  private patchOrder(id: number, patch: Partial<Order>): void {
+    const filter = this.statusFilter();
+    if (patch.status !== undefined && filter !== undefined && patch.status !== filter) {
+      this.orders.update((list) => list.filter((o) => o.id !== id));
+      this.total.update((t) => Math.max(0, t - 1));
+    } else {
+      this.orders.update((list) => list.map((o) => (o.id === id ? { ...o, ...patch } : o)));
+    }
+
+    const current = this.selectedOrder();
+    if (current && current.id === id) {
+      this.selectedOrder.set({ ...current, ...patch });
+    }
+  }
+
   protected async onTransition(req: OrderTransitionRequest): Promise<void> {
     const payload: UpdateOrderStatusPayload = {
       targetStatus: req.targetStatus,
@@ -129,9 +169,7 @@ export class PharmacyOrdersComponent implements OnInit {
     try {
       await firstValueFrom(this.svc.updateStatus(req.order.id, payload));
       this.toast.success(`تم تحديث حالة الطلب إلى «${this.statusLabels[req.targetStatus]}»`);
-      const fresh = await firstValueFrom(this.svc.getOrder(req.order.id));
-      this.selectedOrder.set(fresh);
-      this.load();
+      this.patchOrder(req.order.id, this.buildStatusPatch(req.order, req.targetStatus, req.deliveryFee, req.rejectionReason, req.cancellationReason));
     } catch (err: any) {
       const msg = err?.error?.message ?? 'فشل تحديث حالة الطلب';
       this.toast.error(msg);
@@ -153,9 +191,7 @@ export class PharmacyOrdersComponent implements OnInit {
     try {
       await firstValueFrom(this.svc.markPaid(order.id));
       this.toast.success('تم تأكيد استلام الدفع بنجاح');
-      const fresh = await firstValueFrom(this.svc.getOrder(order.id));
-      this.selectedOrder.set(fresh);
-      this.load();
+      this.patchOrder(order.id, { isPaid: true });
     } catch (err: any) {
       const msg = err?.error?.message ?? 'فشل تأكيد استلام الدفع';
       this.toast.error(msg);
@@ -164,22 +200,86 @@ export class PharmacyOrdersComponent implements OnInit {
     }
   }
 
+  /** Simple transitions (Preparing, OutForDelivery, Delivered) execute directly from the row. */
   protected async onQuickTransition(order: Order, targetStatus: OrderStatus): Promise<void> {
-    if (targetStatus === OrderStatus.Accepted || targetStatus === OrderStatus.Rejected || targetStatus === OrderStatus.Cancelled) {
-      await this.openOrder(order, targetStatus);
-      return;
-    }
-
     this.submitting.set(true);
     try {
       await firstValueFrom(this.svc.updateStatus(order.id, { targetStatus }));
       this.toast.success(`تم تحديث حالة الطلب إلى «${this.statusLabels[targetStatus]}»`);
-      this.load();
+      this.patchOrder(order.id, this.buildStatusPatch(order, targetStatus));
     } catch (err: any) {
       const msg = err?.error?.message ?? 'فشل تحديث حالة الطلب';
       this.toast.error(msg);
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  private buildStatusPatch(
+    order: Order,
+    targetStatus: OrderStatus,
+    deliveryFee?: number,
+    rejectionReason?: string,
+    cancellationReason?: string,
+  ): Partial<Order> {
+    const patch: Partial<Order> = { status: targetStatus, updatedAt: new Date().toISOString() };
+    if (targetStatus === OrderStatus.Accepted && deliveryFee !== undefined) {
+      patch.deliveryFee = deliveryFee;
+      patch.totalAmount = order.subTotal + deliveryFee;
+    }
+    if (targetStatus === OrderStatus.Rejected && rejectionReason !== undefined) {
+      patch.rejectionReason = rejectionReason;
+    }
+    if (targetStatus === OrderStatus.Cancelled && cancellationReason !== undefined) {
+      patch.cancellationReason = cancellationReason;
+    }
+    return patch;
+  }
+
+  // ── Inline row actions (Accept / Reject / Cancel) ────────────────
+
+  protected openInlineAction(order: Order, targetStatus: OrderStatus): void {
+    this.inlineActionOrderId.set(order.id);
+    this.inlineActionStatus.set(targetStatus);
+    this.inlineDeliveryFee.set(null);
+    this.inlineReason.set('');
+  }
+
+  protected cancelInlineAction(): void {
+    this.inlineActionOrderId.set(null);
+    this.inlineActionStatus.set(null);
+  }
+
+  protected async confirmInlineAction(order: Order): Promise<void> {
+    const targetStatus = this.inlineActionStatus();
+    if (targetStatus === null) return;
+
+    const payload: UpdateOrderStatusPayload = { targetStatus };
+    if (targetStatus === OrderStatus.Accepted) {
+      const fee = this.inlineDeliveryFee();
+      if (fee == null || fee < 0) return;
+      payload.deliveryFee = fee;
+    } else if (targetStatus === OrderStatus.Rejected) {
+      const reason = this.inlineReason().trim();
+      if (!reason) return;
+      payload.rejectionReason = reason;
+    } else if (targetStatus === OrderStatus.Cancelled) {
+      const reason = this.inlineReason().trim();
+      if (!reason) return;
+      payload.cancellationReason = reason;
+    }
+
+    this.inlineSubmitting.set(true);
+    try {
+      await firstValueFrom(this.svc.updateStatus(order.id, payload));
+      this.toast.success(`تم تحديث حالة الطلب إلى «${this.statusLabels[targetStatus]}»`);
+      this.patchOrder(order.id, this.buildStatusPatch(order, targetStatus, payload.deliveryFee, payload.rejectionReason, payload.cancellationReason));
+      this.cancelInlineAction();
+    } catch (err: any) {
+      const msg = err?.error?.message ?? 'فشل تحديث حالة الطلب';
+      this.toast.error(msg);
+    } finally {
+      this.inlineSubmitting.set(false);
     }
   }
 

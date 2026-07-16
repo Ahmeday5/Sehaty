@@ -84,7 +84,7 @@
     font-size: 11.5px;
     font-weight: 700;
     color: var(--textsub, #7B91B0);
-    text-align: right;
+    text-align: center;
     white-space: nowrap;
     letter-spacing: .3px;
   }
@@ -95,6 +95,7 @@
     color: var(--txt, #E8F0FE);
     vertical-align: middle;
     white-space: nowrap;
+    text-align: center;
   }
 }
 
@@ -110,6 +111,30 @@
 .ord-td-bold { font-weight: 700; }
 .ord-td-sub  { color: var(--textsub, #7B91B0); }
 .ord-td-fees { font-weight: 700; color: var(--main-color, #13A0A0); }
+
+.ord-status-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ord-reason-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 160px;
+  font-size: 10.5px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: help;
+
+  i { flex-shrink: 0; font-size: 10px; }
+
+  &--reject { color: var(--red, #F43F5E); }
+  &--cancel { color: var(--textsub, #7B91B0); }
+}
 
 .ord-paid-chip {
   display: inline-flex;
@@ -148,22 +173,28 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   white-space: nowrap;
 }
 
 .ord-action-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 9px;
   border: none;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 6px;
   cursor: pointer;
   transition: transform .13s ease, box-shadow .13s ease, opacity .13s ease;
   color: #fff;
   background: rgba(255,255,255,.08);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+  white-space: nowrap;
+
+  span { line-height: 1; }
 }
 
 .ord-action-btn:hover:not(:disabled) {
@@ -182,3 +213,85 @@
 .ord-action-btn--progress { background: linear-gradient(135deg, #6d28d9, #a78bfa); }
 .ord-action-btn--deliver { background: linear-gradient(135deg, #0a5d66, #13a0a0); }
 .ord-action-btn--paid { background: linear-gradient(135deg, #b45309, #f59e0b); }
+
+/* ── Inline row action sub-form (Accept / Reject / Cancel) ── */
+.ord-inline-row {
+  background: var(--surface2, #1A2235);
+  border-bottom: 1px solid var(--border, #1E2D42);
+  animation: ord-inline-in .18s ease both;
+
+  td { padding: 14px 20px; }
+}
+
+@keyframes ord-inline-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ord-inline-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  direction: rtl;
+}
+
+.ord-inline-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--txt, #E8F0FE);
+  white-space: nowrap;
+}
+
+.ord-inline-input {
+  flex: 0 0 160px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border, #1E2D42);
+  background: var(--surface, #111827);
+  color: var(--txt, #E8F0FE);
+  font-size: 13px;
+  font-family: inherit;
+  direction: rtl;
+  transition: border-color .15s, box-shadow .15s;
+
+  &--wide { flex: 1 1 320px; }
+
+  &:focus {
+    outline: none;
+    border-color: var(--main-color, #13A0A0);
+    box-shadow: 0 0 0 3px rgba(19,160,160,.15);
+  }
+
+  &::placeholder { color: var(--textmuted, #3D5068); }
+}
+
+.ord-inline-actions {
+  display: flex;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+.ord-inline-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  background: var(--main-color, #13A0A0);
+  transition: opacity .15s, transform .15s;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+  &--ghost { background: transparent; color: var(--textsub, #7B91B0); border: 1px solid var(--border, #1E2D42); }
+  &--accept { background: linear-gradient(135deg, #15803d, #22c55e); }
+  &--reject { background: linear-gradient(135deg, #9f1239, #f43f5e); }
+  &--cancel { background: linear-gradient(135deg, #334155, #475569); }
+}

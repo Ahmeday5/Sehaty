@@ -20,6 +20,13 @@ export const pharmacyPortalRoutes: Routes = [
       ),
     children: [
       {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/dashboard/pharmacy-dashboard.component').then(
+            (m) => m.PharmacyDashboardComponent,
+          ),
+      },
+      {
         path: 'profile',
         loadComponent: () =>
           import('./pages/profile/pharmacy-profile.component').then(
@@ -40,7 +47,14 @@ export const pharmacyPortalRoutes: Routes = [
             (m) => m.PharmacyOrdersComponent,
           ),
       },
-      { path: '', redirectTo: 'profile', pathMatch: 'full' },
+      {
+        path: 'prescriptions',
+        loadComponent: () =>
+          import('./pages/prescriptions/pharmacy-prescriptions.component').then(
+            (m) => m.PharmacyPrescriptionsComponent,
+          ),
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
 ];

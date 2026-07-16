@@ -5,8 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(3px);
+  background: transparent;
   animation: cdialog-fade 0.2s ease;
   padding: 16px;
 }

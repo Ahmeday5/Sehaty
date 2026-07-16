@@ -1,6 +1,6 @@
 <article class="mic" [class.mic--added]="item().alreadyAdded" dir="rtl">
 
-  <!-- top bar: code -->
+  <!-- top bar: code + group -->
   <div class="mic-top">
     <span class="mic-code">{{ item().code }}</span>
     @if (item().alreadyAdded) {
@@ -8,6 +8,8 @@
         <i class="fa-solid fa-circle-check"></i>
         مُضاف
       </span>
+    } @else if (item().itemGroupNameAr) {
+      <span class="mic-group-badge" [title]="item().itemGroupNameEn">{{ item().itemGroupNameAr }}</span>
     }
   </div>
 

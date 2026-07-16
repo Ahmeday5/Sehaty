@@ -7,6 +7,20 @@ export interface MasterItem {
   defaultConsumerPrice: number;
   imageUrl: string | null;
   alreadyAdded: boolean;
+  itemGroupId: number;
+  itemGroupNameAr: string;
+  itemGroupNameEn: string;
+}
+
+export interface ItemGroup {
+  id: number;
+  code: string;
+  nameAr: string;
+  nameEn: string;
+}
+
+export interface ItemGroupsResponse {
+  data: ItemGroup[];
 }
 
 export interface BrowseMasterItemsParams {
