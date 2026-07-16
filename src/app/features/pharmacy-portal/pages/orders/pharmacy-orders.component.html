@@ -210,13 +210,13 @@
       </table>
     </div>
 
-    @if (totalPages > 1) {
-      <app-pagination
-        [currentPage]="currentPage()"
-        [totalPages]="totalPages"
-        (pageChange)="onPageChange($event)">
-      </app-pagination>
-    }
+    <app-pagination
+      [currentPage]="currentPage()"
+      [totalItems]="total()"
+      [pageSize]="pageSize()"
+      (pageChange)="onPageChange($event)"
+      (pageSizeChange)="onPageSizeChange($event)">
+    </app-pagination>
   }
 
   <!-- Order details modal -->

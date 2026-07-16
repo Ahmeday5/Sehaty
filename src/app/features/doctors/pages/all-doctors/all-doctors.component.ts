@@ -26,8 +26,6 @@ import { SearchFilterBarComponent } from '../../../../shared/components/search-f
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 import { FilterOption } from '../../../../shared/components/search-filter-bar/search-filter-bar.model';
 
-const PAGE_SIZE = 12;
-
 @Component({
   selector: 'app-all-doctors',
   standalone: true,
@@ -66,8 +64,7 @@ export class AllDoctorsComponent implements OnInit {
   protected searchValue = '';
   private readonly search$ = new Subject<string>();
 
-  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
-  protected readonly pageSize = PAGE_SIZE;
+  protected readonly pageSize = signal(10);
 
   protected readonly kpiItems = computed<KpiItem[]>(() => [
     { icon: 'fa-user-doctor',  value: String(this.total()),           label: 'إجمالي الأطباء',  variant: 'primary' },
@@ -104,6 +101,12 @@ export class AllDoctorsComponent implements OnInit {
   }
 
   protected onPageChange(page: number): void { this.currentPage.set(page); this.load(); }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.load();
+  }
 
   protected openAdd(): void  { this.showAddModal.set(true);  }
   protected closeAdd(): void { this.showAddModal.set(false); }
@@ -158,7 +161,7 @@ export class AllDoctorsComponent implements OnInit {
 
     const params: DoctorsListParams = {
       page:     this.currentPage(),
-      pageSize: PAGE_SIZE,
+      pageSize: this.pageSize(),
     };
     if (this.searchValue.trim())        params.name           = this.searchValue.trim();
     if (this.activeFilter())            params.specialization = this.activeFilter()!;

@@ -1,4 +1,4 @@
-<div class="container-fluid sl-page">
+<div class="sl-page">
 
   <!-- ════════════════════════════════
        Header row
@@ -148,8 +148,8 @@
      Add Speciality Modal
      ════════════════════════════════ -->
 @if (showModal()) {
-  <div class="sl-modal-backdrop" (click)="closeModal()"></div>
-  <div class="sl-modal" role="dialog" aria-modal="true">
+  <div class="sl-modal-backdrop" (click)="closeModal()">
+  <div class="sl-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
 
     <!-- Header -->
     <div class="sl-modal-header">
@@ -213,5 +213,6 @@
     </div>
     </form>
 
+  </div>
   </div>
 }

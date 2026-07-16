@@ -18,8 +18,6 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
 import { StatBadgeComponent } from '../../../../shared/components/stat-badge/stat-badge.component';
 
-const PAGE_SIZE = 10;
-
 const AVATAR_COLORS = [
   '#1a9e6e', '#0284c7', '#059669', '#d97706',
   '#dc2626', '#db2777', '#0891b2', '#7c3aed',
@@ -51,8 +49,7 @@ export class PatientsListComponent implements OnInit {
   private readonly nameSearch$  = new Subject<string>();
   private readonly phoneSearch$ = new Subject<string>();
 
-  protected readonly pageSize = PAGE_SIZE;
-  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
+  protected readonly pageSize = signal(10);
 
   ngOnInit(): void {
     this.load();
@@ -77,6 +74,12 @@ export class PatientsListComponent implements OnInit {
 
   protected onPageChange(p: number): void { this.page.set(p); this.load(); }
 
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.page.set(1);
+    this.load();
+  }
+
   protected getStatusVariant(isActive: boolean): string { return isActive ? 'green' : 'default'; }
 
   protected async onDelete(patient: Patient): Promise<void> {
@@ -93,7 +96,7 @@ export class PatientsListComponent implements OnInit {
     });
   }
 
-  protected rowIndex(i: number): number { return (this.page() - 1) * PAGE_SIZE + i + 1; }
+  protected rowIndex(i: number): number { return (this.page() - 1) * this.pageSize() + i + 1; }
 
   protected calcAge(birthday: string): number {
     if (!birthday) return 0;
@@ -121,7 +124,7 @@ export class PatientsListComponent implements OnInit {
   private load(): void {
     this.loading.set(true);
 
-    const params: PatientsListParams = { page: this.page(), pageSize: PAGE_SIZE };
+    const params: PatientsListParams = { page: this.page(), pageSize: this.pageSize() };
     if (this.nameValue.trim())  params.name        = this.nameValue.trim();
     if (this.phoneValue.trim()) params.phoneNumber = this.phoneValue.trim();
 

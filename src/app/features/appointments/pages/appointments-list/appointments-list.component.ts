@@ -15,8 +15,6 @@ import { StatBadgeComponent } from '../../../../shared/components/stat-badge/sta
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 
-const PAGE_SIZE = 10;
-
 @Component({
   selector: 'app-appointments-list',
   standalone: true,
@@ -34,7 +32,7 @@ export class AppointmentsListComponent implements OnInit {
 
   protected readonly loading      = signal(false);
   protected readonly currentPage  = signal(1);
-  protected readonly totalPages   = signal(0);
+  protected readonly pageSize     = signal(10);
   protected readonly totalCount   = signal(0);
   protected readonly displayed    = signal<AppointmentItem[]>([]);
   protected readonly statusOptions = signal<AppointmentStatusOption[]>([]);
@@ -82,6 +80,12 @@ export class AppointmentsListComponent implements OnInit {
 
   protected onPageChange(page: number): void { this.loadPage(page); }
 
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.loadPage(1);
+  }
+
   protected refresh(): void { this.loadPage(this.currentPage()); }
 
   protected statusLabelOf(status: string): string {
@@ -109,12 +113,11 @@ export class AppointmentsListComponent implements OnInit {
       status:      this.statusFilter  || null,
       date:        this.dateFilter    || null,
       page,
-      pageSize: PAGE_SIZE,
+      pageSize: this.pageSize(),
     }).subscribe({
       next: (res) => {
         this.displayed.set(res.data);
         this.totalCount.set(res.totalCount);
-        this.totalPages.set(Math.ceil(res.totalCount / PAGE_SIZE));
         this.loading.set(false);
       },
       error: () => {

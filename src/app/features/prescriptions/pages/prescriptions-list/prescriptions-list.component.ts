@@ -17,8 +17,6 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 
-const PAGE_SIZE = 15;
-
 @Component({
   selector: 'app-prescriptions-list',
   standalone: true,
@@ -37,7 +35,8 @@ export class PrescriptionsListComponent implements OnInit {
 
   protected readonly loading       = signal(false);
   protected readonly currentPage   = signal(1);
-  protected readonly totalPages    = signal(0);
+  protected readonly pageSize      = signal(10);
+  protected readonly filteredCount = signal(0);
   protected readonly displayed     = signal<Prescription[]>([]);
   protected readonly statusFilter  = signal<PrescriptionStatus | null>(null);
   protected readonly sourceFilter  = signal<PrescriptionSource | null>(null);
@@ -84,6 +83,11 @@ export class PrescriptionsListComponent implements OnInit {
   protected onStatusChange(val: string): void { this.statusFilter.set(val ? val as PrescriptionStatus : null); this.applyFilters(); }
   protected onSourceChange(val: string): void { this.sourceFilter.set(val ? val as PrescriptionSource : null); this.applyFilters(); }
   protected onPageChange(page: number): void { this.currentPage.set(page); this.updatePage(); }
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.updatePage();
+  }
   protected refresh(): void { this.svc.invalidate(); this.loadAll(); }
 
   protected statusVariantOf(s: PrescriptionStatus): string { return PRESCRIPTION_STATUS_VARIANT[s] ?? 'default'; }
@@ -115,13 +119,14 @@ export class PrescriptionsListComponent implements OnInit {
       );
     }
     this.filteredPrescriptions = list;
-    this.totalPages.set(Math.ceil(list.length / PAGE_SIZE));
+    this.filteredCount.set(list.length);
     this.currentPage.set(1);
     this.updatePage();
   }
 
   private updatePage(): void {
-    const start = (this.currentPage() - 1) * PAGE_SIZE;
-    this.displayed.set(this.filteredPrescriptions.slice(start, start + PAGE_SIZE));
+    const size = this.pageSize();
+    const start = (this.currentPage() - 1) * size;
+    this.displayed.set(this.filteredPrescriptions.slice(start, start + size));
   }
 }

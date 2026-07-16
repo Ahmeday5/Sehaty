@@ -29,8 +29,6 @@ const ROLES_AR: Record<string, string> = {
   Marketing: 'تسويق',
 };
 
-const PER_PAGE = 12;
-
 @Component({
   selector: 'app-all-users',
   standalone: true,
@@ -65,7 +63,8 @@ export class AllUsersComponent implements OnInit {
   protected readonly editImagePreview = signal<string | null>(null);
   protected readonly selectedRole  = signal<string | null>(null);
   protected readonly currentPage   = signal(1);
-  protected readonly totalPages    = signal(0);
+  protected readonly pageSize      = signal(10);
+  protected readonly totalItems    = signal(0);
   protected readonly displayed     = signal<Employee[]>([]);
   protected readonly editingEmp    = signal<Employee | null>(null);
 
@@ -301,6 +300,12 @@ export class AllUsersComponent implements OnInit {
     this.updateDisplayed();
   }
 
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.updateDisplayed();
+  }
+
   protected refresh(): void { this.svc.invalidate(); this.load(); }
 
   protected roleLabel(roles: any[]): string {
@@ -368,14 +373,15 @@ export class AllUsersComponent implements OnInit {
       );
     }
     this.filtered = result;
-    this.totalPages.set(Math.ceil(result.length / PER_PAGE));
+    this.totalItems.set(result.length);
     this.currentPage.set(1);
     this.updateDisplayed();
   }
 
   private updateDisplayed(): void {
-    const start = (this.currentPage() - 1) * PER_PAGE;
-    this.displayed.set(this.filtered.slice(start, start + PER_PAGE));
+    const size  = this.pageSize();
+    const start = (this.currentPage() - 1) * size;
+    this.displayed.set(this.filtered.slice(start, start + size));
   }
 
   private buildAddForm(): void {

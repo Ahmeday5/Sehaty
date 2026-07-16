@@ -1,0 +1,59 @@
+@if (totalItems() > 0) {
+  <div class="pg-bar" dir="rtl">
+
+    <div class="pg-summary">
+      عرض <strong>{{ startItem() }}–{{ endItem() }}</strong> من <strong>{{ totalItems() }}</strong> نتيجة
+    </div>
+
+    @if (showPageSizeSelector()) {
+      <div class="pg-size">
+        <label class="pg-size-label" for="pgSizeSelect">عرض</label>
+        <div class="pg-size-select-wrap">
+          <select
+            id="pgSizeSelect"
+            class="pg-size-select"
+            [ngModel]="pageSize()"
+            (ngModelChange)="onPageSizeSelect($event)">
+            @for (opt of pageSizeOptions(); track opt) {
+              <option [value]="opt">{{ opt }}</option>
+            }
+          </select>
+          <i class="fa-solid fa-chevron-down pg-size-caret"></i>
+        </div>
+      </div>
+    }
+
+    @if (totalPages() > 1) {
+      <nav class="pg-nav" aria-label="التنقل بين الصفحات">
+        <button class="pg-btn pg-btn--jump" [disabled]="currentPage() === 1" (click)="go(1)" title="الصفحة الأولى" aria-label="الصفحة الأولى">
+          <i class="fa-solid fa-angles-right"></i>
+        </button>
+        <button class="pg-btn" [disabled]="currentPage() === 1" (click)="go(currentPage() - 1)" title="الصفحة السابقة" aria-label="الصفحة السابقة">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        @for (item of pages(); track $index) {
+          @if (item.type === 'page') {
+            <button
+              class="pg-btn"
+              [class.pg-btn--active]="item.value === currentPage()"
+              (click)="go(item.value!)"
+              [attr.aria-current]="item.value === currentPage() ? 'page' : null">
+              {{ item.value }}
+            </button>
+          } @else {
+            <span class="pg-ellipsis">…</span>
+          }
+        }
+
+        <button class="pg-btn" [disabled]="currentPage() === totalPages()" (click)="go(currentPage() + 1)" title="الصفحة التالية" aria-label="الصفحة التالية">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button class="pg-btn pg-btn--jump" [disabled]="currentPage() === totalPages()" (click)="go(totalPages())" title="الصفحة الأخيرة" aria-label="الصفحة الأخيرة">
+          <i class="fa-solid fa-angles-left"></i>
+        </button>
+      </nav>
+    }
+
+  </div>
+}

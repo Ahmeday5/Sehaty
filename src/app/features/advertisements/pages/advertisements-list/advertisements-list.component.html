@@ -87,7 +87,7 @@
 
             <!-- overlay on hover -->
             <div class="adv-card__overlay">
-              <span class="adv-card__overlay-num"># {{ (currentPage() - 1) * 10 + i + 1 }}</span>
+              <span class="adv-card__overlay-num"># {{ (currentPage() - 1) * pageSize() + i + 1 }}</span>
             </div>
 
             <!-- zoom fab -->
@@ -128,15 +128,15 @@
     </div>
 
     <!-- pagination -->
-    @if (totalPages() > 1) {
-      <div class="adv-pagination-wrap">
-        <app-pagination
-          [currentPage]="currentPage()"
-          [totalPages]="totalPages()"
-          (pageChange)="onPageChange($event)">
-        </app-pagination>
-      </div>
-    }
+    <div class="adv-pagination-wrap">
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="totalCount()"
+        [pageSize]="pageSize()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)">
+      </app-pagination>
+    </div>
   }
 
 </div>

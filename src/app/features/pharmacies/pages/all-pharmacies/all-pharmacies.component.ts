@@ -21,7 +21,7 @@ import { EmptyStateComponent } from '../../../../shared/components/empty-state/e
 import { SearchFilterBarComponent } from '../../../../shared/components/search-filter-bar/search-filter-bar.component';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-all-pharmacies',
@@ -55,8 +55,7 @@ export class AllPharmaciesComponent implements OnInit {
   protected phoneValue  = '';
   private readonly search$ = new Subject<void>();
 
-  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
-  protected readonly pageSize = PAGE_SIZE;
+  protected readonly pageSize = signal(PAGE_SIZE);
 
   protected readonly kpiItems = computed<KpiItem[]>(() => [
     { icon: 'fa-prescription-bottle-medical', value: String(this.total()), label: 'إجمالي الصيدليات', variant: 'primary' },
@@ -87,6 +86,12 @@ export class AllPharmaciesComponent implements OnInit {
   }
 
   protected onPageChange(page: number): void { this.currentPage.set(page); this.load(); }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.load();
+  }
 
   protected refresh(): void { this.load(); }
 
@@ -128,7 +133,7 @@ export class AllPharmaciesComponent implements OnInit {
 
     const params: PharmaciesListParams = {
       page:     this.currentPage(),
-      pageSize: PAGE_SIZE,
+      pageSize: this.pageSize(),
     };
     if (this.searchValue.trim())           params.name     = this.searchValue.trim();
     if (this.phoneValue.trim())            params.phone    = this.phoneValue.trim();

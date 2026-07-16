@@ -128,7 +128,8 @@
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1050;
   background: transparent;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: flex-start; justify-content: center;
+  overflow-y: auto;
   padding: 16px;
   animation: overlay-in 0.18s ease;
 }
@@ -144,6 +145,8 @@
   box-shadow: 0 20px 60px rgba(0,0,0,.5);
   width: 100%; max-width: 860px;
   max-height: 90vh;
+  max-height: 90dvh;
+  margin: auto 0;
   display: flex; flex-direction: column;
   animation: modal-in 0.22s cubic-bezier(.34,1.56,.64,1);
   direction: rtl;

@@ -12,6 +12,7 @@ import { FinanceService } from '../../services/finance.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { KpiStripComponent } from '../../../../shared/components/kpi-strip/kpi-strip.component';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import {
   FinanceKpiSummary,
   DoctorRevenue,
@@ -23,12 +24,10 @@ import {
   FinancePeriod,
 } from '../../models/finance.model';
 
-const ITEMS_PER_PAGE = 10;
-
 @Component({
   selector: 'app-finance-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, KpiStripComponent],
+  imports: [CommonModule, FormsModule, KpiStripComponent, PaginationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './finance-home.component.html',
   styleUrl: './finance-home.component.scss',
@@ -58,7 +57,8 @@ export class FinanceHomeComponent implements OnInit {
     search: '',
   });
   protected readonly currentPage = signal(1);
-  protected readonly totalPages  = signal(0);
+  protected readonly pageSize    = signal(10);
+  protected readonly totalCount  = signal(0);
   protected readonly displayed   = signal<FinanceTransaction[]>([]);
 
   // ── Settling ────────────────────────────────────────────────────────────────
@@ -161,8 +161,10 @@ export class FinanceHomeComponent implements OnInit {
     this.updatePage();
   }
 
-  protected get pages(): number[] {
-    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.updatePage();
   }
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -287,10 +289,9 @@ export class FinanceHomeComponent implements OnInit {
       );
     }
 
-    this.totalPages.set(Math.ceil(filtered.length / ITEMS_PER_PAGE));
+    this.totalCount.set(filtered.length);
     this.currentPage.set(1);
-    this.allTransactions = this.allTransactions;
-    this.displayed.set(filtered.slice(0, ITEMS_PER_PAGE));
+    this.displayed.set(filtered.slice(0, this.pageSize()));
 
     // Store filtered for pagination
     this._filtered = filtered;
@@ -299,7 +300,8 @@ export class FinanceHomeComponent implements OnInit {
   private _filtered: FinanceTransaction[] = [];
 
   private updatePage(): void {
-    const start = (this.currentPage() - 1) * ITEMS_PER_PAGE;
-    this.displayed.set(this._filtered.slice(start, start + ITEMS_PER_PAGE));
+    const size = this.pageSize();
+    const start = (this.currentPage() - 1) * size;
+    this.displayed.set(this._filtered.slice(start, start + size));
   }
 }

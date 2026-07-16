@@ -7,8 +7,12 @@
   // targets this exact class name and would otherwise always win.
   background: rgba(0, 0, 0, 0.6) !important;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  // Lets the backdrop itself scroll when the modal is taller than the visible
+  // viewport — without this, a tall modal (or a short mobile viewport once the
+  // browser chrome is accounted for) had no way to reach content past the fold.
+  overflow-y: auto;
   z-index: 1050;
   padding: 16px;
   animation: backdropIn 0.15s ease;
@@ -21,6 +25,15 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   width: 100%;
   max-height: 90vh;
+  // dvh (dynamic viewport height) correctly excludes the mobile browser's
+  // collapsible address bar — 90vh alone can measure taller than what's
+  // actually visible on mobile, pushing the modal's bottom off-screen.
+  // Falls back to the vh value above on browsers that don't support dvh.
+  max-height: 90dvh;
+  // Auto vertical margins center the box when it's shorter than the backdrop,
+  // and collapse to 0 (anchoring it to the top, scrollable) when it's taller —
+  // so the top of the modal is never clipped above the visible area.
+  margin: auto 0;
   display: flex;
   flex-direction: column;
   animation: modalIn 0.2s ease;

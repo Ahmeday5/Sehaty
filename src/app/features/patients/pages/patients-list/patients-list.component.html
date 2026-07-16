@@ -1,4 +1,4 @@
-<div class="container-fluid pl-page">
+<div class="pl-page">
 
   <!-- ════════════════════════════════
        Header row
@@ -208,22 +208,15 @@
         </table>
       </div>
 
-      <!-- Pagination + count -->
+      <!-- Pagination -->
       <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 px-3 pb-3 pt-1">
-        <span class="pl-count-label">
-          عرض
-          <strong>{{ (page() - 1) * pageSize + 1 }}</strong>
-          –
-          <strong>{{ (page() - 1) * pageSize + patients().length }}</strong>
-          من
-          <strong>{{ total() }}</strong>
-          مريض
-        </span>
         <app-pagination
           [currentPage]="page()"
-          [totalPages]="totalPages"
+          [totalItems]="total()"
+          [pageSize]="pageSize()"
           [windowSize]="1"
-          (pageChange)="onPageChange($event)">
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)">
         </app-pagination>
       </div>
     }

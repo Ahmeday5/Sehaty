@@ -429,6 +429,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 16px;
+
+  @media (max-width: 460px) { grid-template-columns: 1fr; }
 }
 
 .spt-info-item {

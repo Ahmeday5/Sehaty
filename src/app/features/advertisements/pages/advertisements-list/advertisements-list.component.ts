@@ -7,7 +7,6 @@ import {
   ViewChild,
   inject,
   signal,
-  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -20,8 +19,6 @@ import { FormErrorComponent } from '../../../../shared/components/form-error/for
 import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import { Advertisement } from '../../models/advertisement.model';
-
-const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-advertisements-list',
@@ -55,7 +52,7 @@ export class AdvertisementsListComponent implements OnInit {
   protected readonly items       = signal<Advertisement[]>([]);
   protected readonly totalCount  = signal(0);
   protected readonly currentPage = signal(1);
-  protected readonly totalPages  = computed(() => Math.ceil(this.totalCount() / PAGE_SIZE));
+  protected readonly pageSize    = signal(10);
 
   protected addForm!: FormGroup;
   private newFile: File | null = null;
@@ -89,6 +86,12 @@ export class AdvertisementsListComponent implements OnInit {
   protected refresh(): void { this.loadPage(this.currentPage()); }
 
   protected onPageChange(page: number): void { this.loadPage(page); }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.loadPage(1);
+  }
 
   protected triggerFilePicker(): void { this.fileInput?.nativeElement.click(); }
 
@@ -153,7 +156,7 @@ export class AdvertisementsListComponent implements OnInit {
       await firstValueFrom(this.svc.delete(ad.id));
       this.toast.success('تم حذف الإعلان بنجاح');
       const newTotal = this.totalCount() - 1;
-      const maxPage  = Math.max(1, Math.ceil(newTotal / PAGE_SIZE));
+      const maxPage  = Math.max(1, Math.ceil(newTotal / this.pageSize()));
       this.loadPage(Math.min(this.currentPage(), maxPage));
     } catch (err: any) {
       this.toast.error(err?.message ?? 'فشل حذف الإعلان');
@@ -165,7 +168,7 @@ export class AdvertisementsListComponent implements OnInit {
   private loadPage(page: number): void {
     this.loading.set(true);
     this.currentPage.set(page);
-    this.svc.getPage(page, PAGE_SIZE).subscribe({
+    this.svc.getPage(page, this.pageSize()).subscribe({
       next: (res) => {
         this.items.set(res.data);
         this.totalCount.set(res.total);

@@ -60,8 +60,7 @@ export class RatingsComponent implements OnInit {
   protected topCount    = DEFAULT_RANK_COUNT;
   protected bottomCount = DEFAULT_RANK_COUNT;
 
-  protected readonly pageSize   = PAGE_SIZE;
-  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
+  protected readonly pageSize = signal(PAGE_SIZE);
 
   protected readonly maxDistCount = computed(() =>
     Math.max(1, ...this.distribution().map((d) => d.count)),
@@ -111,6 +110,12 @@ export class RatingsComponent implements OnInit {
     this.loadReviews();
   }
 
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.loadReviews();
+  }
+
   protected onRankCountChange(): void {
     this.topCount    = this.clampRankCount(this.topCount);
     this.bottomCount = this.clampRankCount(this.bottomCount);
@@ -128,7 +133,7 @@ export class RatingsComponent implements OnInit {
       stars:      this.starsFilter() ?? undefined,
       doctorName: this.doctorNameValue.trim() || undefined,
       page:       this.currentPage(),
-      pageSize:   PAGE_SIZE,
+      pageSize:   this.pageSize(),
     }).subscribe({
       next: (res) => {
         this.reviews.set(res.data ?? []);

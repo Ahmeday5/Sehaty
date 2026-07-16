@@ -1,78 +1,73 @@
-import {
-  ChangeDetectionStrategy, Component, Input, Output, EventEmitter, OnChanges, SimpleChanges,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 interface PageItem { type: 'page' | 'ellipsis'; value?: number; }
 
+const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100, 200];
+
+/**
+ * Self-contained pagination bar: results summary ("عرض X–Y من Z"), a page-size
+ * selector, and page navigation (first/prev/numbers/next/last). `totalPages` is
+ * derived internally from `totalItems`/`pageSize` — callers never compute it.
+ * Renders nothing when `totalItems` is 0; the nav row itself only appears once
+ * there's more than one page (the summary + size selector still show for a
+ * single page, matching how large SaaS tables behave).
+ */
 @Component({
   selector: 'app-pagination',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (totalPages > 1) {
-      <nav class="pg-nav" aria-label="التنقل بين الصفحات">
-        <button class="pg-btn" [disabled]="currentPage === 1" (click)="go(currentPage - 1)" aria-label="الصفحة السابقة">
-          <i class="fa-solid fa-chevron-right"></i>
-        </button>
-
-        @for (item of pages; track $index) {
-          @if (item.type === 'page') {
-            <button
-              class="pg-btn"
-              [class.pg-btn--active]="item.value === currentPage"
-              (click)="go(item.value!)"
-              [attr.aria-current]="item.value === currentPage ? 'page' : null"
-            >{{ item.value }}</button>
-          } @else {
-            <span class="pg-ellipsis">…</span>
-          }
-        }
-
-        <button class="pg-btn" [disabled]="currentPage === totalPages" (click)="go(currentPage + 1)" aria-label="الصفحة التالية">
-          <i class="fa-solid fa-chevron-left"></i>
-        </button>
-      </nav>
-    }
-  `,
-  styles: [`
-    .pg-nav { display:flex; align-items:center; gap:4px; justify-content:center; }
-    .pg-btn {
-      min-width:34px; height:34px; padding:0 6px; border-radius:8px;
-      border:1px solid var(--brd, #e5e7eb); background:var(--bg2,#fff);
-      color:var(--txt2,#374151); font-size:13px; cursor:pointer;
-      transition:background .12s, color .12s; display:flex; align-items:center; justify-content:center;
-      &:hover:not(:disabled) { background:var(--bg3,#f3f4f6); }
-      &--active { background:var(--main-color,#14c8c7); color:#fff; border-color:var(--main-color,#14c8c7); font-weight:700; }
-      &:disabled { opacity:.4; cursor:not-allowed; }
-    }
-    .pg-ellipsis { padding:0 6px; color:var(--txt3,#9ca3af); font-size:14px; }
-  `],
+  templateUrl: './pagination.component.html',
+  styleUrl: './pagination.component.scss',
 })
-export class PaginationComponent implements OnChanges {
-  @Input() currentPage = 1;
-  @Input() totalPages  = 0;
-  @Input() windowSize  = 2;
-  @Output() pageChange = new EventEmitter<number>();
+export class PaginationComponent {
+  currentPage = input(1);
+  totalItems  = input(0);
+  pageSize    = input(10);
+  pageSizeOptions      = input<number[]>(DEFAULT_PAGE_SIZE_OPTIONS);
+  showPageSizeSelector = input(true);
+  /** How many page numbers to show on each side of the current page before collapsing to an ellipsis. */
+  windowSize = input(2);
 
-  pages: PageItem[] = [];
+  pageChange     = output<number>();
+  pageSizeChange = output<number>();
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['currentPage'] || changes['totalPages']) {
-      this.pages = this.buildPages();
+  protected readonly totalPages = computed(() => {
+    const size = this.pageSize();
+    return size > 0 ? Math.max(1, Math.ceil(this.totalItems() / size)) : 1;
+  });
+
+  protected readonly startItem = computed(() =>
+    this.totalItems() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize() + 1,
+  );
+
+  protected readonly endItem = computed(() =>
+    Math.min(this.currentPage() * this.pageSize(), this.totalItems()),
+  );
+
+  protected readonly pages = computed<PageItem[]>(() => this.buildPages());
+
+  protected go(page: number): void {
+    const tp = this.totalPages();
+    if (page >= 1 && page <= tp && page !== this.currentPage()) {
+      this.pageChange.emit(page);
     }
   }
 
-  go(page: number | undefined): void {
-    if (typeof page === 'number' && page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.pageChange.emit(page);
+  protected onPageSizeSelect(value: string): void {
+    const size = Number(value);
+    if (size > 0 && size !== this.pageSize()) {
+      this.pageSizeChange.emit(size);
     }
   }
 
   private buildPages(): PageItem[] {
     const items: PageItem[] = [];
-    const { currentPage: cp, totalPages: tp, windowSize: ws } = this;
+    const cp = this.currentPage();
+    const tp = this.totalPages();
+    const ws = this.windowSize();
 
     if (tp <= 2 * ws + 1) {
       for (let i = 1; i <= tp; i++) items.push({ type: 'page', value: i });
@@ -89,7 +84,7 @@ export class PaginationComponent implements OnChanges {
     if (start > 2) items.push({ type: 'ellipsis' });
     for (let i = start; i <= end; i++) items.push({ type: 'page', value: i });
     if (end < tp - 1) items.push({ type: 'ellipsis' });
-    if (tp > 1) items.push({ type: 'page', value: tp });
+    items.push({ type: 'page', value: tp });
 
     return items;
   }

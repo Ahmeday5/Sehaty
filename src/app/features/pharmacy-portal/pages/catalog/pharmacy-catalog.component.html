@@ -89,13 +89,13 @@
         }
       </div>
 
-      @if (minePages > 1) {
-        <app-pagination
-          [currentPage]="minePage()"
-          [totalPages]="minePages"
-          (pageChange)="onMinePageChange($event)">
-        </app-pagination>
-      }
+      <app-pagination
+        [currentPage]="minePage()"
+        [totalItems]="mineTotal()"
+        [pageSize]="minePageSize()"
+        (pageChange)="onMinePageChange($event)"
+        (pageSizeChange)="onMinePageSizeChange($event)">
+      </app-pagination>
     }
 
   </div>
@@ -163,13 +163,13 @@
         }
       </div>
 
-      @if (browsePages > 1) {
-        <app-pagination
-          [currentPage]="browsePage()"
-          [totalPages]="browsePages"
-          (pageChange)="onBrowsePageChange($event)">
-        </app-pagination>
-      }
+      <app-pagination
+        [currentPage]="browsePage()"
+        [totalItems]="browseTotal()"
+        [pageSize]="browsePageSize()"
+        (pageChange)="onBrowsePageChange($event)"
+        (pageSizeChange)="onBrowsePageSizeChange($event)">
+      </app-pagination>
     }
 
   </div>

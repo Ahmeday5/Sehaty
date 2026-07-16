@@ -1,12 +1,16 @@
 :host {
   display: block;
   height: 100vh;
+  // dvh excludes the mobile browser's collapsible address bar, so the shell's
+  // real height matches what's actually visible instead of measuring taller.
+  height: 100dvh;
 }
 
 .admin-shell {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--bg, #0B1120);
 }

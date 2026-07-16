@@ -97,11 +97,12 @@
         </div>
 
         <div class="rtg-pagination-wrap">
-          <div class="rtg-total-label">إجمالي النتائج: {{ total() }}</div>
           <app-pagination
             [currentPage]="currentPage()"
-            [totalPages]="totalPages"
-            (pageChange)="onPageChange($event)">
+            [totalItems]="total()"
+            [pageSize]="pageSize()"
+            (pageChange)="onPageChange($event)"
+            (pageSizeChange)="onPageSizeChange($event)">
           </app-pagination>
         </div>
       }

@@ -1,7 +1,7 @@
 <!-- ══════════════════════════════════
      Page Header
      ══════════════════════════════════ -->
-<div class="container-fluid au-page">
+<div class="au-page">
 
   <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div>
@@ -151,9 +151,11 @@
     <div class="mt-4">
       <app-pagination
         [currentPage]="currentPage()"
-        [totalPages]="totalPages()"
+        [totalItems]="totalItems()"
+        [pageSize]="pageSize()"
         [windowSize]="1"
-        (pageChange)="onPageChange($event)">
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)">
       </app-pagination>
     </div>
   }

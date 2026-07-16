@@ -286,6 +286,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+
+  // Below ~460px a 2-column grid leaves too little width for icon + value +
+  // label + arrow together, squeezing the label down to nothing. One column
+  // gives every card its full width back.
+  @media (max-width: 460px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pd-action-card {

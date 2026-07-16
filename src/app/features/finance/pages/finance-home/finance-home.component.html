@@ -259,30 +259,13 @@
       </div>
 
       <!-- Pagination -->
-      @if (totalPages() > 1) {
-        <div class="fin-pagination">
-          <button
-            class="fin-page-btn"
-            [disabled]="currentPage() === 1"
-            (click)="onPageChange(currentPage() - 1)">
-            <i class="fa-solid fa-chevron-right"></i>
-          </button>
-          @for (page of pages; track page) {
-            <button
-              class="fin-page-btn"
-              [class.active]="currentPage() === page"
-              (click)="onPageChange(page)">
-              {{ page }}
-            </button>
-          }
-          <button
-            class="fin-page-btn"
-            [disabled]="currentPage() === totalPages()"
-            (click)="onPageChange(currentPage() + 1)">
-            <i class="fa-solid fa-chevron-left"></i>
-          </button>
-        </div>
-      }
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalItems]="totalCount()"
+        [pageSize]="pageSize()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)">
+      </app-pagination>
     }
   </div>
 

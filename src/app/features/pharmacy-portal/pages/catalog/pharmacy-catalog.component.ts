@@ -24,8 +24,6 @@ import { TabDef } from '../../../../shared/components/tabs-nav/tabs-nav.model';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 import { SearchableSelectComponent, SelectOption } from '../../../../shared/components/searchable-select/searchable-select.component';
 
-const PAGE_SIZE = 12;
-
 type CatalogTab = 'mine' | 'browse';
 
 @Component({
@@ -62,14 +60,13 @@ export class PharmacyCatalogComponent implements OnInit {
   protected readonly mineItems     = signal<PharmacyCatalogItem[]>([]);
   protected readonly mineTotal     = signal(0);
   protected readonly minePage      = signal(1);
+  protected readonly minePageSize  = signal(10);
   protected readonly mineAvailable = signal<boolean | undefined>(undefined);
   protected readonly togglingId    = signal<number | null>(null);
   protected readonly deletingId    = signal<number | null>(null);
 
   protected mineSearch = '';
   private readonly mineSearch$ = new Subject<void>();
-
-  protected get minePages(): number { return Math.ceil(this.mineTotal() / PAGE_SIZE); }
 
   protected readonly mineKpis = computed<KpiItem[]>(() => [
     { icon: 'fa-pills', value: String(this.mineTotal()), label: 'إجمالي الأصناف', variant: 'primary' },
@@ -78,9 +75,10 @@ export class PharmacyCatalogComponent implements OnInit {
   // ── Browse master catalog state ───────────────────────────────
   protected readonly browseLoading = signal(false);
   protected readonly browseItems   = signal<MasterItem[]>([]);
-  protected readonly browseTotal   = signal(0);
-  protected readonly browsePage    = signal(1);
-  protected readonly addingId      = signal<number | null>(null);
+  protected readonly browseTotal    = signal(0);
+  protected readonly browsePage     = signal(1);
+  protected readonly browsePageSize = signal(10);
+  protected readonly addingId       = signal<number | null>(null);
   protected browseLoaded = false;
 
   protected readonly itemGroups       = signal<ItemGroup[]>([]);
@@ -91,8 +89,6 @@ export class PharmacyCatalogComponent implements OnInit {
 
   protected browseSearch = '';
   private readonly browseSearch$ = new Subject<void>();
-
-  protected get browsePages(): number { return Math.ceil(this.browseTotal() / PAGE_SIZE); }
 
   ngOnInit(): void {
     this.loadMine();
@@ -130,6 +126,12 @@ export class PharmacyCatalogComponent implements OnInit {
   }
 
   protected onMinePageChange(page: number): void { this.minePage.set(page); this.loadMine(); }
+
+  protected onMinePageSizeChange(size: number): void {
+    this.minePageSize.set(size);
+    this.minePage.set(1);
+    this.loadMine();
+  }
 
   protected refreshMine(): void { this.loadMine(); }
 
@@ -176,7 +178,7 @@ export class PharmacyCatalogComponent implements OnInit {
 
     this.svc.getCatalog({
       page:        this.minePage(),
-      pageSize:    PAGE_SIZE,
+      pageSize:    this.minePageSize(),
       search:      this.mineSearch.trim() || undefined,
       isAvailable: this.mineAvailable(),
     }).subscribe({
@@ -209,6 +211,12 @@ export class PharmacyCatalogComponent implements OnInit {
 
   protected onBrowsePageChange(page: number): void { this.browsePage.set(page); this.loadBrowse(); }
 
+  protected onBrowsePageSizeChange(size: number): void {
+    this.browsePageSize.set(size);
+    this.browsePage.set(1);
+    this.loadBrowse();
+  }
+
   protected refreshBrowse(): void { this.loadBrowse(); }
 
   protected async onAddItem(item: MasterItem): Promise<void> {
@@ -235,7 +243,7 @@ export class PharmacyCatalogComponent implements OnInit {
 
     this.svc.browseMasterItems({
       page:     this.browsePage(),
-      pageSize: PAGE_SIZE,
+      pageSize: this.browsePageSize(),
       search:   this.browseSearch.trim() || undefined,
       groupId:  this.browseGroupId() ?? undefined,
     }).subscribe({

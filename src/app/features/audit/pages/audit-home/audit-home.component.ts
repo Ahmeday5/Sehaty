@@ -13,6 +13,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmService } from '../../../../core/services/confirm.service';
 import { KpiStripComponent } from '../../../../shared/components/kpi-strip/kpi-strip.component';
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 import {
   AuditKpiSummary,
   ActiveSession,
@@ -21,12 +22,12 @@ import {
   AuditRiskLevel,
 } from '../../models/audit.model';
 
-const LOG_PER_PAGE = 10;
+const DEFAULT_LOG_PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-audit-home',
   standalone: true,
-  imports: [CommonModule, FormsModule, KpiStripComponent],
+  imports: [CommonModule, FormsModule, KpiStripComponent, PaginationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './audit-home.component.html',
   styleUrl: './audit-home.component.scss',
@@ -62,12 +63,8 @@ export class AuditHomeComponent implements OnInit {
 
   // ── Pagination ───────────────────────────────────────────────────────────────
   protected readonly currentPage = signal(1);
-  protected readonly totalPages  = signal(0);
+  protected readonly pageSize    = signal(DEFAULT_LOG_PAGE_SIZE);
   protected readonly displayed   = signal<AuditLogEntry[]>([]);
-
-  protected get pages(): number[] {
-    return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
-  }
 
   // ── KPI strip ────────────────────────────────────────────────────────────────
   protected readonly kpiItems = computed<KpiItem[]>(() => {
@@ -107,6 +104,12 @@ export class AuditHomeComponent implements OnInit {
 
   protected onPageChange(page: number): void {
     this.currentPage.set(page);
+    this.updatePage();
+  }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
     this.updatePage();
   }
 
@@ -194,13 +197,13 @@ export class AuditHomeComponent implements OnInit {
     }
 
     this._filteredLog = result;
-    this.totalPages.set(Math.ceil(result.length / LOG_PER_PAGE));
     this.currentPage.set(1);
     this.updatePage();
   }
 
   private updatePage(): void {
-    const start = (this.currentPage() - 1) * LOG_PER_PAGE;
-    this.displayed.set(this._filteredLog.slice(start, start + LOG_PER_PAGE));
+    const size  = this.pageSize();
+    const start = (this.currentPage() - 1) * size;
+    this.displayed.set(this._filteredLog.slice(start, start + size));
   }
 }

@@ -19,8 +19,6 @@ import { KpiStripComponent } from '../../../../shared/components/kpi-strip/kpi-s
 import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model';
 import { apiErrorMessageAr } from '../../utils/api-error-ar.util';
 
-const PAGE_SIZE = 12;
-
 interface StatusFilterOption {
   value: PrescriptionStatus | undefined;
   label: string;
@@ -59,13 +57,12 @@ export class PharmacyPrescriptionsComponent implements OnInit {
   protected readonly prescriptions = signal<Prescription[]>([]);
   protected readonly total        = signal(0);
   protected readonly currentPage  = signal(1);
+  protected readonly pageSize     = signal(10);
   protected readonly statusFilter = signal<PrescriptionStatus | undefined>(undefined);
 
   protected readonly selectedPrescription = signal<Prescription | null>(null);
   protected readonly detailsLoading = signal(false);
   protected readonly submitting     = signal(false);
-
-  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
 
   protected readonly kpiItems = computed<KpiItem[]>(() => {
     const list = this.prescriptions();
@@ -96,6 +93,12 @@ export class PharmacyPrescriptionsComponent implements OnInit {
   }
 
   protected onPageChange(page: number): void { this.currentPage.set(page); this.load(); }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.load();
+  }
 
   protected refresh(): void { this.load(); }
 
@@ -168,7 +171,7 @@ export class PharmacyPrescriptionsComponent implements OnInit {
 
     this.svc.getPrescriptions({
       page: this.currentPage(),
-      pageSize: PAGE_SIZE,
+      pageSize: this.pageSize(),
       status: this.statusFilter(),
     }).subscribe({
       next: (res) => {

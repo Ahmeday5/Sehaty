@@ -25,8 +25,6 @@ import { KpiItem } from '../../../../shared/components/kpi-strip/kpi-strip.model
 import { CurrencyArPipe } from '../../../../shared/pipes/currency-ar.pipe';
 import { DateArPipe } from '../../../../shared/pipes/date-ar.pipe';
 
-const PAGE_SIZE = 10;
-
 interface StatusFilterOption {
   value: OrderStatus | undefined;
   label: string;
@@ -77,6 +75,7 @@ export class PharmacyOrdersComponent implements OnInit {
   protected readonly orders      = signal<Order[]>([]);
   protected readonly total       = signal(0);
   protected readonly currentPage = signal(1);
+  protected readonly pageSize    = signal(10);
   protected readonly statusFilter = signal<OrderStatus | undefined>(undefined);
 
   protected readonly selectedOrder = signal<Order | null>(null);
@@ -89,8 +88,6 @@ export class PharmacyOrdersComponent implements OnInit {
   protected readonly inlineDeliveryFee   = signal<number | null>(null);
   protected readonly inlineReason        = signal('');
   protected readonly inlineSubmitting    = signal(false);
-
-  protected get totalPages(): number { return Math.ceil(this.total() / PAGE_SIZE); }
 
   protected readonly kpiItems = computed<KpiItem[]>(() => [
     { icon: 'fa-cart-shopping', value: String(this.total()), label: 'إجمالي الطلبات', variant: 'primary' },
@@ -116,6 +113,12 @@ export class PharmacyOrdersComponent implements OnInit {
   }
 
   protected onPageChange(page: number): void { this.currentPage.set(page); this.load(); }
+
+  protected onPageSizeChange(size: number): void {
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+    this.load();
+  }
 
   protected refresh(): void { this.load(); }
 
@@ -288,7 +291,7 @@ export class PharmacyOrdersComponent implements OnInit {
 
     this.svc.getOrders({
       page: this.currentPage(),
-      pageSize: PAGE_SIZE,
+      pageSize: this.pageSize(),
       status: this.statusFilter(),
     }).subscribe({
       next: (res) => {
