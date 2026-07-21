@@ -60,7 +60,7 @@ export class PharmacyCatalogComponent implements OnInit {
   protected readonly mineItems     = signal<PharmacyCatalogItem[]>([]);
   protected readonly mineTotal     = signal(0);
   protected readonly minePage      = signal(1);
-  protected readonly minePageSize  = signal(10);
+  protected readonly minePageSize  = signal(12);
   protected readonly mineAvailable = signal<boolean | undefined>(undefined);
   protected readonly togglingId    = signal<number | null>(null);
   protected readonly deletingId    = signal<number | null>(null);
@@ -77,7 +77,7 @@ export class PharmacyCatalogComponent implements OnInit {
   protected readonly browseItems   = signal<MasterItem[]>([]);
   protected readonly browseTotal    = signal(0);
   protected readonly browsePage     = signal(1);
-  protected readonly browsePageSize = signal(10);
+  protected readonly browsePageSize = signal(12);
   protected readonly addingId       = signal<number | null>(null);
   protected browseLoaded = false;
 

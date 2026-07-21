@@ -5,10 +5,25 @@
     <div class="ap-title-group">
       <h1 class="page-title">الصيدليات</h1>
       @if (!loading() && total() > 0) {
-        <span class="ap-count">{{ total() }} صيدلية</span>
+      <span class="ap-count">{{ total() }} صيدلية</span>
       }
     </div>
     <div class="ap-header-actions">
+      <div class="ap-portal-group">
+        <a class="btn-portal-link" [href]="pharmacyPortalUrl" target="_blank" rel="noopener"
+          title="فتح بوابة الصيدليات في نافذة جديدة">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          <span>فتح بوابة الصيدلية</span>
+        </a>
+        <button type="button" class="btn-copy-link" [class.btn-copy-link--copied]="linkCopied()"
+          (click)="copyPortalLink()" [title]="linkCopied() ? 'تم النسخ' : 'نسخ الرابط'">
+          @if (linkCopied()) {
+          <i class="fa-solid fa-check"></i>
+          } @else {
+          <i class="fa-regular fa-copy"></i>
+          }
+        </button>
+      </div>
       <button class="btn-refresh" (click)="refresh()" [disabled]="loading()">
         <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
         @if (lastUpdate()) { {{ lastUpdate() | date:'HH:mm' }} }
@@ -21,39 +36,25 @@
 
   <!-- Search + phone + status filter -->
   <div class="ap-filters">
-    <app-search-filter-bar
-      class="ap-search"
-      placeholder="بحث باسم الصيدلية..."
-      (searchChange)="onSearch($event)">
+    <app-search-filter-bar class="ap-search" placeholder="بحث باسم الصيدلية..." (searchChange)="onSearch($event)">
     </app-search-filter-bar>
 
     <div class="ap-phone-input">
       <i class="fa-solid fa-phone"></i>
-      <input
-        type="text"
-        placeholder="بحث برقم الهاتف..."
-        [(ngModel)]="phoneValue"
-        (ngModelChange)="onPhoneChange()">
+      <input type="text" placeholder="بحث برقم الهاتف..." [(ngModel)]="phoneValue" (ngModelChange)="onPhoneChange()">
     </div>
   </div>
 
   <div class="ap-status-tabs">
-    <button
-      class="ap-status-tab"
-      [class.active]="activeStatus() === undefined"
-      (click)="onStatusFilter(undefined)">
+    <button class="ap-status-tab" [class.active]="activeStatus() === undefined" (click)="onStatusFilter(undefined)">
       الكل
     </button>
-    <button
-      class="ap-status-tab ap-status-tab--active"
-      [class.active]="activeStatus() === true"
+    <button class="ap-status-tab ap-status-tab--active" [class.active]="activeStatus() === true"
       (click)="onStatusFilter(true)">
       <span class="ap-status-dot ap-status-dot--on"></span>
       نشط
     </button>
-    <button
-      class="ap-status-tab ap-status-tab--inactive"
-      [class.active]="activeStatus() === false"
+    <button class="ap-status-tab ap-status-tab--inactive" [class.active]="activeStatus() === false"
       (click)="onStatusFilter(false)">
       <span class="ap-status-dot ap-status-dot--off"></span>
       معطّل
@@ -62,42 +63,29 @@
 
   <!-- Content -->
   @if (loading()) {
-    <div class="ap-spinner">
-      <div class="ap-spinner-ring"></div>
-      <p class="ap-spinner-txt">جاري تحميل الصيدليات...</p>
-    </div>
+  <div class="ap-spinner">
+    <div class="ap-spinner-ring"></div>
+    <p class="ap-spinner-txt">جاري تحميل الصيدليات...</p>
+  </div>
   } @else if (displayed().length === 0) {
-    @if (searchValue || phoneValue || activeStatus() !== undefined) {
-      <app-empty-state
-        icon="fa-magnifying-glass"
-        title="لا توجد نتائج"
-        message="جرّب تعديل معايير البحث أو الفلتر المحدد">
-      </app-empty-state>
-    } @else {
-      <app-empty-state
-        icon="fa-prescription-bottle-medical"
-        title="لا توجد صيدليات"
-        message="لم يتم تسجيل أي صيدلية بعد">
-      </app-empty-state>
-    }
+  @if (searchValue || phoneValue || activeStatus() !== undefined) {
+  <app-empty-state icon="fa-magnifying-glass" title="لا توجد نتائج" message="جرّب تعديل معايير البحث أو الفلتر المحدد">
+  </app-empty-state>
   } @else {
-    <div class="ap-grid mt-3">
-      @for (pharmacy of displayed(); track pharmacy.id) {
-        <app-pharmacy-card
-          [pharmacy]="pharmacy"
-          (toggleActive)="onToggleActive($event)"
-          (delete)="onDelete($event)">
-        </app-pharmacy-card>
-      }
-    </div>
+  <app-empty-state icon="fa-prescription-bottle-medical" title="لا توجد صيدليات" message="لم يتم تسجيل أي صيدلية بعد">
+  </app-empty-state>
+  }
+  } @else {
+  <div class="ap-grid mt-3">
+    @for (pharmacy of displayed(); track pharmacy.id) {
+    <app-pharmacy-card [pharmacy]="pharmacy" (toggleActive)="onToggleActive($event)" (delete)="onDelete($event)">
+    </app-pharmacy-card>
+    }
+  </div>
 
-    <app-pagination
-      [currentPage]="currentPage()"
-      [totalItems]="total()"
-      [pageSize]="pageSize()"
-      (pageChange)="onPageChange($event)"
-      (pageSizeChange)="onPageSizeChange($event)">
-    </app-pagination>
+  <app-pagination [currentPage]="currentPage()" [totalItems]="total()" [pageSize]="pageSize()"
+    (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+  </app-pagination>
   }
 
 </div>

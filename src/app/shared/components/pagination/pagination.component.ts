@@ -1,10 +1,19 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-interface PageItem { type: 'page' | 'ellipsis'; value?: number; }
+interface PageItem {
+  type: 'page' | 'ellipsis';
+  value?: number;
+}
 
-const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100, 200];
+const DEFAULT_PAGE_SIZE_OPTIONS = [10, 12, 25, 50, 100, 200];
 
 /**
  * Self-contained pagination bar: results summary ("عرض X–Y من Z"), a page-size
@@ -24,14 +33,14 @@ const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50, 100, 200];
 })
 export class PaginationComponent {
   currentPage = input(1);
-  totalItems  = input(0);
-  pageSize    = input(10);
-  pageSizeOptions      = input<number[]>(DEFAULT_PAGE_SIZE_OPTIONS);
+  totalItems = input(0);
+  pageSize = input(10);
+  pageSizeOptions = input<number[]>(DEFAULT_PAGE_SIZE_OPTIONS);
   showPageSizeSelector = input(true);
   /** How many page numbers to show on each side of the current page before collapsing to an ellipsis. */
   windowSize = input(2);
 
-  pageChange     = output<number>();
+  pageChange = output<number>();
   pageSizeChange = output<number>();
 
   protected readonly totalPages = computed(() => {
@@ -40,7 +49,9 @@ export class PaginationComponent {
   });
 
   protected readonly startItem = computed(() =>
-    this.totalItems() === 0 ? 0 : (this.currentPage() - 1) * this.pageSize() + 1,
+    this.totalItems() === 0
+      ? 0
+      : (this.currentPage() - 1) * this.pageSize() + 1,
   );
 
   protected readonly endItem = computed(() =>
@@ -77,9 +88,12 @@ export class PaginationComponent {
     items.push({ type: 'page', value: 1 });
 
     let start = Math.max(2, cp - ws);
-    let end   = Math.min(tp - 1, cp + ws);
-    if (cp <= ws + 1) { end = 2 * ws + 1; }
-    else if (cp >= tp - ws) { start = tp - 2 * ws; }
+    let end = Math.min(tp - 1, cp + ws);
+    if (cp <= ws + 1) {
+      end = 2 * ws + 1;
+    } else if (cp >= tp - ws) {
+      start = tp - 2 * ws;
+    }
 
     if (start > 2) items.push({ type: 'ellipsis' });
     for (let i = start; i <= end; i++) items.push({ type: 'page', value: i });

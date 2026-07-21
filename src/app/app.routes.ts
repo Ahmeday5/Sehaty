@@ -97,6 +97,22 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'item-groups',
+        canActivate: [roleGuard(['Admin'])],
+        loadChildren: () =>
+          import('./features/item-groups/item-groups.routes').then(
+            (m) => m.itemGroupsRoutes,
+          ),
+      },
+      {
+        path: 'items',
+        canActivate: [roleGuard(['Admin'])],
+        loadChildren: () =>
+          import('./features/items/items.routes').then(
+            (m) => m.itemsRoutes,
+          ),
+      },
+      {
         path: 'discounts',
         canActivate: [roleGuard(['Admin', 'Sales'])],
         loadChildren: () =>

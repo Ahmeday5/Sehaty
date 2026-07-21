@@ -1,0 +1,89 @@
+<div class="igl-page">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="igl-title mb-1">
+        <i class="fa-solid fa-sitemap igl-title-icon"></i>
+        مجموعات الأصناف
+      </h1>
+      <p class="igl-subtitle mb-0">
+        إدارة التصنيف الشجري للأصناف عبر ثلاثة مستويات: قسم رئيسي، مجموعة رئيسية، مجموعة فرعية
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      <button class="igl-btn igl-btn--refresh" type="button" (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        تحديث
+      </button>
+      <button class="igl-btn igl-btn--add" type="button" (click)="openAddRoot()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة قسم رئيسي
+      </button>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="igl-legend">
+    <span class="igl-legend-item"><span class="igl-legend-dot igl-legend-dot--1"></span> قسم رئيسي</span>
+    <span class="igl-legend-item"><span class="igl-legend-dot igl-legend-dot--2"></span> مجموعة رئيسية</span>
+    <span class="igl-legend-item"><span class="igl-legend-dot igl-legend-dot--3"></span> مجموعة فرعية (ترتبط بالأصناف)</span>
+  </div>
+
+  <!-- Tree card -->
+  <div class="igl-tree-card">
+    @if (loading()) {
+      <div class="igl-skel-wrap">
+        @for (_ of [1,2,3,4,5]; track $index) {
+          <div class="igl-skel-row"></div>
+        }
+      </div>
+    } @else if (roots().length === 0) {
+      <app-empty-state
+        icon="fa-sitemap"
+        title="لا توجد أقسام رئيسية"
+        message="ابدأ بإضافة أول قسم رئيسي لتصنيف الأصناف"
+        actionLabel="إضافة قسم رئيسي"
+        (actionClick)="openAddRoot()">
+      </app-empty-state>
+    } @else {
+      <div class="igl-tree">
+        @for (root of roots(); track root.id) {
+          <app-item-group-node
+            [node]="root"
+            [depth]="0"
+            (toggle)="onToggle($event)"
+            (addChild)="onAddChild($event)"
+            (edit)="onEdit($event)"
+            (remove)="onDelete($event)"
+            (viewItems)="onViewItems($event)">
+          </app-item-group-node>
+        }
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- Add modal -->
+@if (showAddModal()) {
+  <app-modal title="إضافة مجموعة جديدة" size="md" (closed)="closeAddModal()">
+    <app-item-group-form
+      [context]="addContext() ?? undefined"
+      (saved)="onSaved()"
+      (cancelled)="closeAddModal()">
+    </app-item-group-form>
+  </app-modal>
+}
+
+<!-- Edit modal -->
+@if (editingNode()) {
+  <app-modal title="تعديل المجموعة" size="md" (closed)="closeEditModal()">
+    <app-item-group-form
+      [itemGroup]="editingNode()!"
+      (saved)="onSaved()"
+      (cancelled)="closeEditModal()">
+    </app-item-group-form>
+  </app-modal>
+}

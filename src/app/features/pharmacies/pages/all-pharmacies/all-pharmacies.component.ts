@@ -44,6 +44,10 @@ export class AllPharmaciesComponent implements OnInit {
   private readonly toast   = inject(ToastService);
   private readonly confirm = inject(ConfirmService);
 
+  protected readonly pharmacyPortalUrl = 'http://sehaty.theonesystemco.com/pharmacy';
+  protected readonly linkCopied = signal(false);
+  private copyResetTimer: ReturnType<typeof setTimeout> | null = null;
+
   protected readonly loading      = signal(false);
   protected readonly displayed    = signal<Pharmacy[]>([]);
   protected readonly total        = signal(0);
@@ -94,6 +98,18 @@ export class AllPharmaciesComponent implements OnInit {
   }
 
   protected refresh(): void { this.load(); }
+
+  protected async copyPortalLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.pharmacyPortalUrl);
+      this.toast.success('تم نسخ رابط بوابة الصيدليات');
+      this.linkCopied.set(true);
+      if (this.copyResetTimer) clearTimeout(this.copyResetTimer);
+      this.copyResetTimer = setTimeout(() => this.linkCopied.set(false), 2000);
+    } catch {
+      this.toast.error('تعذر نسخ الرابط');
+    }
+  }
 
   protected async onToggleActive(p: Pharmacy): Promise<void> {
     const action = p.isActive ? 'تعطيل' : 'تفعيل';

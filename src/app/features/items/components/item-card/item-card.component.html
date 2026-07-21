@@ -1,0 +1,40 @@
+<div class="itc-card" [class.itc-card--inactive]="!item.isActive">
+
+  <div class="itc-image">
+    @if (imageSrc) {
+      <img [src]="imageSrc" [alt]="item.nameAr">
+    } @else {
+      <span class="itc-image-fallback">{{ initials }}</span>
+    }
+    @if (!item.isActive) {
+      <span class="itc-inactive-badge">غير نشط</span>
+    }
+  </div>
+
+  <div class="itc-body">
+    <h4 class="itc-name" [title]="item.nameAr">{{ item.nameAr }}</h4>
+    <p class="itc-name-en" [title]="item.nameEn">{{ item.nameEn }}</p>
+
+    <div class="itc-meta">
+      <span class="itc-code"><i class="fa-solid fa-hashtag"></i> {{ item.code }}</span>
+      @if (item.barcode) {
+        <span class="itc-barcode"><i class="fa-solid fa-barcode"></i> {{ item.barcode }}</span>
+      }
+    </div>
+
+    <div class="itc-footer">
+      <span class="itc-price">{{ item.defaultConsumerPrice | number:'1.2-2' }} ج.م</span>
+      <span class="itc-unit">{{ item.unitDefault }}</span>
+    </div>
+  </div>
+
+  <div class="itc-actions">
+    <button type="button" class="itc-action-btn itc-action-btn--edit" (click)="edit.emit(item)" title="تعديل">
+      <i class="fa-solid fa-pen"></i>
+    </button>
+    <button type="button" class="itc-action-btn itc-action-btn--delete" (click)="remove.emit(item)" title="حذف">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  </div>
+
+</div>

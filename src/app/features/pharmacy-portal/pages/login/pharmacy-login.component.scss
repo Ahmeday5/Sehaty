@@ -260,12 +260,73 @@
   flex: 1;
   padding: 32px 24px;
   background: var(--bg);
+  overflow: hidden;
+}
+
+/* ── 3D flip stage: a single flipping card whose two faces are the login/register forms ── */
+.lg-stage {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  perspective: 2200px;
+  animation: lg-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+
+.lg-flipper {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.95s cubic-bezier(0.68, -0.4, 0.27, 1.4);
+}
+
+.lg-stage--register .lg-flipper {
+  transform: rotateY(180deg);
+}
+
+.lg-card--login,
+.lg-card--register {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.lg-card--login {
+  position: relative;
+  z-index: 2;
+}
+
+.lg-card--register {
+  position: absolute;
+  top: 0;
+  inset-inline: 0;
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+/* While flipped to register, keep the login face fully inert (unreachable, unclickable, unreadable) */
+.lg-stage:not(.lg-stage--register) .lg-card--register {
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 0.95s;
+}
+
+.lg-stage--register .lg-card--login {
+  pointer-events: none;
+  visibility: hidden;
+  transition: visibility 0s 0.95s;
+}
+
+.lg-stage--register .lg-card--register {
+  visibility: visible;
+}
+
+.lg-stage:not(.lg-stage--register) .lg-card--login {
+  visibility: visible;
 }
 
 /* Card */
 .lg-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 500px;
   background: var(--surface);
   border-radius: 24px;
   border: 1px solid var(--border);
@@ -273,7 +334,14 @@
     0 4px 20px rgba(0, 0, 0, 0.25),
     0 20px 60px rgba(19, 160, 160, 0.08);
   overflow: hidden;
-  animation: lg-card-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Content fades/rises in on its own, slightly after the flip settles, so it never looks mirrored mid-spin */
+.lg-card--login > *,
+.lg-card--register > * {
+  animation: lg-face-in 0.5s ease 0.35s both;
 }
 
 @keyframes lg-card-in {
@@ -285,6 +353,20 @@
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+@keyframes lg-face-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes lg-fade-swap {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.lg-fade-swap {
+  animation: lg-fade-swap 0.4s ease both;
 }
 
 .lg-card-accent {
@@ -579,6 +661,247 @@
   }
 }
 
+/* ── Switch between login / register ── */
+.lg-switch-text {
+  text-align: center;
+  font-size: 13px;
+  color: var(--textsub);
+  margin: 0;
+  padding: 0 32px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lg-switch-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--main-color);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s, gap 0.2s ease;
+
+  i {
+    font-size: 11px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: #17c7c7;
+    gap: 9px;
+  }
+}
+
+/* ── Optional tag ── */
+.lg-optional {
+  color: var(--textmuted);
+  font-weight: 500;
+  font-size: 11px;
+}
+
+/* ── Register form spacing (denser, more fields, sized to never scroll) ── */
+.lg-card--register .lg-card-header {
+  padding: 20px 32px 0;
+}
+
+.lg-card--register .lg-title {
+  font-size: 1.4rem;
+}
+
+.lg-card--register .lg-subtitle {
+  font-size: 12.5px;
+}
+
+.lg-form--register {
+  padding: 16px 36px 16px;
+  gap: 14px;
+
+  .lg-field { gap: 6px; }
+
+  .lg-input {
+    padding: 11px 16px;
+  }
+
+  .lg-label {
+    font-size: 13px;
+  }
+}
+
+.lg-card--register .lg-switch-text {
+  padding: 0 36px 18px;
+}
+
+.lg-field--compact {
+  gap: 4px;
+}
+
+/* Two-up field row (name+phone, password+confirm) */
+.lg-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+
+  .lg-field { gap: 6px; }
+}
+
+/* ── Avatar upload (compact inline strip) ── */
+.lg-avatar-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lg-avatar-preview {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid var(--border2);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &--empty i {
+    font-size: 16px;
+    color: var(--main-color);
+    opacity: 0.7;
+  }
+}
+
+.lg-avatar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.lg-avatar-hint {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--textsub);
+}
+
+.lg-avatar-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lg-avatar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border2);
+  background: var(--surface2);
+  color: var(--txt);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  width: fit-content;
+
+  i {
+    font-size: 12px;
+    color: var(--main-color);
+  }
+
+  &:hover {
+    border-color: var(--main-color);
+    background: var(--surface3);
+    transform: translateY(-1px);
+  }
+}
+
+.lg-avatar-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: none;
+  padding: 0;
+  color: #f43f5e;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  i {
+    font-size: 12px;
+  }
+
+  &:hover {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: rgba(244, 63, 94, 0.25);
+  }
+}
+
+/* ── Location row (lat / lng / locate-me) ── */
+.lg-location-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lg-input-wrap--half {
+  flex: 1;
+  min-width: 0;
+}
+
+.lg-locate-btn {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  border: 1.5px solid var(--border);
+  background: var(--surface2);
+  color: var(--main-color);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+
+  &:hover:not(:disabled) {
+    border-color: var(--main-color);
+    background: var(--surface3);
+    transform: scale(1.05);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.lg-submit-spinner--sm {
+  width: 15px;
+  height: 15px;
+  border-width: 2px;
+  border-color: rgba(19, 160, 160, 0.25);
+  border-top-color: var(--main-color);
+}
+
 /* Card footer text */
 .lg-card-footer-text {
   text-align: center;
@@ -606,6 +929,7 @@
   .lg-form-panel {
     padding: 32px 16px;
   }
+  .lg-stage,
   .lg-card {
     max-width: 100%;
   }
@@ -629,7 +953,18 @@
   .lg-title {
     font-size: 1.4rem;
   }
-  .lg-card-footer-text {
+  .lg-card-footer-text,
+  .lg-switch-text {
     padding-inline: 20px;
+  }
+  .lg-avatar-upload {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lg-card--login,
+  .lg-card--register {
+    transition-duration: 0.01ms !important;
   }
 }

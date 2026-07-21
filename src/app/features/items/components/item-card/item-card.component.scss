@@ -1,0 +1,140 @@
+.itc-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: var(--border2);
+    box-shadow: 0 8px 24px rgba(0,0,0,.35);
+    transform: translateY(-2px);
+
+    .itc-actions { opacity: 1; visibility: visible; }
+  }
+
+  &--inactive { opacity: .6; }
+}
+
+.itc-image {
+  position: relative;
+  height: 130px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img { width: 100%; height: 100%; object-fit: cover; }
+}
+
+.itc-image-fallback {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--textmuted);
+}
+
+.itc-inactive-badge {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  font-size: .68rem;
+  font-weight: 700;
+  color: var(--red);
+  background: var(--redsoft);
+  padding: .15rem .5rem;
+  border-radius: 999px;
+}
+
+.itc-body {
+  padding: .75rem .9rem;
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  flex: 1;
+}
+
+.itc-name {
+  margin: 0;
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--txt);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itc-name-en {
+  margin: 0;
+  font-size: .74rem;
+  color: var(--textsub);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itc-meta {
+  display: flex;
+  gap: .6rem;
+  font-size: .74rem;
+  color: var(--textsub);
+  margin-top: .15rem;
+
+  span { display: inline-flex; align-items: center; gap: .25rem; }
+}
+
+.itc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: .4rem;
+  padding-top: .4rem;
+  border-top: 1px dashed var(--border);
+}
+
+.itc-price {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--main-color);
+}
+
+.itc-unit {
+  font-size: .74rem;
+  color: var(--textsub);
+  background: var(--surface2);
+  padding: .1rem .5rem;
+  border-radius: 999px;
+}
+
+.itc-actions {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 8px;
+  display: flex;
+  gap: .3rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .15s ease;
+}
+
+.itc-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface3);
+  color: var(--textsub);
+  cursor: pointer;
+  font-size: .78rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.3);
+  transition: background-color .15s ease, color .15s ease;
+
+  &--edit:hover   { background: var(--ambersoft); color: var(--amber); }
+  &--delete:hover { background: var(--redsoft); color: var(--red); }
+}

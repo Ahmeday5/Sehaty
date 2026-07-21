@@ -5,7 +5,7 @@ export type NavIconName =
   | 'house' | 'doctors' | 'add-user' | 'users' | 'patients' | 'specialities'
   | 'discount' | 'ads' | 'bell' | 'chart' | 'document' | 'logout' | 'settings'
   | 'pharmacy' | 'calendar' | 'prescription' | 'finance' | 'approvals' | 'support' | 'audit'
-  | 'reports' | 'doctor-map' | 'ratings';
+  | 'reports' | 'doctor-map' | 'ratings' | 'item-groups' | 'items';
 
 const ICON_CLASSES: Record<NavIconName, string> = {
   'house':        'fa-solid fa-house',
@@ -31,6 +31,8 @@ const ICON_CLASSES: Record<NavIconName, string> = {
   'reports':      'fa-solid fa-file-export',
   'doctor-map':   'fa-solid fa-map-location-dot',
   'ratings':      'fa-solid fa-star-half-stroke',
+  'item-groups':  'fa-solid fa-sitemap',
+  'items':        'fa-solid fa-boxes-stacked',
 };
 
 @Component({

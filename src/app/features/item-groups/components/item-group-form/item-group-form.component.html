@@ -1,0 +1,72 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="igf-form">
+
+  <!-- Level (read-only context, structural) -->
+  <div class="igf-field">
+    <label class="igf-label">المستوى</label>
+    <select class="igf-input" formControlName="level">
+      @for (lvl of levels; track lvl) {
+        <option [value]="lvl">{{ levelLabels[lvl] }}</option>
+      }
+    </select>
+    @if (isEdit || context) {
+      <p class="igf-hint">لا يمكن تغيير المستوى بعد الإنشاء لضمان سلامة الشجرة.</p>
+    }
+  </div>
+
+  @if (requiresParent) {
+    <div class="igf-field">
+      <label class="igf-label">المجموعة الأب</label>
+      <input type="text" class="igf-input" [value]="form.getRawValue().parentId ?? '—'" disabled dir="ltr">
+      <p class="igf-hint">يتم تحديد الأب تلقائيًا عند الإضافة كتابع من داخل الشجرة.</p>
+    </div>
+  }
+
+  <!-- Code -->
+  <div class="igf-field">
+    <label class="igf-label">الكود <span class="igf-required">*</span></label>
+    <input type="text" class="igf-input" formControlName="code" placeholder="مثال: 101" dir="ltr"
+           [class.igf-input--invalid]="form.get('code')!.invalid && form.get('code')!.touched">
+    <app-form-error [control]="form.get('code')"></app-form-error>
+  </div>
+
+  <!-- Name AR -->
+  <div class="igf-field">
+    <label class="igf-label">الاسم بالعربية <span class="igf-required">*</span></label>
+    <input type="text" class="igf-input" formControlName="nameAr" placeholder="مثال: مسكنات وخافضات حرارة"
+           [class.igf-input--invalid]="form.get('nameAr')!.invalid && form.get('nameAr')!.touched">
+    <app-form-error [control]="form.get('nameAr')"></app-form-error>
+  </div>
+
+  <!-- Name EN -->
+  <div class="igf-field">
+    <label class="igf-label">الاسم بالإنجليزية <span class="igf-required">*</span></label>
+    <input type="text" class="igf-input" formControlName="nameEn" placeholder="e.g. Painkillers & Antipyretics" dir="ltr"
+           [class.igf-input--invalid]="form.get('nameEn')!.invalid && form.get('nameEn')!.touched">
+    <app-form-error [control]="form.get('nameEn')"></app-form-error>
+  </div>
+
+  @if (isEdit) {
+    <div class="igf-field igf-field--checkbox">
+      <label class="igf-checkbox-label">
+        <input type="checkbox" formControlName="isActive">
+        <span>مجموعة نشطة</span>
+      </label>
+    </div>
+  }
+
+  <div class="igf-actions">
+    <button type="button" class="igf-btn igf-btn--cancel" (click)="cancelled.emit()" [disabled]="submitting()">
+      إلغاء
+    </button>
+    <button type="submit" class="igf-btn igf-btn--save" [disabled]="submitting()">
+      @if (submitting()) {
+        <span class="igf-spinner"></span>
+        جاري الحفظ...
+      } @else {
+        <i class="fa-solid fa-floppy-disk"></i>
+        حفظ
+      }
+    </button>
+  </div>
+
+</form>

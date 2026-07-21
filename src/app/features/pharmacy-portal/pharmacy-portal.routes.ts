@@ -6,6 +6,16 @@ export const pharmacyPortalRoutes: Routes = [
   {
     path: 'login',
     canActivate: [pharmacyGuestGuard],
+    data: { mode: 'login' },
+    loadComponent: () =>
+      import('./pages/login/pharmacy-login.component').then(
+        (m) => m.PharmacyLoginComponent,
+      ),
+  },
+  {
+    path: 'register',
+    canActivate: [pharmacyGuestGuard],
+    data: { mode: 'register' },
     loadComponent: () =>
       import('./pages/login/pharmacy-login.component').then(
         (m) => m.PharmacyLoginComponent,

@@ -1,0 +1,121 @@
+<div class="ait-page">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+      <h1 class="ait-title mb-1">
+        <i class="fa-solid fa-boxes-stacked ait-title-icon"></i>
+        الأصناف
+      </h1>
+      <p class="ait-subtitle mb-0">
+        @if (groupName()) {
+          عرض أصناف مجموعة "<strong>{{ groupName() }}</strong>"
+        } @else {
+          إدارة جميع الأصناف المرتبطة بالمجموعات الفرعية
+        }
+      </p>
+    </div>
+
+    <div class="d-flex gap-2 align-items-center flex-wrap">
+      @if (!loading() && total() > 0) {
+        <span class="ait-total-badge">
+          <i class="fa-solid fa-list-check"></i>
+          {{ total() }} صنف
+        </span>
+      }
+      <button class="ait-btn ait-btn--refresh" type="button" (click)="refresh()" [disabled]="loading()">
+        <i class="fa-solid fa-rotate-right" [class.fa-spin]="loading()"></i>
+        تحديث
+      </button>
+      <button class="ait-btn ait-btn--add" type="button" (click)="openAdd()">
+        <i class="fa-solid fa-plus"></i>
+        إضافة صنف
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="ait-filters">
+    <div class="ait-filter-field">
+      <label class="ait-filter-label">المجموعة الفرعية</label>
+      <select class="ait-filter-input" [ngModel]="selectedGroup()" (ngModelChange)="onGroupFilterChange($event)">
+        <option [ngValue]="undefined">كل المجموعات</option>
+        @for (g of subGroups(); track g.id) {
+          <option [ngValue]="g.id">{{ g.nameAr }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="ait-filter-field">
+      <label class="ait-filter-label">بحث بالكود</label>
+      <div class="ait-search-input-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" class="ait-filter-input ait-filter-input--search"
+               placeholder="ابحث بكود الصنف..." dir="ltr"
+               [ngModel]="codeSearch()" (ngModelChange)="onCodeInput($event)">
+      </div>
+    </div>
+
+    <div class="ait-filter-field">
+      <label class="ait-filter-label">بحث بالباركود</label>
+      <div class="ait-search-input-wrap">
+        <i class="fa-solid fa-barcode"></i>
+        <input type="text" class="ait-filter-input ait-filter-input--search"
+               placeholder="ابحث بالباركود..." dir="ltr"
+               [ngModel]="barcodeSearch()" (ngModelChange)="onBarcodeInput($event)">
+      </div>
+    </div>
+
+    @if (groupName()) {
+      <button type="button" class="ait-clear-filter-btn" (click)="clearGroupFilter()">
+        <i class="fa-solid fa-xmark"></i> إلغاء الفلترة
+      </button>
+    }
+  </div>
+
+  <!-- Content -->
+  @if (loading()) {
+    <div class="ait-grid">
+      @for (_ of [1,2,3,4,5,6,7,8]; track $index) {
+        <div class="ait-skel-card"></div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <app-empty-state
+      icon="fa-boxes-stacked"
+      title="لا توجد أصناف"
+      [message]="groupName() ? 'لا توجد أصناف مرتبطة بهذه المجموعة حتى الآن' : 'لم يتم إضافة أي أصناف حتى الآن'"
+      actionLabel="إضافة أول صنف"
+      (actionClick)="openAdd()">
+    </app-empty-state>
+  } @else {
+    <div class="ait-grid">
+      @for (item of items(); track item.id) {
+        <app-item-card [item]="item" (edit)="openEdit($event)" (remove)="onDelete($event)"></app-item-card>
+      }
+    </div>
+
+    <div class="mt-3">
+      <app-pagination
+        [currentPage]="currentPage()" [totalItems]="total()" [pageSize]="pageSize()"
+        [pageSizeOptions]="[12, 24, 48, 96]"
+        (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+      </app-pagination>
+    </div>
+  }
+
+</div>
+
+<!-- Add modal -->
+@if (showAddModal()) {
+  <app-modal title="إضافة صنف جديد" size="lg" (closed)="closeAdd()">
+    <app-item-form [presetItemGroupId]="selectedGroup()" (saved)="onSaved()" (cancelled)="closeAdd()"></app-item-form>
+  </app-modal>
+}
+
+<!-- Edit modal -->
+@if (editingItem()) {
+  <app-modal title="تعديل بيانات الصنف" size="lg" (closed)="closeEdit()">
+    <app-item-form [item]="editingItem()!" (saved)="onSaved()" (cancelled)="closeEdit()"></app-item-form>
+  </app-modal>
+}

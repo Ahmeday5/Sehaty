@@ -1,0 +1,70 @@
+<div class="ign-row" [class.ign-row--inactive]="!node.isActive" [style.--depth]="depth">
+
+  <div class="ign-main">
+    <!-- Expand/collapse toggle -->
+    @if (canHaveChildren) {
+      <button type="button" class="ign-toggle" (click)="toggle.emit(node)" [attr.aria-label]="node.expanded ? 'طي' : 'توسيع'">
+        @if (node.childrenLoading) {
+          <i class="fa-solid fa-spinner fa-spin"></i>
+        } @else {
+          <i class="fa-solid" [class.fa-chevron-down]="node.expanded" [class.fa-chevron-left]="!node.expanded"></i>
+        }
+      </button>
+    } @else {
+      <span class="ign-toggle ign-toggle--leaf"><i class="fa-solid fa-tag"></i></span>
+    }
+
+    <!-- Level badge -->
+    <span class="ign-level ign-level--{{ node.level }}">{{ levelLabels[node.level] }}</span>
+
+    <!-- Code + names -->
+    <span class="ign-code">{{ node.code }}</span>
+    <span class="ign-name">
+      {{ node.nameAr }}
+      <span class="ign-name-en">{{ node.nameEn }}</span>
+    </span>
+
+    @if (!node.isActive) {
+      <span class="ign-badge-inactive">غير نشط</span>
+    }
+  </div>
+
+  <div class="ign-actions">
+    @if (isSubGroup) {
+      <button type="button" class="ign-action-btn ign-action-btn--items" (click)="viewItems.emit(node)" title="عرض الأصناف">
+        <i class="fa-solid fa-boxes-stacked"></i>
+      </button>
+    }
+    @if (canHaveChildren) {
+      <button type="button" class="ign-action-btn ign-action-btn--add" (click)="addChild.emit(node)" title="إضافة تابع">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+    }
+    <button type="button" class="ign-action-btn ign-action-btn--edit" (click)="edit.emit(node)" title="تعديل">
+      <i class="fa-solid fa-pen"></i>
+    </button>
+    <button type="button" class="ign-action-btn ign-action-btn--delete" (click)="remove.emit(node)" title="حذف">
+      <i class="fa-solid fa-trash-can"></i>
+    </button>
+  </div>
+
+</div>
+
+@if (canHaveChildren && node.expanded) {
+  <div class="ign-children">
+    @if (node.childrenLoaded && node.children.length === 0) {
+      <div class="ign-empty-children" [style.--depth]="depth + 1">لا توجد عناصر تابعة</div>
+    }
+    @for (child of node.children; track child.id) {
+      <app-item-group-node
+        [node]="child"
+        [depth]="depth + 1"
+        (toggle)="toggle.emit($event)"
+        (addChild)="addChild.emit($event)"
+        (edit)="edit.emit($event)"
+        (remove)="remove.emit($event)"
+        (viewItems)="viewItems.emit($event)">
+      </app-item-group-node>
+    }
+  </div>
+}

@@ -1,0 +1,124 @@
+.igl-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--txt);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.igl-title-icon {
+  font-size: 22px;
+  background: linear-gradient(135deg, var(--second-color), var(--main-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.igl-subtitle {
+  font-size: 13.5px;
+  color: var(--textsub);
+}
+
+.igl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 9px 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 13.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s ease, background .15s;
+
+  &:disabled { opacity: .55; cursor: not-allowed; transform: none !important; }
+
+  &--refresh {
+    background: var(--surface);
+    color: var(--textsub);
+    border: 1.5px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,.2);
+
+    &:hover:not(:disabled) {
+      background: var(--surface2);
+      border-color: var(--border2);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--add {
+    background: linear-gradient(135deg, var(--second-color), var(--main-color));
+    color: #fff;
+    box-shadow: 0 4px 14px var(--main-light);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--main-light);
+    }
+  }
+}
+
+.igl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+  padding: .6rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: .8rem;
+  color: var(--textsub);
+}
+
+.igl-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.igl-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &--1 { background: var(--blue); }
+  &--2 { background: var(--green); }
+  &--3 { background: var(--amber); }
+}
+
+.igl-tree-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: .75rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2), 0 8px 28px rgba(0,0,0,.15);
+}
+
+.igl-tree {
+  display: flex;
+  flex-direction: column;
+}
+
+.igl-skel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: .25rem;
+}
+
+.igl-skel-row {
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: igl-shimmer 1.4s ease infinite;
+}
+
+@keyframes igl-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

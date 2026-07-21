@@ -1,0 +1,125 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="itf-form">
+
+  <!-- Image picker -->
+  <div class="itf-image-field">
+    <label class="itf-image-picker">
+      <input type="file" accept="image/*" (change)="onImageChange($event)" hidden>
+      @if (imagePreview()) {
+        <img [src]="imagePreview()" alt="" class="itf-image-preview">
+      } @else {
+        <span class="itf-image-placeholder">
+          <i class="fa-solid fa-image"></i>
+          <span>صورة الصنف</span>
+        </span>
+      }
+      <span class="itf-image-edit-badge"><i class="fa-solid fa-camera"></i></span>
+    </label>
+  </div>
+
+  <!-- Group chain: MainSection -> MainGroup -> SubGroup -->
+  <div class="itf-group-row">
+    <div class="itf-field">
+      <label class="itf-label">القسم الرئيسي <span class="itf-required">*</span></label>
+      <select class="itf-input" formControlName="mainSectionId">
+        <option [ngValue]="null">اختر القسم الرئيسي</option>
+        @for (s of mainSections(); track s.id) {
+          <option [ngValue]="s.id">{{ s.nameAr }}</option>
+        }
+      </select>
+      <app-form-error [control]="form.get('mainSectionId')"></app-form-error>
+    </div>
+
+    <div class="itf-field">
+      <label class="itf-label">المجموعة الرئيسية <span class="itf-required">*</span></label>
+      <select class="itf-input" formControlName="mainGroupId"
+              [disabled]="!form.get('mainSectionId')!.value">
+        <option [ngValue]="null">اختر المجموعة الرئيسية</option>
+        @for (g of mainGroups(); track g.id) {
+          <option [ngValue]="g.id">{{ g.nameAr }}</option>
+        }
+      </select>
+      <app-form-error [control]="form.get('mainGroupId')"></app-form-error>
+    </div>
+
+    <div class="itf-field">
+      <label class="itf-label">المجموعة الفرعية <span class="itf-required">*</span></label>
+      <select class="itf-input" formControlName="subGroupId"
+              [disabled]="!form.get('mainGroupId')!.value">
+        <option [ngValue]="null">اختر المجموعة الفرعية</option>
+        @for (g of subGroups(); track g.id) {
+          <option [ngValue]="g.id">{{ g.nameAr }}</option>
+        }
+      </select>
+      <app-form-error [control]="form.get('subGroupId')"></app-form-error>
+    </div>
+  </div>
+
+  <!-- Code + Barcode -->
+  <div class="itf-row-2">
+    <div class="itf-field">
+      <label class="itf-label">الكود <span class="itf-required">*</span></label>
+      <input type="text" class="itf-input" formControlName="code" placeholder="مثال: 10101001" dir="ltr">
+      <app-form-error [control]="form.get('code')"></app-form-error>
+    </div>
+    <div class="itf-field">
+      <label class="itf-label">الباركود <span class="itf-optional">(اختياري)</span></label>
+      <input type="text" class="itf-input" formControlName="barcode" placeholder="مثال: 2990000000001" dir="ltr">
+    </div>
+  </div>
+
+  <!-- Names -->
+  <div class="itf-field">
+    <label class="itf-label">الاسم بالعربية <span class="itf-required">*</span></label>
+    <input type="text" class="itf-input" formControlName="nameAr" placeholder="مثال: بانادول أقراص">
+    <app-form-error [control]="form.get('nameAr')"></app-form-error>
+  </div>
+
+  <div class="itf-field">
+    <label class="itf-label">الاسم بالإنجليزية <span class="itf-required">*</span></label>
+    <input type="text" class="itf-input" formControlName="nameEn" placeholder="e.g. Panadol Tablets" dir="ltr">
+    <app-form-error [control]="form.get('nameEn')"></app-form-error>
+  </div>
+
+  <!-- Units + Price -->
+  <div class="itf-row-3">
+    <div class="itf-field">
+      <label class="itf-label">وحدة القياس الأساسية <span class="itf-required">*</span></label>
+      <input type="text" class="itf-input" formControlName="unitDefault" placeholder="مثال: علبة">
+      <app-form-error [control]="form.get('unitDefault')"></app-form-error>
+    </div>
+    <div class="itf-field">
+      <label class="itf-label">الوحدة الفرعية <span class="itf-optional">(اختياري)</span></label>
+      <input type="text" class="itf-input" formControlName="unitFirst" placeholder="مثال: شريط">
+    </div>
+    <div class="itf-field">
+      <label class="itf-label">سعر البيع للمستهلك <span class="itf-required">*</span></label>
+      <input type="number" class="itf-input" formControlName="defaultConsumerPrice" min="0" step="0.01" dir="ltr">
+      <app-form-error [control]="form.get('defaultConsumerPrice')"></app-form-error>
+    </div>
+  </div>
+
+  @if (isEdit) {
+    <div class="itf-field itf-field--checkbox">
+      <label class="itf-checkbox-label">
+        <input type="checkbox" formControlName="isActive">
+        <span>صنف نشط</span>
+      </label>
+    </div>
+  }
+
+  <div class="itf-actions">
+    <button type="button" class="itf-btn itf-btn--cancel" (click)="cancelled.emit()" [disabled]="submitting()">
+      إلغاء
+    </button>
+    <button type="submit" class="itf-btn itf-btn--save" [disabled]="submitting()">
+      @if (submitting()) {
+        <span class="itf-spinner"></span>
+        جاري الحفظ...
+      } @else {
+        <i class="fa-solid fa-floppy-disk"></i>
+        حفظ
+      }
+    </button>
+  </div>
+
+</form>

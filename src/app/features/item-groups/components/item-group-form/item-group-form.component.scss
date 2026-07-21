@@ -1,0 +1,130 @@
+.igf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.igf-field {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+
+.igf-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--textsub);
+}
+
+.igf-required { color: var(--red); }
+
+.igf-input {
+  padding: .6rem .8rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface2);
+  color: var(--txt);
+  font-size: .9rem;
+  font-family: inherit;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+
+  &::placeholder { color: var(--textmuted); }
+
+  &:focus {
+    outline: none;
+    border-color: var(--main-color);
+    background: var(--surface3);
+    box-shadow: 0 0 0 3px var(--main-light);
+  }
+
+  &:disabled {
+    background: var(--surface);
+    color: var(--textmuted);
+  }
+
+  &--invalid {
+    border-color: var(--red);
+    background: var(--redsoft);
+  }
+}
+
+.igf-hint {
+  margin: 0;
+  font-size: .76rem;
+  color: var(--textmuted);
+}
+
+.igf-field--checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+.igf-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--txt);
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    accent-color: var(--main-color);
+    cursor: pointer;
+  }
+}
+
+.igf-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .6rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--border);
+}
+
+.igf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  padding: .6rem 1.3rem;
+  border-radius: 10px;
+  border: none;
+  font-size: .88rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color .15s ease, box-shadow .15s ease, opacity .15s ease;
+
+  &:disabled { opacity: .6; cursor: not-allowed; }
+
+  &--cancel {
+    background: var(--surface2);
+    color: var(--textsub);
+    border: 1.5px solid var(--border);
+
+    &:hover:not(:disabled) { background: var(--surface3); color: var(--txt); }
+  }
+
+  &--save {
+    background: linear-gradient(135deg, var(--second-color), var(--main-color));
+    color: #fff;
+    box-shadow: 0 4px 14px var(--main-light);
+
+    &:hover:not(:disabled) { box-shadow: 0 6px 18px var(--main-light); }
+  }
+}
+
+.igf-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, .4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: igf-spin .7s linear infinite;
+}
+
+@keyframes igf-spin {
+  to { transform: rotate(360deg); }
+}

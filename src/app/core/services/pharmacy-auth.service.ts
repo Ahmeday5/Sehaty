@@ -23,7 +23,7 @@ export class PharmacyAuthService {
     this._pharmacy.set(session);
     this.storage.setJson(SESSION_KEY, session);
     this.storage.set(TOKEN_KEY, session.token);
-    if (rememberMe) {
+    if (rememberMe && session.phone) {
       this.storage.set(PHONE_KEY, session.phone);
     } else {
       this.storage.remove(PHONE_KEY);
@@ -49,7 +49,9 @@ export class PharmacyAuthService {
   }
 
   getSavedPhone(): string | null {
-    return this.storage.get(PHONE_KEY);
+    const phone = this.storage.get(PHONE_KEY);
+    if (!phone || phone === 'undefined' || phone === 'null') return null;
+    return phone;
   }
 
   private loadSession(): PharmacySession | null {

@@ -1,4 +1,4 @@
-<div class="lg-wrap">
+<div class="lg-wrap" [class.lg-wrap--register]="mode() === 'register'">
 
   <!-- ══════════════════════════════════
        Left panel — branding
@@ -24,15 +24,24 @@
       <!-- System Overview -->
       <div class="lg-system-overview">
 
-        <div class="lg-overview-card">
+        @if (mode() === 'login') {
+        <div class="lg-overview-card lg-fade-swap">
           <h3>بوابة صاحب الصيدلية</h3>
-
           <p>
             لوحة تحكم مخصصة لأصحاب الصيدليات لإدارة بيانات الصيدلية،
             متابعة الطلبات، والتواصل مع منصة شفاء الصحية بكل سهولة
             وأمان.
           </p>
         </div>
+        } @else {
+        <div class="lg-overview-card lg-fade-swap">
+          <h3>انضم إلى شبكة صيدليات شفاء</h3>
+          <p>
+            أنشئ حساب صيدليتك الآن وابدأ في استقبال الطلبات والروشتات
+            الطبية والوصول إلى آلاف المرضى بكل سهولة وأمان.
+          </p>
+        </div>
+        }
 
         <!-- Features -->
         <div class="lg-feature-list">
@@ -73,111 +82,334 @@
   </div>
 
   <!-- ══════════════════════════════════
-       Right panel — form
+       Right panel — form (sliding stage)
        ══════════════════════════════════ -->
   <div class="lg-form-panel d-flex align-items-center justify-content-center">
 
-    <div class="lg-card">
+    <div class="lg-stage" [class.lg-stage--register]="mode() === 'register'">
+     <div class="lg-flipper">
 
-      <!-- Card top accent -->
-      <div class="lg-card-accent"></div>
+      <!-- ─────────── LOGIN CARD ─────────── -->
+      <div class="lg-card lg-card--login">
 
-      <!-- Header -->
-      <div class="lg-card-header">
-        <!-- Logo visible on mobile only -->
-        <div class="lg-mobile-logo d-flex d-lg-none align-items-center gap-2 mb-4">
-          <div class="lg-mobile-logo-ring">
-            <i class="fa-solid fa-pills"></i>
+        <div class="lg-card-accent"></div>
+
+        <div class="lg-card-header">
+          <div class="lg-mobile-logo d-flex d-lg-none align-items-center gap-2 mb-4">
+            <div class="lg-mobile-logo-ring">
+              <i class="fa-solid fa-pills"></i>
+            </div>
+            <span class="lg-mobile-app-name">شفاء</span>
           </div>
-          <span class="lg-mobile-app-name">شفاء</span>
+
+          <h2 class="lg-title">تسجيل دخول الصيدلية</h2>
+          <p class="lg-subtitle">أدخل بيانات صيدليتك للوصول إلى الملف الشخصي</p>
         </div>
 
-        <h2 class="lg-title">تسجيل دخول الصيدلية</h2>
-        <p class="lg-subtitle">أدخل بيانات صيدليتك للوصول إلى الملف الشخصي</p>
-      </div>
+        <form class="lg-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
 
-      <!-- Form -->
-      <form class="lg-form" #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" novalidate>
-
-        <!-- Phone -->
-        <div class="lg-field">
-          <label class="lg-label" for="phone">
-            <i class="fa-solid fa-phone"></i>
-            رقم الهاتف
-          </label>
-          <div class="lg-input-wrap">
-            <input type="tel" id="phone" name="phone" class="lg-input" placeholder="01xxxxxxxxx" dir="ltr"
-              [ngModel]="phone()" (ngModelChange)="phone.set($event)" required pattern="^01[0-9]{9}$" #phoneRef="ngModel"
-              [class.lg-input--invalid]="phoneRef.invalid && phoneRef.touched"
-              [class.lg-input--valid]="phoneRef.valid && phoneRef.touched">
-            @if (phoneRef.valid && phoneRef.touched) {
-            <i class="fa-solid fa-circle-check lg-input-check"></i>
+          <!-- Phone -->
+          <div class="lg-field">
+            <label class="lg-label" for="phone">
+              <i class="fa-solid fa-phone"></i>
+              رقم الهاتف
+            </label>
+            <div class="lg-input-wrap">
+              <input type="tel" id="phone" name="phone" class="lg-input" placeholder="01xxxxxxxxx" dir="ltr"
+                [ngModel]="phone()" (ngModelChange)="phone.set($event)" required pattern="^01[0-9]{9}$" #phoneRef="ngModel"
+                [class.lg-input--invalid]="phoneRef.invalid && phoneRef.touched"
+                [class.lg-input--valid]="phoneRef.valid && phoneRef.touched">
+              @if (phoneRef.valid && phoneRef.touched) {
+              <i class="fa-solid fa-circle-check lg-input-check"></i>
+              }
+            </div>
+            @if (phoneRef.invalid && phoneRef.touched) {
+            <span class="lg-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              أدخل رقم هاتف مصري صحيح
+            </span>
             }
           </div>
-          @if (phoneRef.invalid && phoneRef.touched) {
-          <span class="lg-error">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            أدخل رقم هاتف مصري صحيح
-          </span>
-          }
-        </div>
 
-        <!-- Password -->
-        <div class="lg-field">
-          <label class="lg-label" for="password">
-            <i class="fa-solid fa-lock"></i>
-            كلمة المرور
-          </label>
-          <div class="lg-input-wrap">
-            <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password"
-              class="lg-input lg-input--pad-left" placeholder="••••••••" [ngModel]="password()"
-              (ngModelChange)="password.set($event)" required minlength="6" #passwordRef="ngModel"
-              [class.lg-input--invalid]="passwordRef.invalid && passwordRef.touched"
-              [class.lg-input--valid]="passwordRef.valid && passwordRef.touched">
-            <button type="button" class="lg-eye-btn" (click)="togglePassword()">
-              <i class="fa-regular" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
-            </button>
-          </div>
-          @if (passwordRef.invalid && passwordRef.touched) {
-          <span class="lg-error">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            كلمة المرور 6 أحرف على الأقل
-          </span>
-          }
-        </div>
-
-        <!-- Remember me -->
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <label class="lg-check-wrap">
-            <input type="checkbox" id="rememberMe" name="rememberMe" [ngModel]="rememberMe()"
-              (ngModelChange)="rememberMe.set($event)">
-            <span class="lg-check-box">
-              <i class="fa-solid fa-check lg-check-tick"></i>
+          <!-- Password -->
+          <div class="lg-field">
+            <label class="lg-label" for="password">
+              <i class="fa-solid fa-lock"></i>
+              كلمة المرور
+            </label>
+            <div class="lg-input-wrap">
+              <input [type]="showPassword() ? 'text' : 'password'" id="password" name="password"
+                class="lg-input lg-input--pad-left" placeholder="••••••••" [ngModel]="password()"
+                (ngModelChange)="password.set($event)" required minlength="6" #passwordRef="ngModel"
+                [class.lg-input--invalid]="passwordRef.invalid && passwordRef.touched"
+                [class.lg-input--valid]="passwordRef.valid && passwordRef.touched">
+              <button type="button" class="lg-eye-btn" (click)="togglePassword()">
+                <i class="fa-regular" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+              </button>
+            </div>
+            @if (passwordRef.invalid && passwordRef.touched) {
+            <span class="lg-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              كلمة المرور 6 أحرف على الأقل
             </span>
-            <span class="lg-check-label">تذكرني</span>
-          </label>
+            }
+          </div>
+
+          <!-- Remember me -->
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <label class="lg-check-wrap">
+              <input type="checkbox" id="rememberMe" name="rememberMe" [ngModel]="rememberMe()"
+                (ngModelChange)="rememberMe.set($event)">
+              <span class="lg-check-box">
+                <i class="fa-solid fa-check lg-check-tick"></i>
+              </span>
+              <span class="lg-check-label">تذكرني</span>
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="lg-submit-btn" [disabled]="isLoading() || loginForm.invalid"
+            [class.lg-submit-btn--loading]="isLoading()">
+            @if (isLoading()) {
+            <span class="lg-submit-spinner"></span>
+            <span>جاري التحقق...</span>
+            } @else {
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>تسجيل الدخول</span>
+            }
+          </button>
+
+        </form>
+
+        <!-- Switch to register -->
+        <p class="lg-switch-text">
+          ليس لديك حساب؟
+          <button type="button" class="lg-switch-link" (click)="switchMode('register')">
+            إنشاء حساب صيدلية جديد
+            <i class="fa-solid fa-arrow-left-long"></i>
+          </button>
+        </p>
+
+        <p class="lg-card-footer-text">
+          <i class="fa-solid fa-shield-halved"></i>
+          اتصالك محمي بتشفير SSL
+        </p>
+
+      </div>
+
+      <!-- ─────────── REGISTER CARD ─────────── -->
+      <div class="lg-card lg-card--register">
+
+        <div class="lg-card-accent"></div>
+
+        <div class="lg-card-header">
+          <div class="lg-mobile-logo d-flex d-lg-none align-items-center gap-2 mb-4">
+            <div class="lg-mobile-logo-ring">
+              <i class="fa-solid fa-pills"></i>
+            </div>
+            <span class="lg-mobile-app-name">شفاء</span>
+          </div>
+
+          <h2 class="lg-title">إنشاء حساب صيدلية جديد</h2>
+          <p class="lg-subtitle">سجّل بيانات صيدليتك وابدأ استقبال الطلبات الآن</p>
         </div>
 
-        <!-- Submit -->
-        <button type="submit" class="lg-submit-btn" [disabled]="isLoading() || loginForm.invalid"
-          [class.lg-submit-btn--loading]="isLoading()">
-          @if (isLoading()) {
-          <span class="lg-submit-spinner"></span>
-          <span>جاري التحقق...</span>
-          } @else {
-          <i class="fa-solid fa-right-to-bracket"></i>
-          <span>تسجيل الدخول</span>
-          }
-        </button>
+        <form class="lg-form lg-form--register" #registerForm="ngForm" (ngSubmit)="onRegisterSubmit(registerForm)" novalidate>
 
-      </form>
+          <!-- Image upload (compact, inline) -->
+          <div class="lg-field lg-field--compact">
+            <div class="lg-avatar-upload">
+              <div class="lg-avatar-preview" [class.lg-avatar-preview--empty]="!regImagePreview()">
+                @if (regImagePreview()) {
+                <img [src]="regImagePreview()!" alt="معاينة الصورة">
+                } @else {
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+                }
+              </div>
+              <div class="lg-avatar-actions">
+                <span class="lg-avatar-hint">شعار الصيدلية <span class="lg-optional">(اختياري)</span></span>
+                <div class="lg-avatar-btn-row">
+                  <label class="lg-avatar-btn" for="regImage">
+                    <i class="fa-solid fa-camera"></i>
+                    {{ regImagePreview() ? 'تغيير' : 'اختيار صورة' }}
+                  </label>
+                  <input #imageInput type="file" id="regImage" name="regImage" accept="image/*" hidden
+                    (change)="onImageSelected($event)">
+                  @if (regImagePreview()) {
+                  <button type="button" class="lg-avatar-remove" (click)="clearImage(imageInput)">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                  }
+                </div>
+              </div>
+            </div>
+            @if (regImageError()) {
+            <span class="lg-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              {{ regImageError() }}
+            </span>
+            }
+          </div>
 
-      <!-- Footer -->
-      <p class="lg-card-footer-text">
-        <i class="fa-solid fa-shield-halved"></i>
-        اتصالك محمي بتشفير SSL
-      </p>
+          <!-- Name + Phone -->
+          <div class="lg-field-row">
+            <div class="lg-field">
+              <label class="lg-label" for="regName">
+                <i class="fa-solid fa-store"></i>
+                اسم الصيدلية
+              </label>
+              <div class="lg-input-wrap">
+                <input type="text" id="regName" name="regName" class="lg-input" placeholder="صيدلية النور"
+                  [ngModel]="regName()" (ngModelChange)="regName.set($event)" required minlength="3" #regNameRef="ngModel"
+                  [class.lg-input--invalid]="regNameRef.invalid && regNameRef.touched"
+                  [class.lg-input--valid]="regNameRef.valid && regNameRef.touched">
+              </div>
+              @if (regNameRef.invalid && regNameRef.touched) {
+              <span class="lg-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                3 أحرف على الأقل
+              </span>
+              }
+            </div>
 
+            <div class="lg-field">
+              <label class="lg-label" for="regPhone">
+                <i class="fa-solid fa-phone"></i>
+                رقم الهاتف
+              </label>
+              <div class="lg-input-wrap">
+                <input type="tel" id="regPhone" name="regPhone" class="lg-input" placeholder="01xxxxxxxxx" dir="ltr"
+                  [ngModel]="regPhone()" (ngModelChange)="regPhone.set($event)" required pattern="^01[0-9]{9}$" #regPhoneRef="ngModel"
+                  [class.lg-input--invalid]="regPhoneRef.invalid && regPhoneRef.touched"
+                  [class.lg-input--valid]="regPhoneRef.valid && regPhoneRef.touched">
+              </div>
+              @if (regPhoneRef.invalid && regPhoneRef.touched) {
+              <span class="lg-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                رقم غير صحيح
+              </span>
+              }
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="lg-field">
+            <label class="lg-label" for="regAddress">
+              <i class="fa-solid fa-location-dot"></i>
+              العنوان
+            </label>
+            <div class="lg-input-wrap">
+              <input type="text" id="regAddress" name="regAddress" class="lg-input" placeholder="العنوان بالتفصيل"
+                [ngModel]="regAddress()" (ngModelChange)="regAddress.set($event)" required minlength="5" #regAddressRef="ngModel"
+                [class.lg-input--invalid]="regAddressRef.invalid && regAddressRef.touched"
+                [class.lg-input--valid]="regAddressRef.valid && regAddressRef.touched">
+            </div>
+            @if (regAddressRef.invalid && regAddressRef.touched) {
+            <span class="lg-error">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              أدخل العنوان بالتفصيل
+            </span>
+            }
+          </div>
+
+          <!-- Location (lat/lng) -->
+          <div class="lg-field">
+            <label class="lg-label">
+              <i class="fa-solid fa-map-location-dot"></i>
+              الموقع الجغرافي <span class="lg-optional">(اختياري)</span>
+            </label>
+            <div class="lg-location-row">
+              <div class="lg-input-wrap lg-input-wrap--half">
+                <input type="text" name="regLat" class="lg-input" placeholder="خط العرض" dir="ltr"
+                  [ngModel]="regLat()" (ngModelChange)="regLat.set($event)">
+              </div>
+              <div class="lg-input-wrap lg-input-wrap--half">
+                <input type="text" name="regLng" class="lg-input" placeholder="خط الطول" dir="ltr"
+                  [ngModel]="regLng()" (ngModelChange)="regLng.set($event)">
+              </div>
+              <button type="button" class="lg-locate-btn" [disabled]="locatingMe()" (click)="useCurrentLocation()"
+                title="استخدام موقعي الحالي">
+                @if (locatingMe()) {
+                <span class="lg-submit-spinner lg-submit-spinner--sm"></span>
+                } @else {
+                <i class="fa-solid fa-location-crosshairs"></i>
+                }
+              </button>
+            </div>
+          </div>
+
+          <!-- Password + Confirm -->
+          <div class="lg-field-row">
+            <div class="lg-field">
+              <label class="lg-label" for="regPassword">
+                <i class="fa-solid fa-lock"></i>
+                كلمة المرور
+              </label>
+              <div class="lg-input-wrap">
+                <input [type]="regShowPassword() ? 'text' : 'password'" id="regPassword" name="regPassword"
+                  class="lg-input lg-input--pad-left" placeholder="••••••••" [ngModel]="regPassword()"
+                  (ngModelChange)="regPassword.set($event)" required minlength="6" #regPasswordRef="ngModel"
+                  [class.lg-input--invalid]="regPasswordRef.invalid && regPasswordRef.touched"
+                  [class.lg-input--valid]="regPasswordRef.valid && regPasswordRef.touched">
+                <button type="button" class="lg-eye-btn" (click)="toggleRegPassword()">
+                  <i class="fa-regular" [class.fa-eye]="!regShowPassword()" [class.fa-eye-slash]="regShowPassword()"></i>
+                </button>
+              </div>
+              @if (regPasswordRef.invalid && regPasswordRef.touched) {
+              <span class="lg-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                6 أحرف على الأقل
+              </span>
+              }
+            </div>
+
+            <div class="lg-field">
+              <label class="lg-label" for="regConfirmPassword">
+                <i class="fa-solid fa-lock"></i>
+                تأكيد كلمة المرور
+              </label>
+              <div class="lg-input-wrap">
+                <input type="password" id="regConfirmPassword" name="regConfirmPassword"
+                  class="lg-input" placeholder="••••••••" [ngModel]="regConfirmPassword()"
+                  (ngModelChange)="regConfirmPassword.set($event)" required #regConfirmRef="ngModel"
+                  [class.lg-input--invalid]="regConfirmRef.touched && regConfirmPassword() !== regPassword()"
+                  [class.lg-input--valid]="regConfirmRef.touched && regConfirmPassword() === regPassword() && regConfirmPassword().length > 0">
+              </div>
+              @if (regConfirmRef.touched && regConfirmPassword() !== regPassword()) {
+              <span class="lg-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                غير متطابقة
+              </span>
+              }
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="lg-submit-btn" [disabled]="regIsLoading() || registerForm.invalid"
+            [class.lg-submit-btn--loading]="regIsLoading()">
+            @if (regIsLoading()) {
+            <span class="lg-submit-spinner"></span>
+            <span>جاري إنشاء الحساب...</span>
+            } @else {
+            <i class="fa-solid fa-store"></i>
+            <span>إنشاء حساب الصيدلية</span>
+            }
+          </button>
+
+        </form>
+
+        <!-- Switch to login -->
+        <p class="lg-switch-text">
+          لديك حساب بالفعل؟
+          <button type="button" class="lg-switch-link" (click)="switchMode('login')">
+            <i class="fa-solid fa-arrow-right-long"></i>
+            تسجيل الدخول
+          </button>
+        </p>
+
+      </div>
+
+     </div>
     </div>
   </div>
 

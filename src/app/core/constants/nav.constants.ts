@@ -31,6 +31,20 @@ export const NAV_SECTIONS: NavSection[] = [
         requiredAnyRole: ['Admin', 'Editor'],
       },
       {
+        id: 'item-groups',
+        label: 'مجموعات الأصناف',
+        route: '/item-groups',
+        icon: 'item-groups',
+        requiredAnyRole: ['Admin'],
+      },
+      {
+        id: 'items',
+        label: 'الأصناف',
+        route: '/items',
+        icon: 'items',
+        requiredAnyRole: ['Admin'],
+      },
+      {
         id: 'discounts',
         label: 'الخصومات والعروض',
         route: '/discounts',
